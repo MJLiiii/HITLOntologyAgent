@@ -1,18 +1,23 @@
-# Domain scope — decision pending
+# Domain scope - DORA source preparation selected
 
-No Deloitte domain or use case has been selected or signed off. The software operates on the explicitly synthetic `demo` namespace `https://example.org/oe-demo/`; this fixture is not a Deloitte scope decision or a regulatory interpretation.
+On 1 November 2026 the user selected **financial regulatory compliance**, with the use case **modelling contractual obligations between financial entities and ICT third-party service providers**. The user chose obligation modelling as the first test and approved preparation of the domain specification and public source corpus. This supersedes the earlier open choice among DORA, AML, risk management and data governance for this preparation work.
 
-The four candidates remain open:
+The bounded subject is EU DORA contractual requirements, centred on Article 30 of Regulation (EU) 2022/2554. General ICT-service contractual requirements and additional requirements for services supporting critical or important functions must remain distinguishable. The initial audience is the project researcher and a future human domain reviewer.
 
-| Candidate | Bounded possibility | Scope decision needed |
-|---|---|---|
-| Financial regulatory compliance, including DORA | Selected ICT services, providers, evidence and obligations | Exact provisions, editions and expert interpretation |
-| Financial crime, including AML | Synthetic due-diligence evidence workflow | Exclude customer records and operational decisions |
-| Risk management | Limited risks, controls, owners and evidence | Agree taxonomy and assessment meaning |
-| Data governance | Ownership, classification and limited policy relationships | Separate business meaning from access enforcement |
+## Prepared materials
 
-The supervisor, domain expert and student must select one use case, identify its owner and intended users, agree source authority and precedence, and sign the included concepts, relationships and exclusions. Selection criteria are document availability, expert access, modelling ambiguity, measurable questions, confidentiality burden and calendar feasibility.
+- [Public source packet](../research/corpora/dora-v1/README.md): five official English documents, retained originals, article/template extracts, source metadata and integrity verification.
+- [Ontology modelling specification](dora-modelling.md): concept and relation design, staged requirement coverage, six competency-question families, acceptance checks and unresolved interpretation.
+- [Source manifest](../research/corpora/dora-v1/manifest.json): exact source representations, editions, dates, retrieval locations, hashes and extract selectors.
 
-Before study collection, record source editions, retrieval/effective dates, rights, classification and retention; name the reviewer, final approver and escalation owner; obtain consent and review availability; approve question-to-IRI bindings, imports and mappings; freeze development versus held-out cases and acceptance criteria. The target capacity is 5–15 short documents, 10–20 competency questions and 10–30 initial vocabulary terms, adjusted before freezing. These are planning targets, not observed results.
+The initial model represents a legal requirement to include a contractual term. A contract containing that term and a party performing the resulting obligation are separate statements requiring separate evidence. Actual contracts and performance are outside this first test.
 
-The demo asks whether Payroll Service inherits Service membership and whether Operations Team owns it. Synthetic source text explicitly states both. A third finite negative test checks that Payroll is not inferred to be a Team. RDFS is sufficient. `hasOwner` domain/range infer types; SHACL separately checks required ownership. The demo may proceed without confidential material. Domain implementation, real reviewers and confirmatory research remain gated by the decisions above and `research/protocol.yaml`.
+## Authorization and runtime boundary
+
+The selection authorizes this public-document preparation. It is not a Deloitte institutional sign-off, an expert interpretation, a recorded application scope/review decision, or consent for a study. No real institution, confidential contract, participant, expert rating, or review time is supplied or inferred.
+
+The existing application still runs the explicitly synthetic `demo` namespace `https://example.org/oe-demo/`. Its project API admits only `demo` and `unselected`; the scope schema fixes that namespace. Public documents are accepted by source ingestion, but registered `synthetic-task-v1` experiments require synthetic evidence. DORA regulations must remain classified **public** and must not be relabelled to bypass these restrictions. No application/API changes or domain activation are included in this increment.
+
+The existing Payroll/Operations ownership demo, its artifacts and research protocols are preserved. A subsequent adaptation must establish the DORA project/namespace, admissible source and experiment classifications, reviewed question-to-IRI bindings and approved test expectations before claiming an end-to-end DORA workflow result.
+
+Before real study collection, the supervisor, domain expert and student still need to identify the institutional owner, reviewer, final approver and escalation owner; sign the included concepts, relationships and exclusions; confirm source rights and retention; obtain consent and availability; approve questions, mappings and acceptance criteria; and separate development from held-out material. The historical planning targets of 5-15 short documents, 10-20 competency questions and 10-30 vocabulary terms are not observed study results. See [the protocol](../research/protocol.yaml).

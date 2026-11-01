@@ -1,5 +1,7 @@
 # Multi-LLM implementation ledger
 
+Historical implementation ledger: the credential and comparison status below describes the original implementation handoff. Later live outcomes and the current shared budget are recorded in [multi-LLM verification](../multi-llm-verification.md) and [comparison evidence](../model-comparison.md).
+
 Approved plan: LiteLLM SDK shared by Studio and TrustGraph; project-authorized server-owned profiles selected by API, immutable queued-job configuration, legacy Ollama/demo compatibility, no website picker. OpenAI/Claude/Ollama/compatible gateways/LiteLLM proxy/OpenCode Go. TrustGraph uses bounded LlmService extension and separate preconfigured flows, frozen original bindings, original array schema validation and existing drift guards. Embeddings/reranker unchanged.
 
 Live test authorization: synthetic disposable data only, at most 20 outbound completion attempts including failures, maximum 4096 output tokens/call, conservative total full-price reservation at most USD 1. No retries, paid-provider fallback, account setting changes or automatic approval/publication. OPENCODE_API_KEY must be configured privately. Initially glm-5.3-flash/kimi-k2.7-code; optional advertised free models after current price/availability verification. Missing credential currently prevents live calls; continue all implementation/offline verification.
@@ -16,7 +18,7 @@ Live test authorization: synthetic disposable data only, at most 20 outbound com
 
 ## Progress
 
-- Baseline: a4892ee; existing 405 backend / 59 UI verification recorded in prior release. Original [ONTOCHECK_REVIEW.md](archive/ONTOCHECK_REVIEW.md) remains untouched.
+- Baseline: a4892ee; existing 405 backend / 59 UI verification recorded in prior release. Original [ONTOCHECK_REVIEW.md](ONTOCHECK_REVIEW.md) remains untouched.
 - Ruling: work in the user's existing folder on codex/multi-llm, preserving their earlier in-place preference. Parallel tasks own distinct files and agree interfaces; root performs integration and final independent review.
 - Increment 1: profile registry, validated immutable revisions, permission catalog/configuration examples — committed as `9a2f286`.
 - Increment 2: bounded shared SDK, Studio/API workflows, experiments, conversation IDs, dispatch budget and protocol tests — committed as `66b86f2`.
@@ -24,5 +26,5 @@ Live test authorization: synthetic disposable data only, at most 20 outbound com
 - Increment 4: bounded real-workflow comparison runner, configuration/API examples, comparison report and verification evidence — complete, recorded in the documentation commit containing this ledger.
 - Final verification: 528 backend tests passed / 7 existing skips; 60 frontend tests, TypeScript, both builds, Ruff, API contracts and diff checks passed. Three real loopback protocol endpoints and the actual local Ollama model passed. Final pinned TrustGraph image passed a network-disabled real-stack smoke with fake HTTP.
 - Independent reviews found and resolved endpoint override, credential echo, strict schema, profile numeric normalization, dedicated legacy-compatible processors, generic JSON and remote flow-marker issues. All source owners completed their work before the final backend run.
-- Running local Studio now serves the new sanitized profile catalog; Ollama stays configured. Main workspace remains unapproved. Original [ONTOCHECK_REVIEW.md](archive/ONTOCHECK_REVIEW.md) is untouched.
-- Remaining live evidence: OPENCODE_API_KEY is still absent. Four comparison observations are credential-blocked; zero completion attempts and USD 0 reserved. User intends to configure the key locally in the ignored .env placeholder. No hosted model quality or live Go TrustGraph extraction/import result is claimed. See multi-llm-verification.md and model-comparison.md.
+- Running local Studio now serves the new sanitized profile catalog; Ollama stays configured. Main workspace remains unapproved. Original [ONTOCHECK_REVIEW.md](ONTOCHECK_REVIEW.md) is untouched.
+- Remaining live evidence: OPENCODE_API_KEY is still absent. Four comparison observations are credential-blocked; zero completion attempts and USD 0 reserved. User intends to configure the key locally in the ignored .env placeholder. No hosted model quality or live Go TrustGraph extraction/import result is claimed. See [multi-LLM verification](../multi-llm-verification.md) and [comparison evidence](../model-comparison.md).

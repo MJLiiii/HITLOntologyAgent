@@ -2,7 +2,7 @@
 
 Executed 1 November 2026 in Chrome against an isolated Studio at `http://localhost:5173`, with a fresh temporary `OE_DATA_DIR`, SQLite, eager jobs, and no configured language model. These are simulated engineering records, not expert-study observations or approvals of a real ontology. The main workspace’s `.data` was not used for these writes.
 
-All workflow mutations below were performed through the actual built web interface. A read-only SQLite export corroborates the resulting identities and statuses in [browser-acceptance-evidence.json](browser-acceptance-evidence.json). This evidence omits session keys, cookies, bootstrap tokens, and raw request headers.
+All workflow mutations below were performed through the actual built web interface. A read-only SQLite export corroborates the resulting identities and statuses in [browser-acceptance-evidence.json](../browser-acceptance-evidence.json). This evidence omits session keys, cookies, bootstrap tokens, and raw request headers.
 
 ## Executed workflow
 
@@ -38,15 +38,15 @@ Final frontend verification: **36 tests passed across 12 files**, TypeScript pas
 
 ## Retained browser evidence
 
-- [Failed CQ with explicit expected/actual result](screenshots/acceptance-failed-cq.jpg)
-- [Published release and provenance](screenshots/acceptance-published-version.jpg)
-- [Historical approved version with unchanged current head](screenshots/acceptance-previous-approved-version.jpg)
-- [Literal untrusted source text](screenshots/acceptance-malicious-source-escaped.jpg)
-- [Model experiment selector](screenshots/acceptance-experiment-selector.jpg)
-- [Mobile ontology history](screenshots/acceptance-mobile-history.jpg)
-- [Mobile model experiment selector](screenshots/acceptance-mobile-experiments.jpg)
-- [Rejected session recovery](screenshots/acceptance-session-error.jpg)
+- [Failed CQ with explicit expected/actual result](../screenshots/acceptance-failed-cq.jpg)
+- [Published release and provenance](../screenshots/acceptance-published-version.jpg)
+- [Historical approved version with unchanged current head](../screenshots/acceptance-previous-approved-version.jpg)
+- [Literal untrusted source text](../screenshots/acceptance-malicious-source-escaped.jpg)
+- [Model experiment selector](../screenshots/acceptance-experiment-selector.jpg)
+- [Mobile ontology history](../screenshots/acceptance-mobile-history.jpg)
+- [Mobile model experiment selector](../screenshots/acceptance-mobile-experiments.jpg)
+- [Rejected session recovery](../screenshots/acceptance-session-error.jpg)
 
 The disposable server and its temporary data are removed after exporting this sanitized evidence. See [portal-smoke.md](portal-smoke.md) for the separate real TrustGraph host checks and their precise scope.
 
-After cleanup, a final read-only check reloaded the latest Studio plugin inside the real TrustGraph host at `127.0.0.1:5183/ontology-studio`. Both sessions survived, the native footer showed **Authenticated**, and the main Studio still showed **No approved version** and **Scope awaiting human acceptance**. The model pilot selector and its limitations rendered correctly; no experiment, review, or publication action was taken in the main workspace. [Final host screenshot](screenshots/trustgraph-studio-experiments-final.jpg).
+After cleanup, a final read-only check reloaded the latest Studio plugin inside the real TrustGraph host at `127.0.0.1:5183/ontology-studio`. Both sessions survived, the native footer showed **Authenticated**, and the main Studio still showed **No approved version** and **Scope awaiting human acceptance**. The model pilot selector and its limitations rendered correctly; no experiment, review, or publication action was taken in the main workspace. [Final host screenshot](../screenshots/trustgraph-studio-experiments-final.jpg).

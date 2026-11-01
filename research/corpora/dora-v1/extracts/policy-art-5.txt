@@ -1,0 +1,14 @@
+Article 5
+Ex-ante risk assessment
+1. The policy shall require that the business needs of the financial entity are defined before a contractual arrangement is concluded.
+2. The policy shall require that a risk assessment is conducted at financial entity level and, where applicable, at consolidated and sub-consolidated level before a contractual arrangement is concluded.
+The risk assessment shall take into account all the relevant requirements laid down in Regulation (EU) 2022/2554 and applicable sectoral Union legislation. It shall consider, in particular, the impact of the provision of ICT services supporting critical or important functions by ICT third-party service providers on the financial entity and all the risks posed by the provision of those ICT services supporting critical or important functions by ICT third-party service providers, including the following:
+(a) | operational risks;
+(b) | legal risks;
+(c) | ICT risks;
+(d) | reputational risks;
+(e) | risks linked to the protection of confidential or personal data;
+(f) | risks linked to the availability of data;
+(g) | risks linked to the location where the data is processed and stored;
+(h) | risks linked to the location of the ICT third-party service provider;
+(i) | ICT concentration risks at entity level.

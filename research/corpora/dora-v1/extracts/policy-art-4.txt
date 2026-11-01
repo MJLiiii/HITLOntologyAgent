@@ -1,0 +1,9 @@
+Article 4
+Main phases of the life cycle for the adoption and use of contractual arrangements
+The policy shall specify the requirements, including the rules, the responsibilities and the processes, for each main phase of the lifecycle of the contractual arrangement, covering at least the following:
+(a) | the responsibilities of the management body, including its involvement, as appropriate, in the decision-making process on the use of ICT services supporting critical or important functions provided by ICT third-party service providers;
+(b) | the planning of contractual arrangements, including the risk assessment, the due diligence as set out in Articles 5 and 6 and the approval process regarding new or material changes to contractual arrangements as set out in Article 8(4);
+(c) | the involvement of business units, internal controls and other relevant units in respect of contractual arrangements;
+(d) | the implementation, monitoring and management of contractual arrangements as referred to in Articles 7, 8 and 9, including at consolidated and sub-consolidated level, where applicable;
+(e) | the documentation and record-keeping, taking into account the requirements with regard to the register of information laid down in Article 28(3) of Regulation (EU) 2022/2554;
+(f) | the exit strategies and termination processes as set out in Article 10.

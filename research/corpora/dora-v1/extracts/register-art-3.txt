@@ -1,0 +1,17 @@
+Article 3
+General requirements for the templates of the register of information
+1. Financial entities shall use the templates set out in Annex I to IV to maintain and update the register of information in accordance with Article 28(3) of Regulation (EU) 2022/2554, at entity level, or at sub-consolidated and consolidated level.
+2. Financial entities shall ensure that the templates referred to in paragraph 1 include all of the following:
+(a) | the relevant information in relation to all the ICT services provided by direct ICT third-party providers;
+(b) | information on all subcontractors that effectively underpin ICT services supporting critical or important functions or material parts thereof.
+3. Financial entities shall ensure that the information contained in the templates referred to in paragraph 1 is accurate and consistent. Financial entities shall review the information contained in the templates regularly and shall promptly correct any errors or discrepancies detected.
+In case of groups, financial entities responsible for maintaining and updating the register of information at sub-consolidated and consolidated level shall ensure that information in relation to entity level in the consolidation is correct and consistent with the information at the sub-consolidated and consolidated level.
+4. Financial entities shall ensure that the information contained in the templates referred to in paragraph 1 adhere to the following principles of data quality:
+(a) | accuracy;
+(b) | completeness;
+(c) | consistency;
+(d) | integrity;
+(e) | uniformity;
+(f) | validity.
+5. Financial entities shall use a valid and active legal entity identifier (LEI) or the European Unique Identifier referred to in Article 16 of Directive (EU) 2017/1132 (‘EUID’), and where available both of these identifiers, to identify all of their ICT third-party service providers that are legal persons, except for individuals acting in a business capacity.
+6. Where an ICT service provided by a direct ICT third-party service provider is supporting a critical or important function of the financial entities, financial entities shall ensure through the direct ICT third-party service provider, that all the subcontractors of the direct ICT third-party service provider included in the register of information in accordance with paragraph 2, point (b), which effectively underpin/support ICT services supporting critical or important functions, use a valid and active LEI or provide their EUID, and where available both of these identifiers, except if those subcontractors are individuals acting in a business capacity.

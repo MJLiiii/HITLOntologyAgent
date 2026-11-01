@@ -1,0 +1,6 @@
+Article 6
+Termination of the contract between the financial entity and the ICT third-party service provider
+The financial entity shall have the right to provide in the contractual arrangement with the ICT third-party service provider that the contractual arrangement is to terminate in each of the following cases:
+(a) | the financial entity has objected to material changes to the subcontracting arrangements supporting critical or important functions and requested for modifications to those arrangements, but the ICT third-party service provider has nevertheless implemented those material changes;
+(b) | the ICT third-party service provider has implemented material changes to subcontracting arrangements supporting critical or important functions or material parts thereof before the end of the notice period without approval by the financial entity;
+(c) | the ICT third-party service provider subcontracts an ICT service that supports a critical or important function or material part thereof not explicitly permitted to be subcontracted by the contract between the financial entity and the ICT third-party service provider.

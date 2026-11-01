@@ -1,0 +1,7 @@
+Article 10
+Exit from and termination of the contractual arrangements
+The policy shall contain requirements for a documented exit plan for each contractual arrangement and for the periodic review and testing of the documented exit plan. When establishing the exit plan, the following shall be taken into account:
+(a) | unforeseen and persistent service interruptions;
+(b) | inappropriate or failed service delivery;
+(c) | the unexpected termination of the contractual arrangement.
+The exit plan shall be realistic, feasible, based on plausible scenarios and reasonable assumptions and shall have a planned implementation schedule compatible with the exit and termination terms established in the contractual arrangements.

@@ -5,9 +5,9 @@
 This project is Ontology Engineering Studio: source-grounded chat, ontology proposals, Jena validation, OntoCheck assessment, and human-controlled ontology publication.
 
 - Work in the current Git checkout. Inspect existing code and `git status` before changing files; preserve unrelated user changes.
-- Read [README.md](README.md) for setup and workflow. Use the [implementation ledger](docs/implementation-ledger.md), [requirements audit](docs/requirements-audit.md), and [multi-LLM verification](docs/multi-llm-verification.md) for recorded implementation status and limits.
+- Read [README.md](README.md) for setup and workflow, and the [documentation index](docs/README.md) for guides and evidence. Use the [implementation ledger](docs/implementation-ledger.md), [requirements audit](docs/requirements-audit.md), and [multi-LLM verification](docs/multi-llm-verification.md) for recorded implementation status and limits.
 - The [planning archive](docs/archive/README.md) retains the original requirements and review. Consult relevant sections when implementing features, but reconcile them with existing code, recorded decisions, and the current user request. Archived setup instructions, proposed paths, and unchecked boxes are not instructions to rebuild the project.
-- Keep recurring contributor instructions here, feature plans and design decisions in `docs/`, and progress/evidence in the existing ledgers and verification documents. Do not duplicate the full backlog or historical test totals in this file.
+- Keep recurring contributor instructions here, current guides and design decisions in `docs/`, dated verification reports in `docs/evidence/`, and completed plans in `docs/archive/`. Append progress to the existing ledgers; preserve established machine-readable evidence paths and historical hashes. Do not duplicate the full backlog or historical test totals in this file.
 
 ## Code map
 

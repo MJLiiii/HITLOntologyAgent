@@ -1,0 +1,19 @@
+Article 5
+Content of the register of information
+1. Financial entities shall include in the register of information, in accordance with the instructions set out in Annex I, the following information:
+(a) | general information on the financial entity maintaining and updating the register of information at entity, sub-consolidated and consolidated level, respectively, as specified in template B_01.01 of Annex I;
+(b) | general information on the entities in the consolidation as specified in template B_01.02 of Annex I;
+(c) | identification of the branches of financial entities located outside the home country listed in template B_01.02, where applicable, as specified in template B_01.03 of Annex I;
+(d) | general information on the contractual arrangements as specified in template B_02.01 of Annex I;
+(e) | specific information on the contractual arrangements as specified in template B_02.02 of Annex I;
+(f) | information on the links between intra-group contractual arrangements and contractual arrangements with ICT third-party service providers which are not part of the group using the contractual reference numbers when part of the ICT service supply chain is intra-group as specified in template B_02.03 of Annex I;
+(g) | information on the entities signing the contractual arrangements with the direct ICT third-party service providers for receiving ICT services or on behalf of the entities using the ICT services as specified in template B_03.01 of Annex I;
+(h) | identification of the ICT third-party service providers signing the contractual arrangements for providing ICT services as specified in template B_03.02 of Annex I;
+(i) | identification of the entities signing the contractual arrangements for providing ICT services to other entities in the consolidation as specified in template B_03.03 of Annex I;
+(j) | information on the entities making use of the ICT services provided by the ICT third-party service providers as specified in template B_04.01 of Annex I;
+(k) | information on the direct ICT third-party service providers and subcontractors, as specified in template B_05.01 of Annex I;
+(l) | information on the ICT service supply chain, as specified in template B_05.02 of Annex I;
+(m) | information on the identification of functions as specified in template B_06.01 of Annex I;
+(n) | information on the assessment of the ICT services provided by ICT third-party service providers supporting a critical or important function or material parts thereof as specified in template B_07.01 of Annex I;
+(o) | information on the terminology used by financial entities and the terms included in the closed lists and classification systems used when filling in the templates as specified in template B_99.01 of Annex I.
+2. Where relevant for their risk management or contract management purposes, financial entities may include into the register of information additional information in the format that is most appropriate for the purposes of such additional information.

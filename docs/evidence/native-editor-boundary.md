@@ -10,11 +10,11 @@ The unchanged portal at `127.0.0.1:5183` used the real 2.11.1 gateway at `127.0.
 
 The native editor's `OntologyWorkbench` calls the upstream `useOntologies` hook, which saves `type: ontology` configuration through `socket.config().putConfig`. That candidate configuration is a different store from Studio's content-addressed artifacts and canonical Git publisher. The native workspace selector does not grant Studio project or approval authority. No native store writeback/mirror is configured; an ontology exported from that editor must enter Studio as an unapproved seed/proposal and pass its scope, validation, assessment and exact-revision human review gates.
 
-![Persisted synthetic native editor class](screenshots/native-editor-boundary.jpg)
+![Persisted synthetic native editor class](../screenshots/native-editor-boundary.jpg)
 
 ## Retained comparisons
 
-The full before/after SHA-256 maps and release identifiers are in [the sanitized evidence packet](native-editor-boundary-evidence.json).
+The full before/after SHA-256 maps and release identifiers are in [the sanitized evidence packet](../native-editor-boundary-evidence.json).
 
 | Target | Before and after result |
 |---|---|

@@ -1,0 +1,75 @@
+{
+  "negative_integrity_checks": [
+    {
+      "case": "altered_source",
+      "rejected": true,
+      "reason": "Source integrity mismatch"
+    },
+    {
+      "case": "altered_extract",
+      "rejected": true,
+      "reason": "Extract integrity mismatch"
+    },
+    {
+      "case": "altered_extract_and_manifest",
+      "rejected": true,
+      "reason": "Extract differs from official source selection"
+    }
+  ],
+  "local_markdown_links_checked": 80,
+  "local_links": "passed",
+  "verification_harness_note": "Initial negative-control invocation resolved the venv symlink to its base interpreter and failed on missing pypdf; this was not accepted as integrity evidence. Corrected invocation preserved the venv path and required each specific integrity error.",
+  "date": "2026-11-01",
+  "scope": "DORA source corpus and ontology specification only",
+  "packet_manifest_sha256": "2befb6c92ed195f1eddd702a0edc4962b54ee12bc0a60f4fa1a9fdd5011c5602",
+  "packet_checksums_sha256": "83c4dda1a5e1f9abdced1a72643443c279355cbeaebbd4faba3391d6c99a162f",
+  "source_documents": 5,
+  "original_representations": 9,
+  "extracts": 44,
+  "packet_file_hashes": 56,
+  "offline_command": ".venv/bin/python research/corpora/dora-v1/verify.py",
+  "independent_review": {
+    "findings": [],
+    "xml_extracts_independently_compared": 43,
+    "limitations": [
+      "Retained-source review, not legal endorsement",
+      "No exhaustive amendment/corrigendum certification",
+      "No application workflow execution"
+    ]
+  },
+  "visual_spot_checks": [
+    {
+      "document": "32022R2554",
+      "pdf_pages": [
+        52,
+        53
+      ]
+    },
+    {
+      "document": "32024R2956",
+      "pdf_pages": [
+        24
+      ]
+    },
+    {
+      "document": "ESMA_QA_2646",
+      "pdf_pages": [
+        2
+      ]
+    }
+  ],
+  "warnings": [
+    "Discarded incomplete layout-mode PDF extraction of rotated register tables; final extracts use official XHTML.",
+    "Poppler font-cache write warnings occurred on two renders; images were produced and visually inspected."
+  ],
+  "not_run": [
+    "Full application test suite",
+    "Jena/OntoCheck candidate validation",
+    "Model generation",
+    "DORA application/experiment activation"
+  ],
+  "application_or_api_changes": false,
+  "paid_model_calls": 0,
+  "human_reviews_created": 0,
+  "publications_created": 0
+}

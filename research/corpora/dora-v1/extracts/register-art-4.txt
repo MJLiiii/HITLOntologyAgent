@@ -1,0 +1,5 @@
+Article 4
+Data format requirement
+1. Unless otherwise specified in the instructions, each template composing the register of information shall be a table with a predefined number of columns and an indefinite number of rows.
+2. Financial entities shall complete each data element with a single value. Where more than one value is valid for a specific data element, financial entities shall add an additional row in the corresponding template for each valid value.
+3. Financial entities shall complete all data elements in the register of information at entity level, sub-consolidated and consolidated level, as applicable.

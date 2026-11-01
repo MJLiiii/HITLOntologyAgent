@@ -1,0 +1,6 @@
+Instructions to complete template B_03.02 — ICT third-party service providers signing the contractual arrangements for providing ICT service(s)
+Identify all the ICT third-party service providers referred to in template B_05.01 signing the contractual arrangements referred to in template B_02.01 for providing the ICT services.
+Column Code | Column Name | Type | Fill-in Instruction | Fill-in Option
+B_03.02.0010 | Contractual arrangement reference number | Alphanumerical | As reported in B_02.02.0010 Identify the contractual arrangement reference number signed by the ICT third-party service provider | Mandatory
+B_03.02.0020 | Identification code of ICT third-party service provider | Alphanumerical | As reported in B_05.01.0010 Code to identify the ICT third-party service provider as reported in B_05.01.0020 for that provider. | Mandatory
+B_03.02.0030 | Type of code to identify the ICT third-party service provider | Pattern | As reported in B_05.01.0020 Type of code to identify the ICT third-party service provider in B_03.02.0020 as reported in B_05.01.0020 for that provider. | Mandatory

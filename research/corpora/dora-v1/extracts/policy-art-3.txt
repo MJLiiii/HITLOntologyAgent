@@ -1,0 +1,18 @@
+Article 3
+Governance arrangements
+1. The management body shall review the policy at least once a year and update it where necessary. Changes made to the policy shall be implemented in a timely manner and as soon as it is possible within the relevant contractual arrangements. The financial entity shall document the planned timeline for the implementation.
+2. The policy shall establish or refer to a methodology for determining which ICT services support critical or important functions. The policy shall also specify when this assessment is to be conducted and reviewed.
+3. The policy shall clearly assign the internal responsibilities for the approval, management, control, and documentation of relevant contractual arrangements and shall ensure that appropriate skills, experience and knowledge are maintained within the financial entity to effectively oversee the relevant contractual arrangements, including the ICT services provided under those arrangements.
+4. Without prejudice to the final responsibility of the financial entity to effectively oversee relevant contractual arrangements, the policy shall require that the ICT third party service provider is assessed to have sufficient resources to ensure that the financial entity complies with all its legal and regulatory requirements regarding the ICT services supporting critical or important functions that are provided.
+5. The policy shall clearly identify the role or member of senior management responsible for monitoring the relevant contractual arrangements. The policy shall specify how that role or member of senior management shall cooperate with the control functions, unless it is part of it, and shall set out the reporting lines to the management body, including the nature of the information to report and the documents to provide. It shall also set out the frequency of such reporting.
+6. The policy shall ensure that the contractual arrangements are consistent with the following:
+(a) | the ICT risk management framework referred to in Article 6 of Regulation (EU) 2022/2554;
+(b) | the information security policy referred to in Article 9(4) of Regulation (EU) 2022/2554;
+(c) | the ICT business continuity policy referred to in Article 11 of Regulation (EU) 2022/2554;
+(d) | the requirements on incident reporting set out in Article 19 of Regulation (EU) 2022/2554.
+7. The policy shall require that ICT services supporting critical or important functions provided by ICT third party service providers are subject to independent review and are included in the audit plan.
+8. The policy shall explicitly specify that the contractual arrangements:
+(a) | do not relieve the financial entity and its management body of its regulatory obligations and its responsibilities to its clients;
+(b) | are not to prevent effective supervision of a financial entity and are not to contravene any supervisory restrictions on services and activities;
+(c) | are to require that the ICT third party service providers cooperate with the competent authorities;
+(d) | are to require that the financial entity, its auditors, and competent authorities have effective access to data and premises relating to the use of ICT services supporting critical or important functions.

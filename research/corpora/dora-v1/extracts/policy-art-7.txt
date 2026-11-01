@@ -1,0 +1,4 @@
+Article 7
+Conflicts of interest
+1. The policy shall specify the appropriate measures to identify, prevent and manage actual or potential conflicts of interest arising from the use of ICT third-party service providers that are to be taken before entering relevant contractual arrangements and shall provide for an ongoing monitoring of such conflicts of interest.
+2. Where ICT services supporting critical or important functions are provided by ICT intra-group service providers, the policy shall specify that decisions on the conditions, including the financial conditions, for the ICT services are to be taken objectively.

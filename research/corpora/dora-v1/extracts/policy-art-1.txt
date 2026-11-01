@@ -1,0 +1,13 @@
+Article 1
+Overall risk profile and complexity
+The policy on the use of ICT services supporting critical or important functions provided by ICT third-party service providers (the ‘policy’) shall take into account the size and the overall risk profile of the financial entity, and the nature, scale and elements of increased or reduced complexity of its services, activities and operations, including elements relating to:
+(a) | the type of ICT services included in the contractual arrangement on the use of ICT services supporting critical or important functions provided by ICT third-party service providers (the ‘contractual arrangement’) between the financial entity and the ICT third-party service provider;
+(b) | the location of the ICT third-party service provider or the location of its parent company;
+(c) | whether the ICT services supporting critical or important functions are provided by an ICT third-party service provider located within a Member State or in a third country, also considering the location from where the ICT services are provided and the location where the data is processed and stored;
+(d) | the nature of the data shared with the ICT third-party service provider;
+(e) | whether the ICT third-party service provider is part of the same group as the financial entity to which the services are provided;
+(f) | the use of ICT third-party service providers that are authorised, registered or subject to supervision or oversight by a competent authority in a Member State or subject to the oversight framework under Chapter V, Section II, of Regulation (EU) 2022/2554, and the use of ICT third-party service providers that are not;
+(g) | the use of ICT third-party service providers that are authorised, registered or subject to supervision or oversight by a supervisory authority in a third country, and the use of ICT third-party service providers that are not;
+(h) | whether the provision of ICT services supporting critical or important functions are concentrated to a single ICT third-party service provider or a small number of such service providers;
+(i) | the transferability of the ICT services supporting critical or important functions to another ICT third-party service provider, including as a result of technology specificities;
+(j) | the potential impact of disruptions in the provision of the ICT services supporting critical or important functions on the continuity of the financial entity’s activities and on the availability of its services.

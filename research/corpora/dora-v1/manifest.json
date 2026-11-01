@@ -1,0 +1,1362 @@
+{
+  "schema_version": 1,
+  "packet_id": "dora-public-sources-v1",
+  "prepared_on": "2026-11-01",
+  "purpose": "Source selection and ontology modelling specification; no application activation or legal compliance decision.",
+  "domain": "Financial regulatory compliance",
+  "use_case": "Modelling contractual obligations between financial entities and ICT third-party service providers",
+  "classification": "public",
+  "scope_decision": "User selected the domain and approved preparation of this packet; no application human review or expert oracle decision is implied.",
+  "edition_policy": "Frozen original English editions. Not a continuously updated legal register; changes require a new packet version. Exhaustive subsequent-amendment/corrigendum certification is not claimed.",
+  "extraction": {
+    "method": "verify.py selected_text: complete official XHTML elements/sibling ranges; pypdf 6.21.4 default extraction for the ESMA two-page PDF",
+    "normalization": "Whitespace-only normalization within lines; HTML table cells joined with | and structural blocks separated by newlines. No paraphrase, OCR, truncation, or hyphen repair.",
+    "authority": "Original documents control over normalized extracts. Full originals preserve all footnotes and cross-referenced material.",
+    "pdf_note": "Register PDF has rotated tables. Its authoritative structured XHTML is used for all extracts; layout-mode PDF extraction was not accepted as complete."
+  },
+  "documents": [
+    {
+      "id": "dora",
+      "document_identifier": "32022R2554",
+      "title": "Regulation (EU) 2022/2554 on digital operational resilience for the financial sector",
+      "classification": "public",
+      "language": "en",
+      "authority_kind": "regulation",
+      "priority": "primary",
+      "edition": "Original Official Journal English edition",
+      "document_date": "2022-12-14",
+      "publication_date": "2022-12-27",
+      "entry_into_force_date": "2023-01-16",
+      "separate_application_date": "2025-01-17",
+      "date_basis": "Article 64",
+      "date_note": "Entry into force and application are distinct.",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+      "representations": [
+        {
+          "path": "originals/32022R2554-en.html",
+          "sha256": "cf50d8f023d23b2a56f535aaee0760eba7f1925ef08a9858c5c31d43d414f46b",
+          "bytes": 746866,
+          "request_url": "https://publications.europa.eu/resource/celex/32022R2554",
+          "resolved_url": "https://publications.europa.eu/resource/cellar/0caf473a-85bd-11ed-9887-01aa75ed71a1.0006.03/DOC_1",
+          "request_headers": {
+            "Accept": "application/xhtml+xml",
+            "Accept-Language": "eng"
+          },
+          "status": 200,
+          "content_type": "application/xhtml+xml;charset=UTF-8",
+          "retrieved_at": "2026-11-01T19:24:02.356147+00:00"
+        },
+        {
+          "path": "originals/32022R2554-en.pdf",
+          "sha256": "85307f9e2a0409826dd0f54489645935816d16e929f0db4db3ef15badd11d38c",
+          "bytes": 1493241,
+          "request_url": "https://publications.europa.eu/resource/cellar/0caf473a-85bd-11ed-9887-01aa75ed71a1.0006.01/DOC_1",
+          "resolved_url": "https://publications.europa.eu/resource/cellar/0caf473a-85bd-11ed-9887-01aa75ed71a1.0006.01/DOC_1",
+          "status": 200,
+          "content_type": "application/pdf;charset=UTF-8",
+          "retrieved_at": "2026-11-01T19:24:48.256670+00:00",
+          "pages": 79
+        }
+      ],
+      "attribution": "European Union, Official Journal; retrieved from official Publications Office/EBA services.",
+      "rights_notice_url": "https://eur-lex.europa.eu/content/legal-notice/legal-notice.html"
+    },
+    {
+      "id": "policy",
+      "document_identifier": "32024R1773",
+      "title": "Commission Delegated Regulation (EU) 2024/1773: policy regarding contractual arrangements on ICT services supporting critical or important functions",
+      "classification": "public",
+      "language": "en",
+      "authority_kind": "delegated_regulation",
+      "priority": "core_supplement",
+      "edition": "Original Official Journal English edition",
+      "document_date": "2024-03-13",
+      "publication_date": "2024-06-25",
+      "entry_into_force_date": "2024-07-15",
+      "separate_application_date": null,
+      "date_basis": "Article 11",
+      "date_note": "No separate application date is specified in the entry-into-force article; do not confuse this with DORA Article 64 or contract remediation timelines.",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "representations": [
+        {
+          "path": "originals/32024R1773-en.html",
+          "sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+          "bytes": 85779,
+          "request_url": "https://publications.europa.eu/resource/celex/32024R1773",
+          "resolved_url": "https://publications.europa.eu/resource/cellar/67edcd9e-328d-11ef-a61b-01aa75ed71a1.0006.03/DOC_1",
+          "request_headers": {
+            "Accept": "application/xhtml+xml",
+            "Accept-Language": "eng"
+          },
+          "status": 200,
+          "content_type": "application/xhtml+xml;charset=UTF-8",
+          "retrieved_at": "2026-11-01T19:24:02.026764+00:00"
+        },
+        {
+          "path": "originals/32024R1773-en.pdf",
+          "sha256": "ab7fee6fd8aaef7d4c2d976d4fb60179e2f7530a75e9bf33d338a65c6bf23ae2",
+          "bytes": 563955,
+          "request_url": "https://publications.europa.eu/resource/cellar/67edcd9e-328d-11ef-a61b-01aa75ed71a1.0006.01/DOC_1",
+          "resolved_url": "https://publications.europa.eu/resource/cellar/67edcd9e-328d-11ef-a61b-01aa75ed71a1.0006.01/DOC_1",
+          "status": 200,
+          "content_type": "application/pdf;charset=UTF-8",
+          "retrieved_at": "2026-11-01T19:24:48.148253+00:00",
+          "pages": 9
+        }
+      ],
+      "attribution": "European Union, Official Journal; retrieved from official Publications Office/EBA services.",
+      "rights_notice_url": "https://eur-lex.europa.eu/content/legal-notice/legal-notice.html"
+    },
+    {
+      "id": "subcontracting",
+      "document_identifier": "32025R0532",
+      "title": "Commission Delegated Regulation (EU) 2025/532: subcontracting ICT services supporting critical or important functions",
+      "classification": "public",
+      "language": "en",
+      "authority_kind": "delegated_regulation",
+      "priority": "extension",
+      "edition": "Original Official Journal English edition",
+      "document_date": "2025-03-24",
+      "publication_date": "2025-07-02",
+      "entry_into_force_date": "2025-07-22",
+      "separate_application_date": null,
+      "date_basis": "Article 7",
+      "date_note": "No separate application date is specified in the entry-into-force article; do not confuse this with DORA Article 64 or contract remediation timelines.",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2025/532/oj/eng",
+      "representations": [
+        {
+          "path": "originals/32025R0532-en.html",
+          "sha256": "69b233ed441b06a268219635f8d53af8370261f5c39d47f47c965825442345d2",
+          "bytes": 64027,
+          "request_url": "https://publications.europa.eu/resource/cellar/931c24dd-570a-11f0-a9d0-01aa75ed71a1.0006.03/DOC_1",
+          "resolved_url": "https://publications.europa.eu/resource/cellar/931c24dd-570a-11f0-a9d0-01aa75ed71a1.0006.03/DOC_1",
+          "status": 200,
+          "content_type": "application/xhtml+xml;charset=UTF-8",
+          "retrieved_at": "2026-11-01T19:24:47.925773+00:00"
+        }
+      ],
+      "attribution": "European Union, Official Journal; retrieved from official Publications Office/EBA services.",
+      "rights_notice_url": "https://eur-lex.europa.eu/content/legal-notice/legal-notice.html"
+    },
+    {
+      "id": "register",
+      "document_identifier": "32024R2956",
+      "title": "Commission Implementing Regulation (EU) 2024/2956: standard templates for the register of information",
+      "classification": "public",
+      "language": "en",
+      "authority_kind": "implementing_regulation",
+      "priority": "structural_reference",
+      "edition": "Original Official Journal English edition",
+      "document_date": "2024-11-29",
+      "publication_date": "2024-12-02",
+      "entry_into_force_date": "2024-12-22",
+      "separate_application_date": null,
+      "date_basis": "Article 7",
+      "date_note": "No separate application date is specified in the entry-into-force article; do not confuse this with DORA Article 64 or contract remediation timelines.",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "representations": [
+        {
+          "path": "originals/32024R2956-en.html",
+          "sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+          "bytes": 466034,
+          "request_url": "https://publications.europa.eu/resource/celex/32024R2956",
+          "resolved_url": "https://publications.europa.eu/resource/cellar/504165c2-b050-11ef-acb1-01aa75ed71a1.0006.03/DOC_1",
+          "request_headers": {
+            "Accept": "application/xhtml+xml",
+            "Accept-Language": "eng"
+          },
+          "status": 200,
+          "content_type": "application/xhtml+xml;charset=UTF-8",
+          "retrieved_at": "2026-11-01T19:24:02.260173+00:00"
+        },
+        {
+          "path": "originals/32024R2956-en.pdf",
+          "sha256": "4ffa3dd7c22ac10e1e4bdaf45cf067bcd7fd12dc1603cc0bd7fd63499b037050",
+          "bytes": 1067187,
+          "request_url": "https://www.eba.europa.eu/sites/default/files/2026-01/OJ_L_202402956_EN_TXT.pdf",
+          "resolved_url": "https://www.eba.europa.eu/sites/default/files/2026-01/OJ_L_202402956_EN_TXT.pdf",
+          "status": 200,
+          "content_type": "application/pdf",
+          "retrieved_at": "2026-11-01T19:22:24.089667+00:00",
+          "retrieval_time_basis": "local write timestamp immediately following successful download",
+          "pages": 43
+        }
+      ],
+      "attribution": "European Union, Official Journal; retrieved from official Publications Office/EBA services.",
+      "rights_notice_url": "https://eur-lex.europa.eu/content/legal-notice/legal-notice.html"
+    },
+    {
+      "id": "esma",
+      "document_identifier": "ESMA_QA_2646",
+      "title": "ESMA Q&A 2646: Audit frequency limitations",
+      "classification": "public",
+      "language": "en",
+      "authority_kind": "supervisory_qa",
+      "priority": "interpretive_supplement",
+      "edition": "Published answer dated 2025-09-18; print and HTML retrieved 2026-11-01",
+      "document_date": "2025-09-18",
+      "publication_date": "2025-09-18",
+      "entry_into_force_date": null,
+      "separate_application_date": null,
+      "date_basis": "Answer dated 18 September 2025",
+      "date_note": "Publication of guidance is not legislative entry into force.",
+      "source_url": "https://www.esma.europa.eu/publications-data/questions-answers/2646",
+      "representations": [
+        {
+          "path": "originals/ESMA_QA_2646-en.pdf",
+          "sha256": "ce4159dddcfd3400a05dc2677d228b871abdd65e5f67896de1395666ca501e62",
+          "bytes": 7208,
+          "request_url": "https://www.esma.europa.eu/print/pdf/node/221346",
+          "resolved_url": "https://www.esma.europa.eu/print/pdf/node/221346",
+          "status": 200,
+          "content_type": "application/pdf",
+          "retrieved_at": "2026-11-01T19:22:24.354260+00:00",
+          "retrieval_time_basis": "local write timestamp immediately following successful download",
+          "pages": 2
+        },
+        {
+          "path": "originals/ESMA_QA_2646-en.html",
+          "sha256": "c70aefa33bad880ffc3a53f0a46f0a242b6009d7ee9a4b4a3e2bc59cf069c0f2",
+          "bytes": 53346,
+          "request_url": "https://www.esma.europa.eu/publications-data/questions-answers/2646",
+          "resolved_url": "https://www.esma.europa.eu/publications-data/questions-answers/2646",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "retrieved_at": "2026-11-01T19:24:47.703139+00:00"
+        }
+      ],
+      "attribution": "European Securities and Markets Authority (ESMA); question and published answer retained with attribution.",
+      "rights_notice_url": "https://www.esma.europa.eu/about-esma/legal-notice-and-data-protection"
+    }
+  ],
+  "extracts": [
+    {
+      "id": "dora-art-2",
+      "document_id": "dora",
+      "locator": "Article 2 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/dora-art-2.txt",
+      "sha256": "85a469ffe687253c50cc1d797964d7e5c05b40aaa2937661ebb2fbecda869e93",
+      "bytes": 2752,
+      "source_path": "originals/32022R2554-en.html",
+      "source_sha256": "cf50d8f023d23b2a56f535aaee0760eba7f1925ef08a9858c5c31d43d414f46b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+      "selector": {
+        "kind": "element",
+        "id": "art_2"
+      },
+      "source_anchors": [
+        "art_2",
+        "d1e1170-1-1",
+        "art_2.tit_1",
+        "002.001",
+        "002.002",
+        "002.003",
+        "002.004"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "dora-art-3",
+      "document_id": "dora",
+      "locator": "Article 3 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/dora-art-3.txt",
+      "sha256": "cec78f45373a6c8fcce1e628f0bc4a662ca41a54d157e9ef9bf8404224e0cf5c",
+      "bytes": 14320,
+      "source_path": "originals/32022R2554-en.html",
+      "source_sha256": "cf50d8f023d23b2a56f535aaee0760eba7f1925ef08a9858c5c31d43d414f46b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+      "selector": {
+        "kind": "element",
+        "id": "art_3"
+      },
+      "source_anchors": [
+        "art_3",
+        "d1e1370-1-1",
+        "art_3.tit_1",
+        "ntc31-L_2022333EN.01000101-E0031",
+        "ntc32-L_2022333EN.01000101-E0032",
+        "ntc33-L_2022333EN.01000101-E0033",
+        "ntc34-L_2022333EN.01000101-E0034",
+        "ntc35-L_2022333EN.01000101-E0035",
+        "ntc36-L_2022333EN.01000101-E0036"
+      ],
+      "cross_reference_links": [
+        "#ntr31-L_2022333EN.01000101-E0031",
+        "#ntr32-L_2022333EN.01000101-E0032",
+        "#ntr33-L_2022333EN.01000101-E0033",
+        "#ntr34-L_2022333EN.01000101-E0034",
+        "#ntr35-L_2022333EN.01000101-E0035",
+        "#ntr36-L_2022333EN.01000101-E0036"
+      ]
+    },
+    {
+      "id": "dora-art-4",
+      "document_id": "dora",
+      "locator": "Article 4 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/dora-art-4.txt",
+      "sha256": "409fb67fc34b1a896a672a8315434645a5dfe5788bf235a287171d35a8cf724f",
+      "bytes": 919,
+      "source_path": "originals/32022R2554-en.html",
+      "source_sha256": "cf50d8f023d23b2a56f535aaee0760eba7f1925ef08a9858c5c31d43d414f46b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+      "selector": {
+        "kind": "element",
+        "id": "art_4"
+      },
+      "source_anchors": [
+        "art_4",
+        "d1e2037-1-1",
+        "art_4.tit_1",
+        "004.001",
+        "004.002",
+        "004.003"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "dora-art-28",
+      "document_id": "dora",
+      "locator": "Article 28 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/dora-art-28.txt",
+      "sha256": "dc02dd840c9389be40a19125a48788c0a77bbcfdce2efa457e1267209d46055d",
+      "bytes": 9659,
+      "source_path": "originals/32022R2554-en.html",
+      "source_sha256": "cf50d8f023d23b2a56f535aaee0760eba7f1925ef08a9858c5c31d43d414f46b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+      "selector": {
+        "kind": "element",
+        "id": "art_28"
+      },
+      "source_anchors": [
+        "art_28",
+        "d1e3675-1-1",
+        "art_28.tit_1",
+        "028.001",
+        "028.002",
+        "028.003",
+        "028.004",
+        "028.005",
+        "028.006",
+        "028.007",
+        "028.008",
+        "028.009",
+        "028.010"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "dora-art-29",
+      "document_id": "dora",
+      "locator": "Article 29 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/dora-art-29.txt",
+      "sha256": "21cd53ce4ad1f42ffe1b71e8b4aa3c8843d77d4e356e8c31f18305e9c09a27e2",
+      "bytes": 2682,
+      "source_path": "originals/32022R2554-en.html",
+      "source_sha256": "cf50d8f023d23b2a56f535aaee0760eba7f1925ef08a9858c5c31d43d414f46b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+      "selector": {
+        "kind": "element",
+        "id": "art_29"
+      },
+      "source_anchors": [
+        "art_29",
+        "d1e3867-1-1",
+        "art_29.tit_1",
+        "029.001",
+        "029.002"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "dora-art-30",
+      "document_id": "dora",
+      "locator": "Article 30 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/dora-art-30.txt",
+      "sha256": "0c2eb61a74f8b697042d993bf0e0ffd7c30983caf5713daa4862b8eaaa633142",
+      "bytes": 7178,
+      "source_path": "originals/32022R2554-en.html",
+      "source_sha256": "cf50d8f023d23b2a56f535aaee0760eba7f1925ef08a9858c5c31d43d414f46b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+      "selector": {
+        "kind": "element",
+        "id": "art_30"
+      },
+      "source_anchors": [
+        "art_30",
+        "d1e3904-1-1",
+        "art_30.tit_1",
+        "030.001",
+        "030.002",
+        "030.003",
+        "030.004",
+        "030.005"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "dora-art-64",
+      "document_id": "dora",
+      "locator": "Article 64 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/dora-art-64.txt",
+      "sha256": "be274fc931ebeaf1858fb233bcb044573570655385cbfbaae527b86d1bd087d4",
+      "bytes": 222,
+      "source_path": "originals/32022R2554-en.html",
+      "source_sha256": "cf50d8f023d23b2a56f535aaee0760eba7f1925ef08a9858c5c31d43d414f46b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj",
+      "selector": {
+        "kind": "element",
+        "id": "art_64"
+      },
+      "source_anchors": [
+        "art_64",
+        "d1e6486-1-1",
+        "art_64.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-1",
+      "document_id": "policy",
+      "locator": "Article 1 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/policy-art-1.txt",
+      "sha256": "c2e01719dffc0c6e38f3d9786bb32f93236d2e6980c190906b7c41ad777a26f8",
+      "bytes": 2496,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_1"
+      },
+      "source_anchors": [
+        "art_1",
+        "d1e234-1-1",
+        "art_1.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-2",
+      "document_id": "policy",
+      "locator": "Article 2 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/policy-art-2.txt",
+      "sha256": "e8dc5ac2b18c447694a95b2b8448329272a0b5e26f60284728a578e41997ae53",
+      "bytes": 444,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_2"
+      },
+      "source_anchors": [
+        "art_2",
+        "d1e311-1-1",
+        "art_2.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-3",
+      "document_id": "policy",
+      "locator": "Article 3 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/policy-art-3.txt",
+      "sha256": "160d9e330aa1bb63dc1bf14271c95b7077705db338d34af12dfd3f8cae7b8830",
+      "bytes": 3231,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_3"
+      },
+      "source_anchors": [
+        "art_3",
+        "d1e318-1-1",
+        "art_3.tit_1",
+        "003.001",
+        "003.002",
+        "003.003",
+        "003.004",
+        "003.005",
+        "003.006",
+        "003.007",
+        "003.008"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-4",
+      "document_id": "policy",
+      "locator": "Article 4 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/policy-art-4.txt",
+      "sha256": "18e310742113e00ca844a12c4a8d9d4e2febcf3a1fbf55403540110dabae1f8d",
+      "bytes": 1358,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_4"
+      },
+      "source_anchors": [
+        "art_4",
+        "d1e415-1-1",
+        "art_4.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-5",
+      "document_id": "policy",
+      "locator": "Article 5 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/policy-art-5.txt",
+      "sha256": "3dfa5892b87da1e3d76dd403d11f9351d2b3f86dc47bc836b9e211474de23304",
+      "bytes": 1283,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_5"
+      },
+      "source_anchors": [
+        "art_5",
+        "d1e460-1-1",
+        "art_5.tit_1",
+        "005.001",
+        "005.002"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-6",
+      "document_id": "policy",
+      "locator": "Article 6 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/policy-art-6.txt",
+      "sha256": "5e24111a78e1b8647f54012fc6d38cd95bbe3de8f760f22c6007a328a3f61627",
+      "bytes": 3713,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_6"
+      },
+      "source_anchors": [
+        "art_6",
+        "d1e533-1-1",
+        "art_6.tit_1",
+        "006.001",
+        "006.002",
+        "006.003",
+        "006.004"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-7",
+      "document_id": "policy",
+      "locator": "Article 7 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/policy-art-7.txt",
+      "sha256": "3f40556370ce16114a420a1d2692cfcdf3d0fd2562fc410b1b5eeb7fb28a58e8",
+      "bytes": 624,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_7"
+      },
+      "source_anchors": [
+        "art_7",
+        "d1e628-1-1",
+        "art_7.tit_1",
+        "007.001",
+        "007.002"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-8",
+      "document_id": "policy",
+      "locator": "Article 8 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/policy-art-8.txt",
+      "sha256": "959cac68978073f065c3d43f0ce2610dc96cf504b7a499550f126e9eadd8684f",
+      "bytes": 3255,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_8"
+      },
+      "source_anchors": [
+        "art_8",
+        "d1e643-1-1",
+        "art_8.tit_1",
+        "008.001",
+        "008.002",
+        "008.003",
+        "008.004"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-9",
+      "document_id": "policy",
+      "locator": "Article 9 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/policy-art-9.txt",
+      "sha256": "1b885bac036f7ca3c1afd81a5a6a54f359e7b677ab1e3efcba6fe16ff3febf17",
+      "bytes": 2798,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_9"
+      },
+      "source_anchors": [
+        "art_9",
+        "d1e744-1-1",
+        "art_9.tit_1",
+        "009.001",
+        "009.002",
+        "009.003",
+        "009.004"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-10",
+      "document_id": "policy",
+      "locator": "Article 10 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/policy-art-10.txt",
+      "sha256": "8aa893cb0e8880c1032983fb2a9bbb9bcb12312067f5ce0a2706e23a6de33302",
+      "bytes": 721,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_10"
+      },
+      "source_anchors": [
+        "art_10",
+        "d1e801-1-1",
+        "art_10.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "policy-art-11",
+      "document_id": "policy",
+      "locator": "Article 11 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/policy-art-11.txt",
+      "sha256": "6a542ed3b285855db9da9364408c6e8a7ab767330751f732c54d3ae55e5c9b3a",
+      "bytes": 161,
+      "source_path": "originals/32024R1773-en.html",
+      "source_sha256": "a0b6ea1a8b7ceedcd18a80524187b58ba2c1764be0ef4d20c48c5818b0ff7072",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2024/1773/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_11"
+      },
+      "source_anchors": [
+        "art_11",
+        "d1e830-1-1",
+        "art_11.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "subcontracting-art-1",
+      "document_id": "subcontracting",
+      "locator": "Article 1 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/subcontracting-art-1.txt",
+      "sha256": "e1b2b9c39773270e36ffdf92789584b533445a207411e292afeb76a67e14c2b8",
+      "bytes": 3047,
+      "source_path": "originals/32025R0532-en.html",
+      "source_sha256": "69b233ed441b06a268219635f8d53af8370261f5c39d47f47c965825442345d2",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2025/532/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_1"
+      },
+      "source_anchors": [
+        "art_1",
+        "d1e217-1-1",
+        "art_1.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "subcontracting-art-2",
+      "document_id": "subcontracting",
+      "locator": "Article 2 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/subcontracting-art-2.txt",
+      "sha256": "17c4a22ba9c73fcdb2d358f7a14b1f748ae31c55051c7964abce0cb3a93c69ad",
+      "bytes": 654,
+      "source_path": "originals/32025R0532-en.html",
+      "source_sha256": "69b233ed441b06a268219635f8d53af8370261f5c39d47f47c965825442345d2",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2025/532/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_2"
+      },
+      "source_anchors": [
+        "art_2",
+        "d1e299-1-1",
+        "art_2.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "subcontracting-art-3",
+      "document_id": "subcontracting",
+      "locator": "Article 3 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/subcontracting-art-3.txt",
+      "sha256": "963a6180a2a82e6c874378b9d13b552a517a08f2bbb3bb3d36df17fec0008eed",
+      "bytes": 4720,
+      "source_path": "originals/32025R0532-en.html",
+      "source_sha256": "69b233ed441b06a268219635f8d53af8370261f5c39d47f47c965825442345d2",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2025/532/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_3"
+      },
+      "source_anchors": [
+        "art_3",
+        "d1e306-1-1",
+        "art_3.tit_1",
+        "003.001",
+        "003.002",
+        "003.003"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "subcontracting-art-4",
+      "document_id": "subcontracting",
+      "locator": "Article 4 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/subcontracting-art-4.txt",
+      "sha256": "8c766b87b9f0d923e0c12030ebc2d51f5425eceaa8e4933a89074646409113d7",
+      "bytes": 3672,
+      "source_path": "originals/32025R0532-en.html",
+      "source_sha256": "69b233ed441b06a268219635f8d53af8370261f5c39d47f47c965825442345d2",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2025/532/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_4"
+      },
+      "source_anchors": [
+        "art_4",
+        "d1e388-1-1",
+        "art_4.tit_1",
+        "004.001",
+        "004.002"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "subcontracting-art-5",
+      "document_id": "subcontracting",
+      "locator": "Article 5 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/subcontracting-art-5.txt",
+      "sha256": "c115fb2dc5974f0e7dadacbb5727ec31c936a361d3fdfcec474de7488a5749e6",
+      "bytes": 1364,
+      "source_path": "originals/32025R0532-en.html",
+      "source_sha256": "69b233ed441b06a268219635f8d53af8370261f5c39d47f47c965825442345d2",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2025/532/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_5"
+      },
+      "source_anchors": [
+        "art_5",
+        "d1e478-1-1",
+        "art_5.tit_1",
+        "005.001",
+        "005.002",
+        "005.003",
+        "005.004"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "subcontracting-art-6",
+      "document_id": "subcontracting",
+      "locator": "Article 6 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/subcontracting-art-6.txt",
+      "sha256": "3ab745c25b1d4fee3c1ca4789d982b3449a36af520ca00153a9c60322bb211c0",
+      "bytes": 1131,
+      "source_path": "originals/32025R0532-en.html",
+      "source_sha256": "69b233ed441b06a268219635f8d53af8370261f5c39d47f47c965825442345d2",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2025/532/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_6"
+      },
+      "source_anchors": [
+        "art_6",
+        "d1e531-1-1",
+        "art_6.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "subcontracting-art-7",
+      "document_id": "subcontracting",
+      "locator": "Article 7 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/subcontracting-art-7.txt",
+      "sha256": "cd9929c20ae2778ccc9e895983d8abddfef45a1a36d8e93738203166231d4370",
+      "bytes": 168,
+      "source_path": "originals/32025R0532-en.html",
+      "source_sha256": "69b233ed441b06a268219635f8d53af8370261f5c39d47f47c965825442345d2",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2025/532/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_7"
+      },
+      "source_anchors": [
+        "art_7",
+        "d1e558-1-1",
+        "art_7.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-art-1",
+      "document_id": "register",
+      "locator": "Article 1 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/register-art-1.txt",
+      "sha256": "cf74a9d6dcfed663fc91765bfe5138e4cebf8deddeb1255f6581a4b55e5528a0",
+      "bytes": 938,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_1"
+      },
+      "source_anchors": [
+        "art_1",
+        "d1e229-1-1",
+        "art_1.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-art-2",
+      "document_id": "register",
+      "locator": "Article 2 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/register-art-2.txt",
+      "sha256": "22c6c34e35416fb63c072e091586d13439f21ab8ef4049de42a1789b9a1aad3b",
+      "bytes": 536,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_2"
+      },
+      "source_anchors": [
+        "art_2",
+        "d1e279-1-1",
+        "art_2.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-art-3",
+      "document_id": "register",
+      "locator": "Article 3 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/register-art-3.txt",
+      "sha256": "4280e93385c02941dd49d07fd008c8b0ed8d9ce3d8c189bb3c10d0a91bd3cb7c",
+      "bytes": 2611,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_3"
+      },
+      "source_anchors": [
+        "art_3",
+        "d1e302-1-1",
+        "art_3.tit_1",
+        "003.001",
+        "003.002",
+        "003.003",
+        "003.004",
+        "003.005",
+        "003.006"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-art-4",
+      "document_id": "register",
+      "locator": "Article 4 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/register-art-4.txt",
+      "sha256": "e037c498a42210b19400d2e578f7857af0676a4ce9b998416375fa381d912c10",
+      "bytes": 622,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_4"
+      },
+      "source_anchors": [
+        "art_4",
+        "d1e395-1-1",
+        "art_4.tit_1",
+        "004.001",
+        "004.002",
+        "004.003"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-art-5",
+      "document_id": "register",
+      "locator": "Article 5 (complete, including all paragraphs and points)",
+      "role": "selected",
+      "path": "extracts/register-art-5.txt",
+      "sha256": "9cd2383995840991ddcdaca7db2eaaebd185d92b8283cf210d22939d8b75fffe",
+      "bytes": 2999,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_5"
+      },
+      "source_anchors": [
+        "art_5",
+        "d1e415-1-1",
+        "art_5.tit_1",
+        "005.001",
+        "005.002"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-art-6",
+      "document_id": "register",
+      "locator": "Article 6 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/register-art-6.txt",
+      "sha256": "2843e02e2154706e80ff512a020ff0a6453c04e8f53be4822d25d0c8dbc74bba",
+      "bytes": 499,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_6"
+      },
+      "source_anchors": [
+        "art_6",
+        "d1e523-1-1",
+        "art_6.tit_1",
+        "006.001",
+        "006.002"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-art-7",
+      "document_id": "register",
+      "locator": "Article 7 (complete, including all paragraphs and points)",
+      "role": "context_and_dates",
+      "path": "extracts/register-art-7.txt",
+      "sha256": "cd9929c20ae2778ccc9e895983d8abddfef45a1a36d8e93738203166231d4370",
+      "bytes": 168,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "art_7"
+      },
+      "source_anchors": [
+        "art_7",
+        "d1e538-1-1",
+        "art_7.tit_1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-general-instructions",
+      "document_id": "register",
+      "locator": "Annex I, Part 1, complete general instructions and template overview",
+      "role": "context",
+      "path": "extracts/register-general-instructions.txt",
+      "sha256": "7c698f9aaa45b4ee9a5c700bb4f257366bcd33b19cff3d9c7c388f772f35e81d",
+      "bytes": 8373,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "sibling_range",
+        "parent_id": "anx_I",
+        "start_id": "d1e44-7-1",
+        "end_id": "d1e391-7-1"
+      },
+      "source_anchors": [],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-B_02.01",
+      "document_id": "register",
+      "locator": "Annex I, Part 2, B_02.01 complete template-specific instructions and field table",
+      "role": "selected",
+      "path": "extracts/register-B_02.01.txt",
+      "sha256": "d53ead58a59c21c698405d53b57a43408b02e90ad25052f80cef53a48a477414",
+      "bytes": 5151,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "sibling_range",
+        "parent_id": "anx_I",
+        "start_id": "d1e1126-7-1",
+        "end_id": "d1e1321-7-1"
+      },
+      "source_anchors": [],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-B_02.02",
+      "document_id": "register",
+      "locator": "Annex I, Part 2, B_02.02 complete template-specific instructions and field table",
+      "role": "selected",
+      "path": "extracts/register-B_02.02.txt",
+      "sha256": "24a9058695be53f75b166a9d72bba79723eb8457b48cc068bab968be5d462db7",
+      "bytes": 7870,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "sibling_range",
+        "parent_id": "anx_I",
+        "start_id": "d1e1321-7-1",
+        "end_id": "d1e1724-7-1"
+      },
+      "source_anchors": [],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-B_03.01",
+      "document_id": "register",
+      "locator": "Annex I, Part 2, B_03.01 complete template-specific instructions and field table",
+      "role": "selected",
+      "path": "extracts/register-B_03.01.txt",
+      "sha256": "fcd91fef2383414c49efd52ccaa6777869c97138d0e6d3b2e846b2ffcd231812",
+      "bytes": 1606,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "sibling_range",
+        "parent_id": "anx_I",
+        "start_id": "d1e1774-7-1",
+        "end_id": "d1e1829-7-1"
+      },
+      "source_anchors": [],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-B_03.02",
+      "document_id": "register",
+      "locator": "Annex I, Part 2, B_03.02 complete template-specific instructions and field table",
+      "role": "selected",
+      "path": "extracts/register-B_03.02.txt",
+      "sha256": "13c14b38713f138095ca1ce11a55aa2b1e6282233374d0f8799fa3a994473b86",
+      "bytes": 1103,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "sibling_range",
+        "parent_id": "anx_I",
+        "start_id": "d1e1829-7-1",
+        "end_id": "d1e1901-7-1"
+      },
+      "source_anchors": [],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-B_05.01",
+      "document_id": "register",
+      "locator": "Annex I, Part 2, B_05.01 complete template-specific instructions and field table",
+      "role": "selected",
+      "path": "extracts/register-B_05.01.txt",
+      "sha256": "78b8b433ef370ac9243620b0a3425f1519e22cacc0d6693fb482c50c3490ce08",
+      "bytes": 6059,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "sibling_range",
+        "parent_id": "anx_I",
+        "start_id": "d1e2048-7-1",
+        "end_id": "d1e2401-7-1"
+      },
+      "source_anchors": [],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-B_05.02",
+      "document_id": "register",
+      "locator": "Annex I, Part 2, B_05.02 complete template-specific instructions and field table",
+      "role": "selected",
+      "path": "extracts/register-B_05.02.txt",
+      "sha256": "3f393e739bcf70d3d8b077b73cb96caf19d2bca65c5c5a52607f2767ed353838",
+      "bytes": 6259,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "sibling_range",
+        "parent_id": "anx_I",
+        "start_id": "d1e2401-7-1",
+        "end_id": "d1e2726-7-1"
+      },
+      "source_anchors": [],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-B_06.01",
+      "document_id": "register",
+      "locator": "Annex I, Part 2, B_06.01 complete template-specific instructions and field table",
+      "role": "selected",
+      "path": "extracts/register-B_06.01.txt",
+      "sha256": "d6bca733e0e7a0c5b45a8d34e331c09b315f5c39e0787b00235796fa6b38fdec",
+      "bytes": 4078,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "sibling_range",
+        "parent_id": "anx_I",
+        "start_id": "d1e2726-7-1",
+        "end_id": "d1e3041-7-1"
+      },
+      "source_anchors": [],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-annex-II",
+      "document_id": "register",
+      "locator": "Annex II (complete supporting classifications/instructions)",
+      "role": "context",
+      "path": "extracts/register-annex-II.txt",
+      "sha256": "55b111378153b6f9cf4e0daa93bd38e6e5d5ee447931d35db1e5e117ae922e80",
+      "bytes": 8128,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "anx_II"
+      },
+      "source_anchors": [
+        "anx_II",
+        "d1e35-37-1",
+        "ntc1-L_202402956EN.003701-E0001",
+        "ntc2-L_202402956EN.003701-E0002",
+        "ntc3-L_202402956EN.003701-E0003",
+        "ntc4-L_202402956EN.003701-E0004",
+        "ntc5-L_202402956EN.003701-E0005",
+        "ntc6-L_202402956EN.003701-E0006",
+        "ntc7-L_202402956EN.003701-E0007",
+        "ntc8-L_202402956EN.003701-E0008",
+        "ntc9-L_202402956EN.003701-E0009",
+        "ntc10-L_202402956EN.003701-E0010",
+        "ntc11-L_202402956EN.003701-E0011",
+        "ntc12-L_202402956EN.003701-E0012",
+        "ntr1-L_202402956EN.003701-E0001",
+        "ntr2-L_202402956EN.003701-E0002",
+        "ntr3-L_202402956EN.003701-E0003",
+        "ntr4-L_202402956EN.003701-E0004",
+        "ntr5-L_202402956EN.003701-E0005",
+        "ntr6-L_202402956EN.003701-E0006",
+        "ntr7-L_202402956EN.003701-E0007",
+        "ntr8-L_202402956EN.003701-E0008",
+        "ntr9-L_202402956EN.003701-E0009",
+        "ntr10-L_202402956EN.003701-E0010",
+        "ntr11-L_202402956EN.003701-E0011",
+        "ntr12-L_202402956EN.003701-E0012"
+      ],
+      "cross_reference_links": [
+        "#ntc1-L_202402956EN.003701-E0001",
+        "#ntc10-L_202402956EN.003701-E0010",
+        "#ntc11-L_202402956EN.003701-E0011",
+        "#ntc12-L_202402956EN.003701-E0012",
+        "#ntc2-L_202402956EN.003701-E0002",
+        "#ntc3-L_202402956EN.003701-E0003",
+        "#ntc4-L_202402956EN.003701-E0004",
+        "#ntc5-L_202402956EN.003701-E0005",
+        "#ntc6-L_202402956EN.003701-E0006",
+        "#ntc7-L_202402956EN.003701-E0007",
+        "#ntc8-L_202402956EN.003701-E0008",
+        "#ntc9-L_202402956EN.003701-E0009",
+        "#ntr1-L_202402956EN.003701-E0001",
+        "#ntr10-L_202402956EN.003701-E0010",
+        "#ntr11-L_202402956EN.003701-E0011",
+        "#ntr12-L_202402956EN.003701-E0012",
+        "#ntr2-L_202402956EN.003701-E0002",
+        "#ntr3-L_202402956EN.003701-E0003",
+        "#ntr4-L_202402956EN.003701-E0004",
+        "#ntr5-L_202402956EN.003701-E0005",
+        "#ntr6-L_202402956EN.003701-E0006",
+        "#ntr7-L_202402956EN.003701-E0007",
+        "#ntr8-L_202402956EN.003701-E0008",
+        "#ntr9-L_202402956EN.003701-E0009",
+        "http://data.europa.eu/eli/dir/2009/138/oj",
+        "http://data.europa.eu/eli/dir/2009/65/oj",
+        "http://data.europa.eu/eli/dir/2011/61/oj",
+        "http://data.europa.eu/eli/dir/2016/2341/oj",
+        "http://data.europa.eu/eli/dir/2016/97/oj",
+        "http://data.europa.eu/eli/reg/2009/1060/oj",
+        "http://data.europa.eu/eli/reg/2014/600/oj",
+        "http://data.europa.eu/eli/reg/2014/909/oj",
+        "http://data.europa.eu/eli/reg/2015/2365/oj",
+        "http://data.europa.eu/eli/reg/2017/2402/oj",
+        "http://data.europa.eu/eli/reg/2020/1230/oj",
+        "http://data.europa.eu/eli/reg/2020/1503/oj",
+        "http://publications.europa.eu/resource/oj/JOL_2009_302_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2009_335_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2011_174_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2014_173_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2014_257_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2015_337_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2016_026_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2016_354_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2017_347_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2020_289_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2020_347_R_TOC"
+      ]
+    },
+    {
+      "id": "register-annex-III",
+      "document_id": "register",
+      "locator": "Annex III (complete supporting classifications/instructions)",
+      "role": "context",
+      "path": "extracts/register-annex-III.txt",
+      "sha256": "10a9c4aeee555621fd69a441dd2c3661cfdec0866e6be503f5ad89ece616d640",
+      "bytes": 2912,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "anx_III"
+      },
+      "source_anchors": [
+        "anx_III",
+        "d1e35-40-1"
+      ],
+      "cross_reference_links": []
+    },
+    {
+      "id": "register-annex-IV",
+      "document_id": "register",
+      "locator": "Annex IV (complete supporting classifications/instructions)",
+      "role": "context",
+      "path": "extracts/register-annex-IV.txt",
+      "sha256": "76642bcd89e8c22d6408ca9556dd6b4aa57096762679225308e94d66fa48d9ea",
+      "bytes": 4898,
+      "source_path": "originals/32024R2956-en.html",
+      "source_sha256": "164c3d0689483bfa624a0692555135016af1fdb496f7c058c321d0cdccc83f1b",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_impl/2024/2956/oj/eng",
+      "selector": {
+        "kind": "element",
+        "id": "anx_IV"
+      },
+      "source_anchors": [
+        "anx_IV",
+        "d1e35-42-1",
+        "ntc1-L_202402956EN.004201-E0001",
+        "ntc2-L_202402956EN.004201-E0002",
+        "ntc3-L_202402956EN.004201-E0003",
+        "ntc4-L_202402956EN.004201-E0004",
+        "ntr1-L_202402956EN.004201-E0001",
+        "ntr2-L_202402956EN.004201-E0002",
+        "ntr3-L_202402956EN.004201-E0003",
+        "ntr4-L_202402956EN.004201-E0004"
+      ],
+      "cross_reference_links": [
+        "#ntc1-L_202402956EN.004201-E0001",
+        "#ntc2-L_202402956EN.004201-E0002",
+        "#ntc3-L_202402956EN.004201-E0003",
+        "#ntc4-L_202402956EN.004201-E0004",
+        "#ntr1-L_202402956EN.004201-E0001",
+        "#ntr2-L_202402956EN.004201-E0002",
+        "#ntr3-L_202402956EN.004201-E0003",
+        "#ntr4-L_202402956EN.004201-E0004",
+        "http://data.europa.eu/eli/reg_del/2017/392/oj",
+        "http://data.europa.eu/eli/reg_impl/2018/1624/oj",
+        "http://data.europa.eu/eli/reg_impl/2021/451/oj",
+        "http://data.europa.eu/eli/reg_impl/2023/894/oj",
+        "http://publications.europa.eu/resource/oj/JOL_2017_065_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2018_277_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2021_097_R_TOC",
+        "http://publications.europa.eu/resource/oj/JOL_2023_120_R_TOC"
+      ]
+    },
+    {
+      "id": "esma-qa-2646",
+      "document_id": "esma",
+      "locator": "Q&A 2646, complete question and published answer; PDF pages 1-2",
+      "role": "selected",
+      "path": "extracts/esma-qa-2646.txt",
+      "sha256": "dbac6d2c7dca5e8221b8adc5f709c77f9d717127d85650f1b822c88e0d4fcba7",
+      "bytes": 1644,
+      "source_path": "originals/ESMA_QA_2646-en.pdf",
+      "source_sha256": "ce4159dddcfd3400a05dc2677d228b871abdd65e5f67896de1395666ca501e62",
+      "source_url": "https://www.esma.europa.eu/publications-data/questions-answers/2646",
+      "selector": {
+        "kind": "pdf_pages",
+        "pages": [
+          1,
+          2
+        ]
+      },
+      "source_anchors": [],
+      "cross_reference_links": []
+    }
+  ]
+}

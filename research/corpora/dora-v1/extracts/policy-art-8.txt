@@ -1,0 +1,18 @@
+Article 8
+Contractual clauses
+1. The policy shall specify that the relevant contractual arrangement are to be in written form and are to include all the elements referred to in Article 30(2) and (3) of Regulation (EU) 2022/2554. The policy shall also include elements regarding requirements referred to in Article 1(1), point (a), of Regulation (EU) 2022/2554, as well as other relevant Union and national law as appropriate.
+2. The policy shall specify that the relevant contractual arrangements are to include the right for the financial entity to access information, to carry out inspections and audits, and to perform tests on ICT. For that purpose, the policy shall require that the financial entity uses the following methods, without prejudice to the ultimate responsibility of the financial entity:
+(a) | its own internal audit or an audit by an appointed third party;
+(b) | where appropriate, pooled audits and pooled ICT testing, including threat-led penetration testing, that are organised jointly with other contracting financial entities or firms that use ICT services of the same ICT third-party service provider and that are performed by those contracting financial entities or firms or by a third party appointed by them;
+(c) | where appropriate, third-party certifications;
+(d) | where appropriate, internal or third-party audit reports made available by the ICT third-party service provider.
+3. The financial entity shall not over time rely solely on certifications referred to in paragraph 2, point (c), or audit reports referred to in point (d) of that paragraph. The policy shall only permit the use of the methods referred to in paragraph 2, points (c) and (d), where the financial entity:
+(a) | is satisfied with the audit plan of the ICT third-party service provider for the relevant contractual arrangements;
+(b) | ensures that the scope of the certifications or audit reports cover the systems and key controls identified by it and ensures compliance with relevant regulatory requirements;
+(c) | thoroughly assesses the content of the certifications or audit reports on an ongoing basis and verifies that the reports or certifications are not obsolete;
+(d) | ensures that key systems and controls are covered in future versions of the certification or audit report;
+(e) | is satisfied with the aptitude of the certifying or auditing party;
+(f) | is satisfied that the certifications are issued, and the audits are performed against widely recognised relevant professional standards and include a test of the operational effectiveness of the key controls in place;
+(g) | has the contractual right to request, with a frequency that is reasonable and legitimate from a risk management perspective, modifications of the scope of the certifications or audit reports to other relevant systems and controls;
+(h) | has the contractual right to perform individual and pooled audits at its discretion with regard to the contractual arrangements and execute those rights in line with the agreed frequency.
+4. The policy shall ensure that material changes to the contractual agreement are to be formalised in a written document which is dated and signed by all parties and shall specify the renewal process for the contractual arrangements.

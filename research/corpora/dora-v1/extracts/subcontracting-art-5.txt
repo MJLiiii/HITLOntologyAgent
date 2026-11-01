@@ -1,0 +1,10 @@
+Article 5
+Material changes to subcontracting arrangements of ICT services that support critical or important functions or material parts thereof
+1. The contractual arrangement shall provide that the ICT third-party service provider shall inform the financial entity about any intended material changes to its subcontracting arrangements well in time to enable the financial entity to assess:
+(a) | the impact on the risks it is or might be exposed to;
+(b) | whether such material changes might affect the ability of the ICT third-party service provider to meet its contractual obligations vis-a-vis the financial entity.
+2. The contractual arrangement shall contain a reasonable notice period by which the financial entity is to approve or object to the changes.
+3. The ICT third-party service provider shall only implement the material changes to its subcontracting arrangements after the financial entity has either approved or not objected to the changes by the end of the notice period.
+4. Where the financial entity is of the opinion that the material changes referred to in paragraph 1 exceed the financial entity’s risk tolerance, the financial entity shall, before the end of the notice period:
+(a) | inform the ICT third-party service provider thereof;
+(b) | object to the changes and request modifications to those changes before they are implemented.

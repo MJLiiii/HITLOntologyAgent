@@ -1,0 +1,6 @@
+Article 1
+Definitions
+For the purposes of this Regulation, the following definitions apply:
+1. | ‘direct ICT third-party service provider’ means an ICT third-party service provider or ICT intra-group service provider that signed a contractual arrangement with: (a) | a financial entity to provide its ICT services directly to that financial entity; (b) | a financial or a non-financial entity to provide its services to other financial entities within the same group;
+2. | ‘ICT service supply chain’ means a sequence of contractual arrangements connected with the ICT service being provided by the direct ICT third-party service provider to the financial entity, starting with the direct ICT third-party service provider which has one or multiple other ICT third-party service providers as counterparties (subcontractors);
+3. | ‘rank’ means the position of an ICT third-party service provider in the ICT service supply chain.

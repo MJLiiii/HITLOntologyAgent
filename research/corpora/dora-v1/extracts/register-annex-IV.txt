@@ -1,0 +1,31 @@
+ANNEX IV
+Instruction to report the “value of total assets”
+Type of entity | Instruction to report value of total assets in column B_01.02.0110
+(a) | credit institutions | Information as specified in Template C40.00, Row 0410, Column 0010 of Annex X to Commission Implementing Regulation (EU) 2021/451 (1)
+(b) | payment institutions, including payment institutions exempted pursuant to Directive (EU) 2015/2366 | Value of the total assets in the statutory accounts
+(c) | account information service providers | Value of the total assets in the statutory accounts
+(d) | electronic money institutions, including electronic money institutions exempted pursuant to Directive 2009/110/EC | Value of the total assets in the statutory accounts
+(e) | investment firms | Information as specified in template Z01.00, column 0090 of Annex I to Commission Implementing Regulation (EU) 2018/1624 (2)
+(f) | crypto-asset service providers authorised under Regulation (EU) 2023/1114 | Value of the total assets in the statutory accounts
+(g) | issuers of asset-referenced tokens authorised under Regulation (EU) 2023/1114 | Value of the total assets in the statutory accounts
+(h) | central securities depositories | Value of the total assets in the audited financial statements reported to competent authorities pursuant to Article 41, point (a), of Commission Delegated Regulation (EU) 2017/392 (3)
+(i) | central counterparties | Information as reported in "Public quantitative disclosure standards for central counterparties" of BIS/IOSCO, field 15.2
+(j) | trading venues | Value of the total assets in the statutory accounts
+(k) | trade repositories | Value of the total assets in the statutory accounts
+(l) | managers of alternative investment funds | Value of the total assets in the statutory accounts
+(m) | management companies | Value of the total assets in the statutory accounts
+(n) | data reporting service providers | Value of the total assets in the statutory accounts
+(o) | insurance and reinsurance undertakings | Information as specified in Annex II and Template S02.01, Row 0500, Column 0010, of Annex III to Commission Implementing Regulation (EU) 2023/894 (4)
+(p) | insurance intermediaries, reinsurance intermediaries and ancillary insurance intermediaries | Value of the total assets in the statutory accounts
+(q) | institutions for occupational retirement provision | Total assets must equal the sum of all items separately identified on the assets side of the balance sheet and must also equal total liabilities
+(r) | credit rating agencies | Value of the total assets in the statutory accounts
+(s) | administrators of critical benchmarks | Value of the total assets in the statutory accounts
+(t) | crowdfunding service providers | Value of the total assets in the statutory accounts
+(u) | securitisation repositories | Value of the total assets in the statutory accounts
+Non-financial entity: ICT intra-group service provider | Not applicable
+Non-financial entity: Other intra-group entity | Not applicable
+Non-financial entity: ICT third-party service provider | Not applicable
+(1) Commission Implementing Regulation (EU) 2021/451 of 17 December 2020 laying down implementing technical standards for the application of Regulation (EU) No 575/2013 of the European Parliament and of the Council with regard to supervisory reporting of institutions and repealing Implementing Regulation (EU) No 680/2014 (OJ L 97, 19.3.2021, p. 1, ELI: http://data.europa.eu/eli/reg_impl/2021/451/oj).
+(2) Commission Implementing Regulation (EU) 2018/1624 of 23 October 2018 laying down implementing technical standards with regard to procedures and standard forms and templates for the provision of information for the purposes of resolution plans for credit institutions and investment firms pursuant to Directive 2014/59/EU of the European Parliament and of the Council, and repealing Commission Implementing Regulation (EU) 2016/1066 (OJ L 277, 7.11.2018, p. 1, ELI: http://data.europa.eu/eli/reg_impl/2018/1624/oj).
+(3) Commission Delegated Regulation (EU) 2017/392 of 11 November 2016 supplementing Regulation (EU) No 909/2014 of the European Parliament and of the Council with regard to regulatory technical standards on authorisation, supervisory and operational requirements for central securities depositories (OJ L 65, 10.3.2017, p. 48, ELI: http://data.europa.eu/eli/reg_del/2017/392/oj).
+(4) Commission Implementing Regulation (EU) 2023/894 of 4 April 2023 laying down implementing technical standards for the application of Directive 2009/138/EC of the European Parliament and the Council with regard to the templates for the submission by insurance and reinsurance undertakings to their supervisory authorities of information necessary for their supervision and repealing Implementing Regulation (EU) 2015/2450 (OJ L 120, 5.5.2023, p. 1, ELI: http://data.europa.eu/eli/reg_impl/2023/894/oj).
