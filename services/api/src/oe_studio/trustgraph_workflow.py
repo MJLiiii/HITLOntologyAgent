@@ -109,6 +109,9 @@ def _verify_profile_markers(config, profile):
             processor, variant = declaration.split(":", 1)
             if "text-completion" not in processor:
                 continue
+            # Profiled flows must use the dedicated extension processors. The
+            # preserved legacy processors do not enforce these profile markers.
+            valid = valid and processor.startswith("studio-")
             variant = variant.replace("{id}", binding.flow).replace("{workspace}", binding.workspace).replace("{blueprint}", blueprint_name)
             for key, value in params.items():
                 variant = variant.replace("{" + key + "}", str(value))
