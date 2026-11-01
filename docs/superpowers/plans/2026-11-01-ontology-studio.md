@@ -2,7 +2,7 @@
 
 **Goal:** a runnable local web application that chats using source evidence and ontology results, and supports the plan's candidate → checks → human review → immutable publication loop.
 
-**Spec:** `CODEX_DEVELOPMENT_PLAN.md` sections 1–16. The original specification remains authoritative. Decisions and exceptions live in `docs/implementation-ledger.md`.
+**Spec:** [CODEX_DEVELOPMENT_PLAN.md](../../archive/CODEX_DEVELOPMENT_PLAN.md) sections 1–16. The original specification remains authoritative. Decisions and exceptions live in `docs/implementation-ledger.md`.
 
 **Architecture:** FastAPI with SQLAlchemy persistence, content-addressed artifacts and a sole Git publisher. React/TypeScript standalone local harness plus TrustGraph-compatible plugin entry. Isolated Jena process and pinned offline OntoCheck assessment. All generated content is untrusted; no automatic approval.
 

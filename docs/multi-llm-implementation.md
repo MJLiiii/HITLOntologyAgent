@@ -16,7 +16,7 @@ Live test authorization: synthetic disposable data only, at most 20 outbound com
 
 ## Progress
 
-- Baseline: a4892ee; existing 405 backend / 59 UI verification recorded in prior release. Original ONTOCHECK_REVIEW.md remains untouched.
+- Baseline: a4892ee; existing 405 backend / 59 UI verification recorded in prior release. Original [ONTOCHECK_REVIEW.md](archive/ONTOCHECK_REVIEW.md) remains untouched.
 - Ruling: work in the user's existing folder on codex/multi-llm, preserving their earlier in-place preference. Parallel tasks own distinct files and agree interfaces; root performs integration and final independent review.
 - Increment 1: profile registry, validated immutable revisions, permission catalog/configuration examples — committed as `9a2f286`.
 - Increment 2: bounded shared SDK, Studio/API workflows, experiments, conversation IDs, dispatch budget and protocol tests — committed as `66b86f2`.
@@ -24,5 +24,5 @@ Live test authorization: synthetic disposable data only, at most 20 outbound com
 - Increment 4: bounded real-workflow comparison runner, configuration/API examples, comparison report and verification evidence — complete, recorded in the documentation commit containing this ledger.
 - Final verification: 528 backend tests passed / 7 existing skips; 60 frontend tests, TypeScript, both builds, Ruff, API contracts and diff checks passed. Three real loopback protocol endpoints and the actual local Ollama model passed. Final pinned TrustGraph image passed a network-disabled real-stack smoke with fake HTTP.
 - Independent reviews found and resolved endpoint override, credential echo, strict schema, profile numeric normalization, dedicated legacy-compatible processors, generic JSON and remote flow-marker issues. All source owners completed their work before the final backend run.
-- Running local Studio now serves the new sanitized profile catalog; Ollama stays configured. Main workspace remains unapproved. Original ONTOCHECK_REVIEW.md is untouched.
+- Running local Studio now serves the new sanitized profile catalog; Ollama stays configured. Main workspace remains unapproved. Original [ONTOCHECK_REVIEW.md](archive/ONTOCHECK_REVIEW.md) is untouched.
 - Remaining live evidence: OPENCODE_API_KEY is still absent. Four comparison observations are credential-blocked; zero completion attempts and USD 0 reserved. User intends to configure the key locally in the ignored .env placeholder. No hosted model quality or live Go TrustGraph extraction/import result is claimed. See multi-llm-verification.md and model-comparison.md.

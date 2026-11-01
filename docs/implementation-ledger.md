@@ -1,4 +1,6 @@
-# Implementation ledger — CODEX_DEVELOPMENT_PLAN.md
+# Implementation ledger
+
+This historical ledger follows [CODEX_DEVELOPMENT_PLAN.md](archive/CODEX_DEVELOPMENT_PLAN.md). See the [planning archive](archive/README.md) for the later arrival of `developPlan.md` and the preserved original paths. Later model-layer evidence is recorded in [multi-LLM verification](multi-llm-verification.md).
 
 ## Decisions (1 November 2026)
 

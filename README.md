@@ -78,3 +78,9 @@ The standalone pilot writes JSON, CSV and hashes to `research/results/demo-v1/`.
 `make dev-up` starts the optional digest-pinned PostgreSQL container after you set `OE_POSTGRES_PASSWORD` in `.env`; set `OE_DATABASE_URL` to use it and run `make migrate`. `make dev-down` keeps the database volume. SQLite is sufficient for the single-machine demo. Never use `down -v` unless deletion is intended.
 
 Stop the app before `make backup-restore-check`. This copies SQLite, artifacts and ontology Git history into an isolated temporary directory, restores them, and verifies database integrity, artifact hashes, Git integrity, workflow rows and approved refs. Persistent backup/restore commands and PostgreSQL requirements are documented in [operations](docs/operations.md).
+
+## Development guidance and plans
+
+Read [AGENTS.md](AGENTS.md) for contributor instructions, architectural boundaries, and verification commands. The [planning archive](docs/archive/README.md) preserves the original product plan, Studio implementation plan, and OntoCheck review with their distinct scope and history.
+
+Use the [implementation ledger](docs/implementation-ledger.md), [requirements audit](docs/requirements-audit.md), and [multi-LLM verification](docs/multi-llm-verification.md) for recorded progress and remaining limits. The archive's proposed tasks are requirements to reconcile with current code, not evidence that every feature is complete.
