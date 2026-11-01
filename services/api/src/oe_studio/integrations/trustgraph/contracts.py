@@ -1,6 +1,7 @@
 from typing import Literal, Protocol
 from urllib.parse import urlparse
 from uuid import UUID
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, model_validator
 
@@ -136,6 +137,55 @@ class ContextBundle(Frozen):
     review_eligible: bool
     reasons: tuple[str, ...]
     mode: Literal['real', 'fake']
+
+
+class PreparedIngestion(Frozen):
+    """Persist this before the first upstream mutation; contains no credential."""
+    id: UUID
+    request: IngestRequest
+    binding_digest: str
+    source: DocumentRegistration
+    seed_mode: Literal['ordinary', 'approved_ontology']
+    approved_version_id: UUID | None
+    approved_ontology: Artifact | None
+    configuration_artifact: Artifact
+    configuration_version: int = Field(ge=1)
+    manifest_artifact: Artifact
+    manifest_digest: str
+
+
+class ImportedChunk(Frozen):
+    evidence_id: UUID
+    upstream_chunk_uri: str
+    source_id: UUID
+    source_artifact: Artifact
+    upstream_chunk_artifact: Artifact
+    normalized_source_artifact: Artifact
+    chunk_artifact: Artifact
+    metadata_artifact: Artifact
+    quote: str
+    byte_start: int
+    byte_end: int
+    span_start: int
+    span_end: int
+    graph_uri: Literal['urn:graph:source'] = 'urn:graph:source'
+    subgraph_uris: tuple[str, ...]
+    extracted_triples: tuple[dict[str, Any], ...]
+
+
+class ImportedSnapshot(Frozen):
+    id: UUID
+    project_id: UUID
+    ingestion_id: UUID
+    status: Literal['verified_selection'] = 'verified_selection'
+    selection_kind: Literal['explicit_registered_chunks'] = 'explicit_registered_chunks'
+    upstream_completion_supported: Literal[False] = False
+    source_artifact: Artifact
+    configuration_artifact: Artifact
+    provenance_artifact: Artifact
+    chunks: tuple[ImportedChunk, ...]
+    manifest_artifact: Artifact
+    manifest_digest: str
 
 
 class TrustGraphGateway(Protocol):

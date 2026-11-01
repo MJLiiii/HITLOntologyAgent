@@ -1,0 +1,448 @@
+{
+  "classification": "SIMULATED ENGINEERING TEST; no study participant or observation",
+  "verified_at": "2026-11-01T12:35:26.541453+00:00",
+  "workspace": "oe-native-boundary",
+  "ontology_id": "native-boundary-candidate",
+  "native_edit_class": "NativeBoundaryOnly",
+  "native_before": {
+    "metadata": {
+      "name": "SIMULATED native boundary candidate",
+      "description": "SIMULATED ENGINEERING TEST: native-editor boundary fixture; not a human-study observation.",
+      "version": "1.0.0",
+      "namespace": "https://example.org/native-boundary#",
+      "creator": "engineering-test"
+    },
+    "classes": {},
+    "objectProperties": {},
+    "datatypeProperties": {}
+  },
+  "native_after": {
+    "metadata": {
+      "name": "SIMULATED native boundary candidate",
+      "description": "SIMULATED ENGINEERING TEST: native-editor boundary fixture; not a human-study observation.",
+      "version": "1.0.0",
+      "namespace": "https://example.org/native-boundary#",
+      "creator": "engineering-test"
+    },
+    "classes": {
+      "NativeBoundaryOnly": {
+        "uri": "https://example.org/native-boundary#NativeBoundaryOnly",
+        "type": "owl:Class",
+        "rdfs:label": [
+          {
+            "value": "NativeBoundaryOnly",
+            "lang": "en"
+          }
+        ]
+      }
+    },
+    "objectProperties": {},
+    "datatypeProperties": {}
+  },
+  "native_before_sha256": "bf56c21837e1dd6f1feb0d04a92cd746dc427f7de5683f26c67c4863844457fa",
+  "native_after_sha256": "686925dddfbfcbb897a5aed180fc552528e30cb9b207a46b2e4b0bfd11142513",
+  "main_before": {
+    "artifacts": {
+      "0b9e163f414ee28c4fe9a180b83b75b7a968480f67d54075a618e1e4942d45f0": "0b9e163f414ee28c4fe9a180b83b75b7a968480f67d54075a618e1e4942d45f0",
+      "0e505fef1a34529767a840b657932254df274305e8a5563e7259f3ee29e13367": "0e505fef1a34529767a840b657932254df274305e8a5563e7259f3ee29e13367",
+      "1067ede1181b4b16608b2ad75f359c7fd99968231dc1f3701f5f2a4ad3d14add": "1067ede1181b4b16608b2ad75f359c7fd99968231dc1f3701f5f2a4ad3d14add",
+      "1d713a29658a5246f9a09301d5717fa56aa4fa3709b6aaa299593139a67fc691": "1d713a29658a5246f9a09301d5717fa56aa4fa3709b6aaa299593139a67fc691",
+      "1de516672320d4356d358fefc926f56daa64630199df3c9ca4ab43511e619a79": "1de516672320d4356d358fefc926f56daa64630199df3c9ca4ab43511e619a79",
+      "245acdab8a30cdc7cfa88472e29aeeab120b261826722abe2b0a2d0f1e987f5a": "245acdab8a30cdc7cfa88472e29aeeab120b261826722abe2b0a2d0f1e987f5a",
+      "2dfc43316ca125faf8bee4fc0a611d07ceaf51c5ddefba8cb8300e3a1c302c0c": "2dfc43316ca125faf8bee4fc0a611d07ceaf51c5ddefba8cb8300e3a1c302c0c",
+      "38f457025ab312e6974340d6a7d14bf650f27b4a59113de6ceee69a0060f7a8d": "38f457025ab312e6974340d6a7d14bf650f27b4a59113de6ceee69a0060f7a8d",
+      "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686": "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686",
+      "4bbd48c409ad08e2594a92de09ff2ca2bb93590781e4e53a871ed5dd48c1d50f": "4bbd48c409ad08e2594a92de09ff2ca2bb93590781e4e53a871ed5dd48c1d50f",
+      "52162ff376703f9924a9b179837588782ff9d38db91cff6c34a0f5883d51b3a7": "52162ff376703f9924a9b179837588782ff9d38db91cff6c34a0f5883d51b3a7",
+      "526da6150137e7000760b2a25cf988a8adfb3e7c43298d54dc44a20070ca6b6e": "526da6150137e7000760b2a25cf988a8adfb3e7c43298d54dc44a20070ca6b6e",
+      "52c437475020faeaba6ca029be2adedcb922532fb6c039b0963a51f299c70145": "52c437475020faeaba6ca029be2adedcb922532fb6c039b0963a51f299c70145",
+      "775290451503f967da996c2b6e13346964a52ff76ef2d8a917846caa11086656": "775290451503f967da996c2b6e13346964a52ff76ef2d8a917846caa11086656",
+      "7e70fa2de35d6c9464ab3570d35ee01e1eb7990d3b89f67cbc90c6c0ca04bf1f": "7e70fa2de35d6c9464ab3570d35ee01e1eb7990d3b89f67cbc90c6c0ca04bf1f",
+      "890196436e44385b0923b2b57b228c468659738db90b267de76b0c6892d9c9b6": "890196436e44385b0923b2b57b228c468659738db90b267de76b0c6892d9c9b6",
+      "a7278ba85c433612abdc5db02438136c9d1382af860fe389894cae5883d988ff": "a7278ba85c433612abdc5db02438136c9d1382af860fe389894cae5883d988ff",
+      "b7974bf4d19b0a509e2d4d0984a23c82aa617555dd5b5fd129c486026f81ab18": "b7974bf4d19b0a509e2d4d0984a23c82aa617555dd5b5fd129c486026f81ab18",
+      "b91c97710218ed54156de3c5d965bf295f22a64d477012489bf3d5a095a935b8": "b91c97710218ed54156de3c5d965bf295f22a64d477012489bf3d5a095a935b8",
+      "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf": "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf",
+      "cb1e2ef93963d39caca87d86523e95b1bbfd9f63fa0f0b7a717b4ef9cfd85136": "cb1e2ef93963d39caca87d86523e95b1bbfd9f63fa0f0b7a717b4ef9cfd85136",
+      "ce8b4e8f664a5c685690c486f7cf78f8d007494f71df9d73d4c9db353ab5d0a7": "ce8b4e8f664a5c685690c486f7cf78f8d007494f71df9d73d4c9db353ab5d0a7",
+      "d5c13f8a47a4feea039bd6d3ee1d56145c741739b2356de8e8ae5a64b7e90624": "d5c13f8a47a4feea039bd6d3ee1d56145c741739b2356de8e8ae5a64b7e90624",
+      "dd0622c4f04c26f84980ff5423dd6552f732cfd446d97a6e9f3a2fe81200091c": "dd0622c4f04c26f84980ff5423dd6552f732cfd446d97a6e9f3a2fe81200091c",
+      "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0": "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0",
+      "ea19b7bf94179eeea8dde28b93109e2250e14e8f22f6db970f6ee2954890cc00": "ea19b7bf94179eeea8dde28b93109e2250e14e8f22f6db970f6ee2954890cc00",
+      "f116474e41044fb36f73fa4456a310765d20ae1b4fc69223a44ce84037476c6b": "f116474e41044fb36f73fa4456a310765d20ae1b4fc69223a44ce84037476c6b",
+      "f1d98cdd4e464209ab173ef58890a7291f0c0fb937544cbd4faceaba607a55b4": "f1d98cdd4e464209ab173ef58890a7291f0c0fb937544cbd4faceaba607a55b4",
+      "f3f6030628ad4ddd4d8570c42a1cf70554590c4f8016401e59e80d1113ffc562": "f3f6030628ad4ddd4d8570c42a1cf70554590c4f8016401e59e80d1113ffc562",
+      "faa9571115b11b4dd0d7844ff79b5e5981ea4fdf4449e1c1a0302688cc91fe3c": "faa9571115b11b4dd0d7844ff79b5e5981ea4fdf4449e1c1a0302688cc91fe3c"
+    },
+    "git_files": {
+      "HEAD": "28d25bf82af4c0e2b72f50959b2beb859e3e60b9630a5e8c603dad4ddb2b6e80",
+      "config": "3c5cc3e72b5473d08433171d50fc687ac3aa2a6a3f4c20b97f5b66f581b0fec9",
+      "description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+      "hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+      "hooks/commit-msg.sample": "efc1401b0e99d1ff51494d154d98b46c1e99059bcd8bf9f73cecde19fd3eb23b",
+      "hooks/fsmonitor-watchman.sample": "9159720099ad5595b8e66645cbfd47763c1e920f46e0b50ae75e642bbec57ef0",
+      "hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+      "hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+      "hooks/pre-commit.sample": "57185b7b9f05239d7ab52db045f5b89eb31348d7b2177eab214f5eb872e1971b",
+      "hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+      "hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+      "hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+      "hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+      "hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+      "hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+      "hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+      "hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+      "info/exclude": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1"
+    },
+    "git_refs": [],
+    "projects": [
+      [
+        "2b768e17-5dcc-4343-a922-5354ff5d72d1",
+        null,
+        null
+      ]
+    ],
+    "canonical_records_sha256": "fe2f0a51a5eddce0e903a9722e151658f990b87b4473e571bdd3b5cecf7b8262",
+    "canonical_record_count": 2
+  },
+  "main_after": {
+    "artifacts": {
+      "0b9e163f414ee28c4fe9a180b83b75b7a968480f67d54075a618e1e4942d45f0": "0b9e163f414ee28c4fe9a180b83b75b7a968480f67d54075a618e1e4942d45f0",
+      "0e505fef1a34529767a840b657932254df274305e8a5563e7259f3ee29e13367": "0e505fef1a34529767a840b657932254df274305e8a5563e7259f3ee29e13367",
+      "1067ede1181b4b16608b2ad75f359c7fd99968231dc1f3701f5f2a4ad3d14add": "1067ede1181b4b16608b2ad75f359c7fd99968231dc1f3701f5f2a4ad3d14add",
+      "1d713a29658a5246f9a09301d5717fa56aa4fa3709b6aaa299593139a67fc691": "1d713a29658a5246f9a09301d5717fa56aa4fa3709b6aaa299593139a67fc691",
+      "1de516672320d4356d358fefc926f56daa64630199df3c9ca4ab43511e619a79": "1de516672320d4356d358fefc926f56daa64630199df3c9ca4ab43511e619a79",
+      "245acdab8a30cdc7cfa88472e29aeeab120b261826722abe2b0a2d0f1e987f5a": "245acdab8a30cdc7cfa88472e29aeeab120b261826722abe2b0a2d0f1e987f5a",
+      "2dfc43316ca125faf8bee4fc0a611d07ceaf51c5ddefba8cb8300e3a1c302c0c": "2dfc43316ca125faf8bee4fc0a611d07ceaf51c5ddefba8cb8300e3a1c302c0c",
+      "38f457025ab312e6974340d6a7d14bf650f27b4a59113de6ceee69a0060f7a8d": "38f457025ab312e6974340d6a7d14bf650f27b4a59113de6ceee69a0060f7a8d",
+      "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686": "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686",
+      "4bbd48c409ad08e2594a92de09ff2ca2bb93590781e4e53a871ed5dd48c1d50f": "4bbd48c409ad08e2594a92de09ff2ca2bb93590781e4e53a871ed5dd48c1d50f",
+      "52162ff376703f9924a9b179837588782ff9d38db91cff6c34a0f5883d51b3a7": "52162ff376703f9924a9b179837588782ff9d38db91cff6c34a0f5883d51b3a7",
+      "526da6150137e7000760b2a25cf988a8adfb3e7c43298d54dc44a20070ca6b6e": "526da6150137e7000760b2a25cf988a8adfb3e7c43298d54dc44a20070ca6b6e",
+      "52c437475020faeaba6ca029be2adedcb922532fb6c039b0963a51f299c70145": "52c437475020faeaba6ca029be2adedcb922532fb6c039b0963a51f299c70145",
+      "775290451503f967da996c2b6e13346964a52ff76ef2d8a917846caa11086656": "775290451503f967da996c2b6e13346964a52ff76ef2d8a917846caa11086656",
+      "7e70fa2de35d6c9464ab3570d35ee01e1eb7990d3b89f67cbc90c6c0ca04bf1f": "7e70fa2de35d6c9464ab3570d35ee01e1eb7990d3b89f67cbc90c6c0ca04bf1f",
+      "890196436e44385b0923b2b57b228c468659738db90b267de76b0c6892d9c9b6": "890196436e44385b0923b2b57b228c468659738db90b267de76b0c6892d9c9b6",
+      "a7278ba85c433612abdc5db02438136c9d1382af860fe389894cae5883d988ff": "a7278ba85c433612abdc5db02438136c9d1382af860fe389894cae5883d988ff",
+      "b7974bf4d19b0a509e2d4d0984a23c82aa617555dd5b5fd129c486026f81ab18": "b7974bf4d19b0a509e2d4d0984a23c82aa617555dd5b5fd129c486026f81ab18",
+      "b91c97710218ed54156de3c5d965bf295f22a64d477012489bf3d5a095a935b8": "b91c97710218ed54156de3c5d965bf295f22a64d477012489bf3d5a095a935b8",
+      "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf": "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf",
+      "cb1e2ef93963d39caca87d86523e95b1bbfd9f63fa0f0b7a717b4ef9cfd85136": "cb1e2ef93963d39caca87d86523e95b1bbfd9f63fa0f0b7a717b4ef9cfd85136",
+      "ce8b4e8f664a5c685690c486f7cf78f8d007494f71df9d73d4c9db353ab5d0a7": "ce8b4e8f664a5c685690c486f7cf78f8d007494f71df9d73d4c9db353ab5d0a7",
+      "d5c13f8a47a4feea039bd6d3ee1d56145c741739b2356de8e8ae5a64b7e90624": "d5c13f8a47a4feea039bd6d3ee1d56145c741739b2356de8e8ae5a64b7e90624",
+      "dd0622c4f04c26f84980ff5423dd6552f732cfd446d97a6e9f3a2fe81200091c": "dd0622c4f04c26f84980ff5423dd6552f732cfd446d97a6e9f3a2fe81200091c",
+      "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0": "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0",
+      "ea19b7bf94179eeea8dde28b93109e2250e14e8f22f6db970f6ee2954890cc00": "ea19b7bf94179eeea8dde28b93109e2250e14e8f22f6db970f6ee2954890cc00",
+      "f116474e41044fb36f73fa4456a310765d20ae1b4fc69223a44ce84037476c6b": "f116474e41044fb36f73fa4456a310765d20ae1b4fc69223a44ce84037476c6b",
+      "f1d98cdd4e464209ab173ef58890a7291f0c0fb937544cbd4faceaba607a55b4": "f1d98cdd4e464209ab173ef58890a7291f0c0fb937544cbd4faceaba607a55b4",
+      "f3f6030628ad4ddd4d8570c42a1cf70554590c4f8016401e59e80d1113ffc562": "f3f6030628ad4ddd4d8570c42a1cf70554590c4f8016401e59e80d1113ffc562",
+      "faa9571115b11b4dd0d7844ff79b5e5981ea4fdf4449e1c1a0302688cc91fe3c": "faa9571115b11b4dd0d7844ff79b5e5981ea4fdf4449e1c1a0302688cc91fe3c"
+    },
+    "git_files": {
+      "HEAD": "28d25bf82af4c0e2b72f50959b2beb859e3e60b9630a5e8c603dad4ddb2b6e80",
+      "config": "3c5cc3e72b5473d08433171d50fc687ac3aa2a6a3f4c20b97f5b66f581b0fec9",
+      "description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+      "hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+      "hooks/commit-msg.sample": "efc1401b0e99d1ff51494d154d98b46c1e99059bcd8bf9f73cecde19fd3eb23b",
+      "hooks/fsmonitor-watchman.sample": "9159720099ad5595b8e66645cbfd47763c1e920f46e0b50ae75e642bbec57ef0",
+      "hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+      "hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+      "hooks/pre-commit.sample": "57185b7b9f05239d7ab52db045f5b89eb31348d7b2177eab214f5eb872e1971b",
+      "hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+      "hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+      "hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+      "hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+      "hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+      "hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+      "hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+      "hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+      "info/exclude": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1"
+    },
+    "git_refs": [],
+    "projects": [
+      [
+        "2b768e17-5dcc-4343-a922-5354ff5d72d1",
+        null,
+        null
+      ]
+    ],
+    "canonical_records_sha256": "fe2f0a51a5eddce0e903a9722e151658f990b87b4473e571bdd3b5cecf7b8262",
+    "canonical_record_count": 2
+  },
+  "fixture_before": {
+    "artifacts": {
+      "0d67a51834137a9048bbc996a6bf2d97961a7697ef5074495247afd836cfa146": "0d67a51834137a9048bbc996a6bf2d97961a7697ef5074495247afd836cfa146",
+      "1415a0f2f24ce4edb12bc6b57f49fc9c9bb37077db368a8d53b1a91a4b58ff60": "1415a0f2f24ce4edb12bc6b57f49fc9c9bb37077db368a8d53b1a91a4b58ff60",
+      "1ac829feef76b06905950b12d1de8417192b512cd71c269e95d3eabdd2d49607": "1ac829feef76b06905950b12d1de8417192b512cd71c269e95d3eabdd2d49607",
+      "1d8c680af97af8290bb9f4029ce003f374eb6b8a702eb4a0ce70373e64d21d0f": "1d8c680af97af8290bb9f4029ce003f374eb6b8a702eb4a0ce70373e64d21d0f",
+      "221c06dc71b7a0f0be03772a6ddfe84d17447cde222793a758e8d137e0705ac2": "221c06dc71b7a0f0be03772a6ddfe84d17447cde222793a758e8d137e0705ac2",
+      "2dfc43316ca125faf8bee4fc0a611d07ceaf51c5ddefba8cb8300e3a1c302c0c": "2dfc43316ca125faf8bee4fc0a611d07ceaf51c5ddefba8cb8300e3a1c302c0c",
+      "2e8fbcf2dacce4f51aa55d428afe4ff41466d124f7ad8a62c8329469efbeac13": "2e8fbcf2dacce4f51aa55d428afe4ff41466d124f7ad8a62c8329469efbeac13",
+      "38f457025ab312e6974340d6a7d14bf650f27b4a59113de6ceee69a0060f7a8d": "38f457025ab312e6974340d6a7d14bf650f27b4a59113de6ceee69a0060f7a8d",
+      "3bf569a59c3e39535e93d963f037654291c9c2dced4bee96de49f23ea84d6b5a": "3bf569a59c3e39535e93d963f037654291c9c2dced4bee96de49f23ea84d6b5a",
+      "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686": "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686",
+      "4161b171022e0acb8b8d457e21d10d9e57dbc4407f8eeecacc73816729b24777": "4161b171022e0acb8b8d457e21d10d9e57dbc4407f8eeecacc73816729b24777",
+      "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "4fa51320867cd110c5cfc834c817bc38041e78a9f56e604eca9d5290adfd2a69": "4fa51320867cd110c5cfc834c817bc38041e78a9f56e604eca9d5290adfd2a69",
+      "54b938b2a7d6109f942a36a3977d6453f57dded9fee4e7444f6ca2295219460a": "54b938b2a7d6109f942a36a3977d6453f57dded9fee4e7444f6ca2295219460a",
+      "6953e84c171defc2ad695873509503d003d0c8b10faf89f17b47d1b8568244d4": "6953e84c171defc2ad695873509503d003d0c8b10faf89f17b47d1b8568244d4",
+      "7356b5457fa5fc18b9095927e70f7aba8e1e4ece1002160baa8a96288285ca15": "7356b5457fa5fc18b9095927e70f7aba8e1e4ece1002160baa8a96288285ca15",
+      "83744f2070c6c98fc5ac14cf8e2f80920e2fc7b360680b26addcd90e5569e2bd": "83744f2070c6c98fc5ac14cf8e2f80920e2fc7b360680b26addcd90e5569e2bd",
+      "8b868c01f2c03203eb42dfcfdb781f4adb549ea2dd9c3cca09a023c8bec99684": "8b868c01f2c03203eb42dfcfdb781f4adb549ea2dd9c3cca09a023c8bec99684",
+      "8c671c7ea4c2c262704d0c90933fd37bf1789ad28d675e59439234855bbf4c41": "8c671c7ea4c2c262704d0c90933fd37bf1789ad28d675e59439234855bbf4c41",
+      "9bbd7602558f84cf8ca818d91c69920d040f4554280e1e327e5a45dc212b2cff": "9bbd7602558f84cf8ca818d91c69920d040f4554280e1e327e5a45dc212b2cff",
+      "a55b89665ce237275231ff395940b3da5a6f667eaff4954539b64748258dddf0": "a55b89665ce237275231ff395940b3da5a6f667eaff4954539b64748258dddf0",
+      "b602fa061362a3c8ce3f2e2e5ea3733f679a77bceb146bade83b8b7ad1ef9e56": "b602fa061362a3c8ce3f2e2e5ea3733f679a77bceb146bade83b8b7ad1ef9e56",
+      "bbed50cd264a9385f7a28f1d64ca0004741ebbdb1cfaf76e3d33425c4f99e3eb": "bbed50cd264a9385f7a28f1d64ca0004741ebbdb1cfaf76e3d33425c4f99e3eb",
+      "bcdbb008d52cb11eba4f89c50b68e920961e8b7bb5b0cf4be5c2340490bab8b3": "bcdbb008d52cb11eba4f89c50b68e920961e8b7bb5b0cf4be5c2340490bab8b3",
+      "be2bee8253fcf8853449fc9666cb5d905e96abf194b85cfab02cda71505be32d": "be2bee8253fcf8853449fc9666cb5d905e96abf194b85cfab02cda71505be32d",
+      "c2c51db1a868238006cbeb14935b124bbf90da385abaf1eb028aa6cd120f5e32": "c2c51db1a868238006cbeb14935b124bbf90da385abaf1eb028aa6cd120f5e32",
+      "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf": "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf",
+      "c9e72bde88ab4d9e324654d3ddfa13493ac3e16defa7e2a4a49b72372f6f9b19": "c9e72bde88ab4d9e324654d3ddfa13493ac3e16defa7e2a4a49b72372f6f9b19",
+      "cb1e2ef93963d39caca87d86523e95b1bbfd9f63fa0f0b7a717b4ef9cfd85136": "cb1e2ef93963d39caca87d86523e95b1bbfd9f63fa0f0b7a717b4ef9cfd85136",
+      "cb5a104f62331d5ec1743b20b371886fa1d7c140736abed93733ff6c6688ef2f": "cb5a104f62331d5ec1743b20b371886fa1d7c140736abed93733ff6c6688ef2f",
+      "dd0622c4f04c26f84980ff5423dd6552f732cfd446d97a6e9f3a2fe81200091c": "dd0622c4f04c26f84980ff5423dd6552f732cfd446d97a6e9f3a2fe81200091c",
+      "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0": "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0",
+      "e49ec30e3de5e091c1aea43139f41ee6e1a6640da7b85cfcf5bc10dd2e030088": "e49ec30e3de5e091c1aea43139f41ee6e1a6640da7b85cfcf5bc10dd2e030088",
+      "ea19b7bf94179eeea8dde28b93109e2250e14e8f22f6db970f6ee2954890cc00": "ea19b7bf94179eeea8dde28b93109e2250e14e8f22f6db970f6ee2954890cc00",
+      "f116474e41044fb36f73fa4456a310765d20ae1b4fc69223a44ce84037476c6b": "f116474e41044fb36f73fa4456a310765d20ae1b4fc69223a44ce84037476c6b",
+      "f1406e8dafa118de549f12dea31b6f8c7b68183306b1bfe0e548a768ded2fd0e": "f1406e8dafa118de549f12dea31b6f8c7b68183306b1bfe0e548a768ded2fd0e"
+    },
+    "git_files": {
+      "HEAD": "28d25bf82af4c0e2b72f50959b2beb859e3e60b9630a5e8c603dad4ddb2b6e80",
+      "config": "3c5cc3e72b5473d08433171d50fc687ac3aa2a6a3f4c20b97f5b66f581b0fec9",
+      "description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+      "hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+      "hooks/commit-msg.sample": "efc1401b0e99d1ff51494d154d98b46c1e99059bcd8bf9f73cecde19fd3eb23b",
+      "hooks/fsmonitor-watchman.sample": "9159720099ad5595b8e66645cbfd47763c1e920f46e0b50ae75e642bbec57ef0",
+      "hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+      "hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+      "hooks/pre-commit.sample": "57185b7b9f05239d7ab52db045f5b89eb31348d7b2177eab214f5eb872e1971b",
+      "hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+      "hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+      "hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+      "hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+      "hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+      "hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+      "hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+      "hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+      "info/exclude": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1",
+      "objects/2e/4f148f6b50f4431dd3540e7d05519fdd44f214": "721e12eaa904dfe7c02bf5ef057cadd270ef15063dd2d696f8bedbc5b5b11275",
+      "objects/5d/d6e33da8e1df6bee4c152599a1d6d3df131eb0": "558e64364ca6ea4400582624dbbdb8d86c48498daacb724b1a5c357121b6c3e5",
+      "objects/8a/3771d47f5db6e90120d244c689708fc9567c85": "fe0137d8d092ba07a74004356b009e549d6bec0856fc5811bf1769f5365c9166",
+      "objects/93/ea2cd3eed6aa8b6181eea8383dcb6de3da40ee": "f1eef2b16404a36ddeb6f35196e8d850ac24ee7c8cdf5b724436af477d8358e8",
+      "objects/9f/c4d64ed7f0cfd190cb5cfe646292972243c690": "95008a1acd2499f7a62193fc90a4bc20b41922ac4fb6b8ee77487931e12a9b1d",
+      "objects/a6/275f3a17c176bc89fd559fe33a5812d16d1d22": "ca6ed415c47a604b4da4e1869e7787ccebbfd4d2b45460a3d6da912432fc9b3f",
+      "objects/b7/b8c2b6aa04a654fb2832b14ad58beae473ab92": "f28562b7fb2848d4dc094d35fde0910d62f3114093a963373226feb633a00c25",
+      "objects/d0/255ae324c7ad0dab4fc579d110db72fc5e8b4d": "781619a07643481b55ee3d2634bbf240fdb899692ab2fcbd33fc9f8b1fc4aa94",
+      "objects/e7/fb95917371ad20929d97738d60500a26f56f3f": "2d856080fa29db239c1a484e82324f208932bcffd4093f6b3e2502c16bb7504a",
+      "refs/heads/2ddf433f-7594-47c7-bdd6-76fefb6728f6-approved": "1a553180b5f15598e5a87a1d721b68f50ee9eb1e89bccb899aeaa62939a8b362"
+    },
+    "git_refs": [
+      "refs/heads/2ddf433f-7594-47c7-bdd6-76fefb6728f6-approved 9fc4d64ed7f0cfd190cb5cfe646292972243c690"
+    ],
+    "projects": [
+      [
+        "2ddf433f-7594-47c7-bdd6-76fefb6728f6",
+        "38a1874a-e459-4414-843b-329ad70f0493",
+        null
+      ]
+    ],
+    "canonical_records_sha256": "ef6364b26dc2c2e3da1360c6a2c29af13db71f23b052f327cd62b070ae213661",
+    "canonical_record_count": 10
+  },
+  "fixture_after": {
+    "artifacts": {
+      "0d67a51834137a9048bbc996a6bf2d97961a7697ef5074495247afd836cfa146": "0d67a51834137a9048bbc996a6bf2d97961a7697ef5074495247afd836cfa146",
+      "1415a0f2f24ce4edb12bc6b57f49fc9c9bb37077db368a8d53b1a91a4b58ff60": "1415a0f2f24ce4edb12bc6b57f49fc9c9bb37077db368a8d53b1a91a4b58ff60",
+      "1ac829feef76b06905950b12d1de8417192b512cd71c269e95d3eabdd2d49607": "1ac829feef76b06905950b12d1de8417192b512cd71c269e95d3eabdd2d49607",
+      "1d8c680af97af8290bb9f4029ce003f374eb6b8a702eb4a0ce70373e64d21d0f": "1d8c680af97af8290bb9f4029ce003f374eb6b8a702eb4a0ce70373e64d21d0f",
+      "221c06dc71b7a0f0be03772a6ddfe84d17447cde222793a758e8d137e0705ac2": "221c06dc71b7a0f0be03772a6ddfe84d17447cde222793a758e8d137e0705ac2",
+      "2dfc43316ca125faf8bee4fc0a611d07ceaf51c5ddefba8cb8300e3a1c302c0c": "2dfc43316ca125faf8bee4fc0a611d07ceaf51c5ddefba8cb8300e3a1c302c0c",
+      "2e8fbcf2dacce4f51aa55d428afe4ff41466d124f7ad8a62c8329469efbeac13": "2e8fbcf2dacce4f51aa55d428afe4ff41466d124f7ad8a62c8329469efbeac13",
+      "38f457025ab312e6974340d6a7d14bf650f27b4a59113de6ceee69a0060f7a8d": "38f457025ab312e6974340d6a7d14bf650f27b4a59113de6ceee69a0060f7a8d",
+      "3bf569a59c3e39535e93d963f037654291c9c2dced4bee96de49f23ea84d6b5a": "3bf569a59c3e39535e93d963f037654291c9c2dced4bee96de49f23ea84d6b5a",
+      "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686": "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686",
+      "4161b171022e0acb8b8d457e21d10d9e57dbc4407f8eeecacc73816729b24777": "4161b171022e0acb8b8d457e21d10d9e57dbc4407f8eeecacc73816729b24777",
+      "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "4fa51320867cd110c5cfc834c817bc38041e78a9f56e604eca9d5290adfd2a69": "4fa51320867cd110c5cfc834c817bc38041e78a9f56e604eca9d5290adfd2a69",
+      "54b938b2a7d6109f942a36a3977d6453f57dded9fee4e7444f6ca2295219460a": "54b938b2a7d6109f942a36a3977d6453f57dded9fee4e7444f6ca2295219460a",
+      "6953e84c171defc2ad695873509503d003d0c8b10faf89f17b47d1b8568244d4": "6953e84c171defc2ad695873509503d003d0c8b10faf89f17b47d1b8568244d4",
+      "7356b5457fa5fc18b9095927e70f7aba8e1e4ece1002160baa8a96288285ca15": "7356b5457fa5fc18b9095927e70f7aba8e1e4ece1002160baa8a96288285ca15",
+      "83744f2070c6c98fc5ac14cf8e2f80920e2fc7b360680b26addcd90e5569e2bd": "83744f2070c6c98fc5ac14cf8e2f80920e2fc7b360680b26addcd90e5569e2bd",
+      "8b868c01f2c03203eb42dfcfdb781f4adb549ea2dd9c3cca09a023c8bec99684": "8b868c01f2c03203eb42dfcfdb781f4adb549ea2dd9c3cca09a023c8bec99684",
+      "8c671c7ea4c2c262704d0c90933fd37bf1789ad28d675e59439234855bbf4c41": "8c671c7ea4c2c262704d0c90933fd37bf1789ad28d675e59439234855bbf4c41",
+      "9bbd7602558f84cf8ca818d91c69920d040f4554280e1e327e5a45dc212b2cff": "9bbd7602558f84cf8ca818d91c69920d040f4554280e1e327e5a45dc212b2cff",
+      "a55b89665ce237275231ff395940b3da5a6f667eaff4954539b64748258dddf0": "a55b89665ce237275231ff395940b3da5a6f667eaff4954539b64748258dddf0",
+      "b602fa061362a3c8ce3f2e2e5ea3733f679a77bceb146bade83b8b7ad1ef9e56": "b602fa061362a3c8ce3f2e2e5ea3733f679a77bceb146bade83b8b7ad1ef9e56",
+      "bbed50cd264a9385f7a28f1d64ca0004741ebbdb1cfaf76e3d33425c4f99e3eb": "bbed50cd264a9385f7a28f1d64ca0004741ebbdb1cfaf76e3d33425c4f99e3eb",
+      "bcdbb008d52cb11eba4f89c50b68e920961e8b7bb5b0cf4be5c2340490bab8b3": "bcdbb008d52cb11eba4f89c50b68e920961e8b7bb5b0cf4be5c2340490bab8b3",
+      "be2bee8253fcf8853449fc9666cb5d905e96abf194b85cfab02cda71505be32d": "be2bee8253fcf8853449fc9666cb5d905e96abf194b85cfab02cda71505be32d",
+      "c2c51db1a868238006cbeb14935b124bbf90da385abaf1eb028aa6cd120f5e32": "c2c51db1a868238006cbeb14935b124bbf90da385abaf1eb028aa6cd120f5e32",
+      "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf": "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf",
+      "c9e72bde88ab4d9e324654d3ddfa13493ac3e16defa7e2a4a49b72372f6f9b19": "c9e72bde88ab4d9e324654d3ddfa13493ac3e16defa7e2a4a49b72372f6f9b19",
+      "cb1e2ef93963d39caca87d86523e95b1bbfd9f63fa0f0b7a717b4ef9cfd85136": "cb1e2ef93963d39caca87d86523e95b1bbfd9f63fa0f0b7a717b4ef9cfd85136",
+      "cb5a104f62331d5ec1743b20b371886fa1d7c140736abed93733ff6c6688ef2f": "cb5a104f62331d5ec1743b20b371886fa1d7c140736abed93733ff6c6688ef2f",
+      "dd0622c4f04c26f84980ff5423dd6552f732cfd446d97a6e9f3a2fe81200091c": "dd0622c4f04c26f84980ff5423dd6552f732cfd446d97a6e9f3a2fe81200091c",
+      "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0": "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0",
+      "e49ec30e3de5e091c1aea43139f41ee6e1a6640da7b85cfcf5bc10dd2e030088": "e49ec30e3de5e091c1aea43139f41ee6e1a6640da7b85cfcf5bc10dd2e030088",
+      "ea19b7bf94179eeea8dde28b93109e2250e14e8f22f6db970f6ee2954890cc00": "ea19b7bf94179eeea8dde28b93109e2250e14e8f22f6db970f6ee2954890cc00",
+      "f116474e41044fb36f73fa4456a310765d20ae1b4fc69223a44ce84037476c6b": "f116474e41044fb36f73fa4456a310765d20ae1b4fc69223a44ce84037476c6b",
+      "f1406e8dafa118de549f12dea31b6f8c7b68183306b1bfe0e548a768ded2fd0e": "f1406e8dafa118de549f12dea31b6f8c7b68183306b1bfe0e548a768ded2fd0e"
+    },
+    "git_files": {
+      "HEAD": "28d25bf82af4c0e2b72f50959b2beb859e3e60b9630a5e8c603dad4ddb2b6e80",
+      "config": "3c5cc3e72b5473d08433171d50fc687ac3aa2a6a3f4c20b97f5b66f581b0fec9",
+      "description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+      "hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+      "hooks/commit-msg.sample": "efc1401b0e99d1ff51494d154d98b46c1e99059bcd8bf9f73cecde19fd3eb23b",
+      "hooks/fsmonitor-watchman.sample": "9159720099ad5595b8e66645cbfd47763c1e920f46e0b50ae75e642bbec57ef0",
+      "hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+      "hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+      "hooks/pre-commit.sample": "57185b7b9f05239d7ab52db045f5b89eb31348d7b2177eab214f5eb872e1971b",
+      "hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+      "hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+      "hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+      "hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+      "hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+      "hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+      "hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+      "hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+      "info/exclude": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1",
+      "objects/2e/4f148f6b50f4431dd3540e7d05519fdd44f214": "721e12eaa904dfe7c02bf5ef057cadd270ef15063dd2d696f8bedbc5b5b11275",
+      "objects/5d/d6e33da8e1df6bee4c152599a1d6d3df131eb0": "558e64364ca6ea4400582624dbbdb8d86c48498daacb724b1a5c357121b6c3e5",
+      "objects/8a/3771d47f5db6e90120d244c689708fc9567c85": "fe0137d8d092ba07a74004356b009e549d6bec0856fc5811bf1769f5365c9166",
+      "objects/93/ea2cd3eed6aa8b6181eea8383dcb6de3da40ee": "f1eef2b16404a36ddeb6f35196e8d850ac24ee7c8cdf5b724436af477d8358e8",
+      "objects/9f/c4d64ed7f0cfd190cb5cfe646292972243c690": "95008a1acd2499f7a62193fc90a4bc20b41922ac4fb6b8ee77487931e12a9b1d",
+      "objects/a6/275f3a17c176bc89fd559fe33a5812d16d1d22": "ca6ed415c47a604b4da4e1869e7787ccebbfd4d2b45460a3d6da912432fc9b3f",
+      "objects/b7/b8c2b6aa04a654fb2832b14ad58beae473ab92": "f28562b7fb2848d4dc094d35fde0910d62f3114093a963373226feb633a00c25",
+      "objects/d0/255ae324c7ad0dab4fc579d110db72fc5e8b4d": "781619a07643481b55ee3d2634bbf240fdb899692ab2fcbd33fc9f8b1fc4aa94",
+      "objects/e7/fb95917371ad20929d97738d60500a26f56f3f": "2d856080fa29db239c1a484e82324f208932bcffd4093f6b3e2502c16bb7504a",
+      "refs/heads/2ddf433f-7594-47c7-bdd6-76fefb6728f6-approved": "1a553180b5f15598e5a87a1d721b68f50ee9eb1e89bccb899aeaa62939a8b362"
+    },
+    "git_refs": [
+      "refs/heads/2ddf433f-7594-47c7-bdd6-76fefb6728f6-approved 9fc4d64ed7f0cfd190cb5cfe646292972243c690"
+    ],
+    "projects": [
+      [
+        "2ddf433f-7594-47c7-bdd6-76fefb6728f6",
+        "38a1874a-e459-4414-843b-329ad70f0493",
+        null
+      ]
+    ],
+    "canonical_records_sha256": "ef6364b26dc2c2e3da1360c6a2c29af13db71f23b052f327cd62b070ae213661",
+    "canonical_record_count": 10
+  },
+  "fixture_release": {
+    "project_id": "2ddf433f-7594-47c7-bdd6-76fefb6728f6",
+    "publication": {
+      "proposal_id": "9a6682b6-5225-4070-a33b-a2ed5f90fab9",
+      "revision": 1,
+      "bundle_digest": "sha256:c1ba06d8731396dbd7d071e1a33c903118f8d4625ac57171a907f2663b3fbdce",
+      "approval_ids": [
+        "5557078e-5e64-40f3-acfa-4d9779fd51a6"
+      ],
+      "expected_head": null,
+      "revision_id": "d4d68323-8cec-491d-b71a-8a66fd89c6f4",
+      "request_digest": "sha256:f02c3235b27baeca6341b72a1b29134a79cbfbf1dca3db98443437b12740a7bf",
+      "idempotency_key": "0d98d313-74a0-4270-9349-b326bc145af2",
+      "actor": {
+        "subject": "local-human",
+        "kind": "human",
+        "roles": [
+          "researcher",
+          "reviewer",
+          "approver",
+          "viewer"
+        ]
+      },
+      "expected_commit": null,
+      "new_version_id": "38a1874a-e459-4414-843b-329ad70f0493",
+      "id": "2de1b840-28b6-43f2-9970-9f0097ba23c9",
+      "status": "completed",
+      "created_at": "2026-11-01T12:31:40.605057+00:00",
+      "commit": "9fc4d64ed7f0cfd190cb5cfe646292972243c690"
+    },
+    "payload": {
+      "proposal_id": "9a6682b6-5225-4070-a33b-a2ed5f90fab9",
+      "revision": 1,
+      "bundle_digest": "sha256:c1ba06d8731396dbd7d071e1a33c903118f8d4625ac57171a907f2663b3fbdce",
+      "approval_ids": [
+        "5557078e-5e64-40f3-acfa-4d9779fd51a6"
+      ],
+      "expected_head": null
+    },
+    "validation_engine": {
+      "name": "Apache Jena",
+      "version": "6.2.0",
+      "runner_version": "0.1.0",
+      "isolation": {
+        "mode": "macos-seatbelt",
+        "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+        "launcher": "/usr/bin/sandbox-exec",
+        "platform": "darwin",
+        "network": "kernel-denied",
+        "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+        "rendered_profile_sha256": "fbc44e8df5de5d5c5c99ba949575446d5f64b5b1973bc5ae56bc8b93769b0ad8",
+        "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+      },
+      "jar_sha256": "572fd5730cea46f9bab467b61684c4675dfc15f6cccf041076864ef21c013bf3"
+    },
+    "assessment_engine": {
+      "name": "OntoCheck",
+      "version": "0.1.3",
+      "commit": "69d42e38979f381fe531ae547fcc49b8ad58ef15",
+      "network": "disabled",
+      "network_control": "macOS Seatbelt network denial plus Python audit hook",
+      "isolation": {
+        "mode": "macos-seatbelt",
+        "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+        "launcher": "/usr/bin/sandbox-exec",
+        "platform": "darwin",
+        "network": "kernel-denied",
+        "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+        "rendered_profile_sha256": "70de4ce782abcd08705a401725b2b3ecb61a0b283a5481f08040feb7135c796b",
+        "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+      },
+      "python": "3.12.14",
+      "resources": {
+        "nltk_english_stopwords_sha256": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b"
+      },
+      "packages": {
+        "ontocheck": "0.1.3",
+        "rdflib": "7.6.0",
+        "networkx": "3.7",
+        "nltk": "3.10.4"
+      },
+      "configuration": {
+        "domain_prefixes": [
+          "ex"
+        ],
+        "domain_ns_fragments": [
+          "https://example.org/oe-demo/"
+        ],
+        "authorize_prefix_mapping": false,
+        "mappings": {},
+        "mappings_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "weighting": "canonical",
+        "max_hops": 8,
+        "lam": 0.6931471805599453
+      }
+    },
+    "review_id": "5557078e-5e64-40f3-acfa-4d9779fd51a6",
+    "rationale": "SIMULATED ENGINEERING TEST: native-editor boundary fixture; not a human-study observation."
+  },
+  "main_native_jwt_publication_http": 401,
+  "fixture_native_jwt_publication_http": 401,
+  "main_unchanged": true,
+  "populated_fixture_unchanged": true,
+  "limits": [
+    "Native editor changes its workspace ontology configuration, not a Studio release.",
+    "Live main publication denial uses HTTP through the real portal; populated fixture denial uses the real ASGI app without mocks.",
+    "Local API/store separation is verified; OS credential/process isolation and shared identity remain unverified."
+  ],
+  "cleanup": {
+    "temporary_studio_fixture_removed": true,
+    "native_workspace_disabled": true
+  }
+}

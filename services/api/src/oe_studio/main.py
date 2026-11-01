@@ -6,7 +6,7 @@ import logging
 import hmac
 from pathlib import Path
 from threading import Event, Thread
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import uuid4
 from fastapi import Depends, FastAPI, File, Form, Header, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
@@ -27,6 +27,27 @@ from pydantic import Field
 
 class CorpusRequest(StrictModel):
     ingestion_run_ids: list[str] = Field(min_length=1, max_length=100)
+
+
+class TrustGraphSnapshotRequest(StrictModel):
+    ingestion_run_id: str
+    chunk_uris: list[str] = Field(min_length=1, max_length=50)
+
+
+class TrustGraphRecoveryRequest(StrictModel):
+    preparation_id: str
+
+
+class SyntheticTaskRegistration(BundleRequest):
+    task_id: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,79}$")
+    instruction: str = Field(min_length=5, max_length=4000)
+
+
+class SyntheticTaskJob(StrictModel):
+    registration_id: str
+    registration_digest: str = Field(pattern=r"^sha256:[a-f0-9]{64}$")
+    condition: Literal["A", "B", "C", "D", "all"] = "all"
+    replicate_ids: list[Annotated[int, Field(ge=1, le=3)]] = Field(default_factory=lambda: [1], min_length=1, max_length=3)
 
 
 class MappingSetRequest(StrictModel):
@@ -113,7 +134,7 @@ def create_app(settings=None):
             raise Problem(401, "operator_session_required", "Open the private operator link printed by the local server, or enter its session token")
         response.set_cookie("oe_session", app.state.local_cookie, httponly=True, samesite="strict", path="/", max_age=86400)
         return {"actor": {"subject": "local-human", "kind": "human", "roles": ["researcher", "reviewer", "approver", "viewer"]},
-                "mode": "local", "model_mode": "model" if settings.model_url and settings.model_name else "local", "integrations": {"trustgraph": "not_configured", "identity": "loopback_single_user"}}
+                "mode": "local", "model_mode": "model" if settings.model_url and settings.model_name else "local", "integrations": {"trustgraph": "configured_on_demand" if settings.trustgraph_config_file else "not_configured", "identity": "loopback_single_user"}}
 
     @app.get("/health/live")
     @app.get("/api/v1/health/live")
@@ -135,7 +156,7 @@ def create_app(settings=None):
         available = all(value in {"available", "not_configured"} for value in checks.values())
         return JSONResponse(status_code=200 if available else 503,
                             content={"status": "ready" if available else "not_ready", "mode": "local", **checks,
-                                     "trustgraph": "not_configured", "shared_auth": "not_configured"})
+                                     "trustgraph": "configured_on_demand" if settings.trustgraph_config_file else "not_configured", "shared_auth": "not_configured"})
 
     def page(items, cursor: str | None, limit: int):
         if limit < 1 or limit > 200:
@@ -245,6 +266,31 @@ def create_app(settings=None):
     def corpus(p: str, body: CorpusRequest, actor=Depends(require_actor)):
         return studio.freeze_corpus(p, body.ingestion_run_ids, actor)
 
+    @app.post("/api/v1/projects/{p}/trustgraph-ingestions", status_code=202)
+    def trustgraph_ingest(p: str, body: IngestRequest, idempotency_key: str = Header(...), actor=Depends(require_actor)):
+        return studio.create_job(p, "trustgraph-ingestion", body.model_dump(), idempotency_key, actor)
+
+    @app.post("/api/v1/projects/{p}/trustgraph-ingestion-recoveries", status_code=202)
+    def trustgraph_recover(p: str, body: TrustGraphRecoveryRequest, idempotency_key: str = Header(...), actor=Depends(require_actor)):
+        return studio.create_job(p, "trustgraph-recovery", body.model_dump(), idempotency_key, actor)
+
+    @app.post("/api/v1/projects/{p}/trustgraph-snapshots", status_code=202)
+    def trustgraph_snapshot(p: str, body: TrustGraphSnapshotRequest, idempotency_key: str = Header(...), actor=Depends(require_actor)):
+        return studio.create_job(p, "trustgraph-snapshot", body.model_dump(), idempotency_key, actor)
+
+    @app.get("/api/v1/projects/{p}/trustgraph-ingestions")
+    def trustgraph_ingestions(p: str, actor=Depends(require_actor)):
+        with studio.db.session() as s:
+            studio.project(s, p)
+            return {"items": [studio.body(i) for i in studio.items(s, p, "trustgraph_ingestion")],
+                    "preparations": [studio.body(i) for i in studio.items(s, p, "trustgraph_preparation")],
+                    "configured": bool(settings.trustgraph_config_file)}
+
+    @app.get("/api/v1/projects/{p}/trustgraph-ingestions/{ingestion}/chunks")
+    def trustgraph_chunks(p: str, ingestion: str, actor=Depends(require_actor)):
+        from .trustgraph_workflow import list_chunks
+        return list_chunks(studio, p, ingestion)
+
     @app.get("/api/v1/projects/{p}/versions")
     def versions(p: str, cursor: str | None = None, limit: int = 50, actor=Depends(require_actor)):
         with studio.db.session() as s:
@@ -294,6 +340,21 @@ def create_app(settings=None):
     @app.post("/api/v1/projects/{p}/experiment-jobs", status_code=202)
     def experiment(p: str, body: ExperimentRequest, idempotency_key: str = Header(...), actor=Depends(require_actor)):
         return studio.create_job(p, "experiment", body.model_dump(), idempotency_key, actor)
+
+    @app.post("/api/v1/projects/{p}/synthetic-tasks", status_code=201)
+    def register_synthetic_task(p: str, body: SyntheticTaskRegistration, actor=Depends(require_actor)):
+        from .research_workflow import register
+        return register(studio, p, body, actor)
+
+    @app.get("/api/v1/projects/{p}/synthetic-tasks")
+    def synthetic_tasks(p: str, actor=Depends(require_actor)):
+        with studio.db.session() as s:
+            studio.project(s, p)
+            return {"items": [studio.body(i) for i in studio.items(s, p, "synthetic_task")]}
+
+    @app.post("/api/v1/projects/{p}/synthetic-task-jobs", status_code=202)
+    def synthetic_task_run(p: str, body: SyntheticTaskJob, idempotency_key: str = Header(...), actor=Depends(require_actor)):
+        return studio.create_job(p, "synthetic-experiment", body.model_dump(), idempotency_key, actor)
 
     @app.post("/api/v1/projects/{p}/test-generation-jobs", status_code=202)
     def generate_tests(p: str, body: TestGenerationRequest, idempotency_key: str = Header(...), actor=Depends(require_actor)):

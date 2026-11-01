@@ -18,7 +18,7 @@ export type OracleDecision = { "decision": "accept" | "reject"; "rationale": str
 export type ProjectCreate = { "domain"?: "unselected" | "demo"; "name": string; };
 export type ProposalRequest = { "base_version_id"?: (string | null); "competency_question_ids"?: Array<string>; "corpus_snapshot_id"?: (string | null); "instruction"?: string; };
 export type PublishRequest = { "approval_ids": Array<string>; "bundle_digest": string; "expected_head"?: (string | null); "proposal_id": string; "revision": number; };
-export type QuestionRequest = { "conversation_id"?: (string | null); "history"?: Array<Message>; "proposal_id"?: (string | null); "question": string; "revision"?: (number | null); };
+export type QuestionRequest = { "conversation_id"?: (string | null); "corpus_snapshot_id"?: (string | null); "history"?: Array<Message>; "proposal_id"?: (string | null); "question": string; "revision"?: (number | null); };
 export type RationaleRequest = { "rationale": string; };
 export type ReviewRequest = { "bundle_digest": string; "decision": "accept" | "request_changes" | "reject"; "proposal_id": string; "rationale": string; "required_assessment_run_ids": Array<string>; "review_policy_id": string; "revision": number; "validation_run_id": string; };
 export type ReviewSessionEvent = { "event": "start" | "pause" | "resume" | "end"; "revision_id": string; };
@@ -27,8 +27,12 @@ export type ScopeDecision = { "decision": "accept" | "reject"; "rationale": stri
 export type ScopeUpload = { "competency_questions": Array<CompetencyQuestion>; "fixtures_ttl"?: string; "namespace"?: "https://example.org/oe-demo/"; "purpose": string; "shapes_ttl"?: string; "title": string; };
 export type SeedImportRequest = { "corpus_snapshot_id": string; "ontology_ttl": string; "profile"?: "rdfs"; "rationale": string; };
 export type Submission = { "proposal_id": string; "required_assessment_run_ids": Array<string>; "revision": number; "validation_run_id": string; };
+export type SyntheticTaskJob = { "condition"?: "A" | "B" | "C" | "D" | "all"; "registration_digest": string; "registration_id": string; "replicate_ids"?: Array<number>; };
+export type SyntheticTaskRegistration = { "bundle_digest": string; "instruction": string; "proposal_id": string; "revision": number; "task_id": string; };
 export type TestGenerationRequest = { "proposal_id": string; "revision": number; };
 export type Triple = { "datatype"?: (string | null); "language"?: (string | null); "object": string; "object_type"?: "iri" | "literal"; "predicate": string; "subject": string; };
+export type TrustGraphRecoveryRequest = { "preparation_id": string; };
+export type TrustGraphSnapshotRequest = { "chunk_uris": Array<string>; "ingestion_run_id": string; };
 
 export interface ApiRequestBodies {
   "POST /api/v1/projects [application/json]": ProjectCreate;
@@ -52,7 +56,12 @@ export interface ApiRequestBodies {
   "POST /api/v1/projects/{p}/scope [application/json]": ScopeUpload;
   "POST /api/v1/projects/{p}/scope-decisions [application/json]": ScopeDecision;
   "POST /api/v1/projects/{p}/seed-imports [application/json]": SeedImportRequest;
+  "POST /api/v1/projects/{p}/synthetic-task-jobs [application/json]": SyntheticTaskJob;
+  "POST /api/v1/projects/{p}/synthetic-tasks [application/json]": SyntheticTaskRegistration;
   "POST /api/v1/projects/{p}/test-generation-jobs [application/json]": TestGenerationRequest;
   "POST /api/v1/projects/{p}/test-oracle-decisions [application/json]": OracleDecision;
+  "POST /api/v1/projects/{p}/trustgraph-ingestion-recoveries [application/json]": TrustGraphRecoveryRequest;
+  "POST /api/v1/projects/{p}/trustgraph-ingestions [application/json]": IngestRequest;
+  "POST /api/v1/projects/{p}/trustgraph-snapshots [application/json]": TrustGraphSnapshotRequest;
   "POST /api/v1/projects/{p}/validation-jobs [application/json]": BundleRequest;
 }

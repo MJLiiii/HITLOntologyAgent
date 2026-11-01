@@ -1,0 +1,30 @@
+{
+  "classification": "synthetic_engineering_verification",
+  "real_study_approved": false,
+  "browser": "actual in-app browser",
+  "selected_import": {
+    "status": "passed",
+    "corpus_snapshot_id": "a7c44cf1-6a85-568d-9923-727fd6733997",
+    "selected_chunks": 1,
+    "known_quote_present": true,
+    "verified_citation": true,
+    "approved_version_id_unchanged": "b2c185ce-269f-4308-8392-99a1be6a731e",
+    "approved_commit_unchanged": "6db81f6c92184be6aeb2857789edffd2c909c681",
+    "global_upstream_completion_claimed": false
+  },
+  "main_chat": {
+    "status": "passed",
+    "question": "Who owns the Payroll service, and is Payroll a service?",
+    "answer": "Payroll Service is owned by the Operations Team, and it is classified as a critical service.",
+    "resolved_citations": 2,
+    "ontology_triples": 2,
+    "approved_versions": 0,
+    "reference_status": "unapproved"
+  },
+  "screenshots": [
+    "docs/screenshots/trustgraph-selected-import.jpg",
+    "docs/screenshots/trustgraph-source-chat.jpg",
+    "docs/screenshots/ontology-chat-continuation.jpg",
+    "docs/screenshots/ontology-chat-results.jpg"
+  ]
+}

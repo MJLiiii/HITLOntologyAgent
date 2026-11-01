@@ -172,6 +172,13 @@
 .ontology-studio .suggestion > svg { color:#afb3c4; }
 .ontology-studio .welcome-note { display:flex; align-items:center; gap:6px; font-size:11px; color:#7c8399; }
 .ontology-studio .composer-wrap { padding:14px 30px 16px; background:linear-gradient(#fcfcfd00,#fcfcfd 18%); }
+.ontology-studio .chat-source-selection { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-bottom:9px; }
+.ontology-studio .chat-source-selection label { display:flex; flex-direction:row; align-items:center; gap:9px; font-size:11px; color:#747b8e; }
+.ontology-studio .chat-source-selection select { width:auto; max-width:100%; padding:5px 25px 5px 9px; font-size:11px; }
+.ontology-studio .chat-source-selection > code { font-size:10px; color:#868398; overflow-wrap:anywhere; }
+.ontology-studio .chat-source-note { margin:0 0 10px; color:#8a749f; font-size:11px; line-height:1.6; }
+.ontology-studio .answer-source-context { margin-top:12px; }
+.ontology-studio .composer-context { flex-wrap:wrap; }
 .ontology-studio .composer { border:1px solid #dddfe9; background:#fff; border-radius:11px; box-shadow:0 3px 15px #202a4305; padding:13px 14px 10px; }
 .ontology-studio .composer:focus-within { border-color:#a99ddc; box-shadow:0 0 0 3px #eeebfc; }
 .ontology-studio .composer textarea { border:0; background:transparent; width:100%; resize:none; padding:0; outline:none; font-size:13px; min-height:44px; max-height:150px; }
@@ -519,6 +526,23 @@
 .ontology-studio .mapping-report-review strong { font-weight:500; }
 .ontology-studio .mapping-diagnostics { padding:0 22px 17px; font-size:10px; color:#a285af; }
 .ontology-studio .mapping-diagnostics pre { max-height:260px; font-size:10px; white-space:pre-wrap; }
+.ontology-studio .trustgraph-panel { margin-top:22px; }
+.ontology-studio .trustgraph-body { padding:0 22px 22px; }
+.ontology-studio .trustgraph-submit { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px; margin-top:20px; }
+.ontology-studio .trustgraph-submit label { flex:1; min-width:180px; }
+.ontology-studio .trustgraph-record,.ontology-studio .trustgraph-selection,.ontology-studio .trustgraph-frozen { margin-top:20px; padding-top:18px; border-top:1px solid var(--line); }
+.ontology-studio .trustgraph-record h4,.ontology-studio .trustgraph-selection h4,.ontology-studio .trustgraph-frozen h4 { font-size:13px; margin-bottom:7px; }
+.ontology-studio .trustgraph-record p { font-size:12px; line-height:1.7; }
+.ontology-studio .trustgraph-record details,.ontology-studio .trustgraph-frozen details { margin:12px 0; font-size:12px; }
+.ontology-studio .trustgraph-panel code { overflow-wrap:anywhere; white-space:normal; }
+.ontology-studio .trustgraph-panel dl { display:grid; grid-template-columns:minmax(90px,120px) minmax(0,1fr); gap:7px 12px; padding:10px 0; font-size:11px; }
+.ontology-studio .trustgraph-panel dd { margin:0; }
+.ontology-studio .trustgraph-panel dd code { display:block; }
+.ontology-studio .trustgraph-selection fieldset { margin:15px 0; border:1px solid var(--line); border-radius:8px; padding:8px 12px; max-height:320px; overflow:auto; }
+.ontology-studio .trustgraph-selection legend { font-size:11px; padding:0 5px; }
+.ontology-studio .trustgraph-selection fieldset label { display:flex; flex-direction:row; align-items:flex-start; gap:10px; margin:10px 0; font-size:11px; }
+.ontology-studio .trustgraph-selection input { flex:none; width:15px; height:15px; margin:0; accent-color:var(--indigo); }
+@media (max-width:760px) { .ontology-studio .trustgraph-body { padding:0 17px 17px; } .ontology-studio .trustgraph-selection .form-actions { flex-wrap:wrap; } }
 @media (max-width:760px) { .ontology-studio .mapping-panel-body { padding:0 17px 17px; } .ontology-studio .mapping-config-summary { flex-direction:column; gap:12px; } .ontology-studio .mapping-terms { grid-template-columns:1fr; gap:7px; } .ontology-studio .mapping-terms > svg { transform:rotate(90deg); } .ontology-studio .mapping-edit-actions { flex-direction:column; align-items:flex-end; gap:8px; } .ontology-studio .mapping-proposals > .section-heading { flex-direction:column; align-items:stretch; } .ontology-studio .mapping-proposals select { max-width:none; } }
 .ontology-studio .oracle-body { padding:0 22px 22px; }
 .ontology-studio .oracle-principle { display:flex; align-items:flex-start; gap:10px; padding:13px 15px; border:1px solid #e7e4f5; border-radius:7px; background:#f8f7fc; color:#8d7f9d; font-size:12px; line-height:1.75; }
@@ -541,6 +565,25 @@
 .ontology-studio .oracle-test-content details { margin-top:14px; font-size:11px; color:#a590b3; }
 .ontology-studio .oracle-decision { padding-top:6px; }
 .ontology-studio .oracle-decision label { margin-bottom:7px; }
+.ontology-studio .oracle-generator { font-size:12px; line-height:1.7; margin-bottom:15px; }
+.ontology-studio .oracle-generator code,.ontology-studio .oracle-inputs code { overflow-wrap:anywhere; }
+.ontology-studio .oracle-generator ul,.ontology-studio .oracle-inputs ul { padding-left:20px; }
+.ontology-studio .oracle-inputs dl { display:grid; grid-template-columns:minmax(100px,145px) minmax(0,1fr); gap:7px 12px; margin:12px 0; }
+.ontology-studio .oracle-inputs dd { margin:0; }
+.ontology-studio .oracle-inputs dd code { display:block; }
+.ontology-studio .oracle-violations { margin:12px 0; }
+.ontology-studio .synthetic-task-panel { padding:20px 22px; margin:20px 0; }
+.ontology-studio .synthetic-task-panel > h3 { font-size:15px; margin-bottom:8px; }
+.ontology-studio .synthetic-task-panel > label { margin-top:18px; }
+.ontology-studio .synthetic-task-details,.ontology-studio .synthetic-task-register { font-size:12px; line-height:1.7; margin-top:18px; }
+.ontology-studio .synthetic-task-details dl { display:grid; grid-template-columns:minmax(100px,140px) minmax(0,1fr); gap:8px 14px; }
+.ontology-studio .synthetic-task-details dd { margin:0; }
+.ontology-studio .synthetic-task-details dd code { display:block; }
+.ontology-studio .synthetic-task-panel code { overflow-wrap:anywhere; white-space:normal; }
+.ontology-studio .synthetic-task-register fieldset { margin:12px 0 0; border:0; padding:0; min-width:0; }
+.ontology-studio .synthetic-task-register .form-grid { margin-top:13px; }
+.ontology-studio .expected-result { min-width:0; flex-wrap:wrap; }
+.ontology-studio .expected-result code { overflow-wrap:anywhere; min-width:0; }
 @media (max-width:760px) { .ontology-studio .oracle-body { padding:0 17px 17px; } .ontology-studio .oracle-test > summary { flex-wrap:wrap; } .ontology-studio .oracle-test > summary .badge { margin-left:0; } .ontology-studio .oracle-decision .form-actions { flex-wrap:wrap; } }
 
 /* Reproducible A–D comparison. */

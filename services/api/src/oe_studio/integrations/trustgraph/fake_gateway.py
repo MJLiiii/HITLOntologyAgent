@@ -18,6 +18,8 @@ class FakeTrustGraphGateway(PinnedTrustGraphGateway):
         self.calls = []
         self.answer = {'text': 'Explicit synthetic fake answer', 'sources': []}
         self.triples = []
+        self.configuration = {}
+        self.configuration_version = 1
         for document in self.documents.values():
             self.content[document.upstream_document_id] = self.artifacts.get_verified(document.artifact.model_dump())
         for corpus in self.corpora.values():
@@ -53,10 +55,14 @@ class FakeTrustGraphGateway(PinnedTrustGraphGateway):
                 return owner.document_metadata[id]
 
             def request(self, request):
-                if request['operation'] != 'get-document-metadata' or request['workspace'] != binding.workspace:
+                if request['workspace'] != binding.workspace:
                     raise ValueError('Unsupported fake metadata operation or workspace')
+                if request['operation'] == 'list-documents':
+                    return {'document-metadatas': [{'id': key} for key in owner.content]}
+                if request['operation'] != 'get-document-metadata':
+                    raise ValueError('Unsupported fake metadata operation')
                 row = owner.document_metadata[request['document-id']]
-                return {'document-metadata': {'id': row['id'], 'parent-id': row['parent_id']}}
+                return {'document-metadata': {'id': row['id'], 'parent-id': row['parent_id'], 'document-type': 'chunk'}}
 
         class Flow:
             def graph_rag(self, **kwargs):
@@ -69,7 +75,16 @@ class FakeTrustGraphGateway(PinnedTrustGraphGateway):
                 owner.calls.append(('triples_query', request))
                 return {'response': owner.triples}
 
-        return SimpleNamespace(workspace=binding.workspace, library=Library,
+        def request(path, request):
+            import json
+            if path != 'config' or request['workspace'] != binding.workspace:
+                raise ValueError('Unsupported fake API scope')
+            keys = request.get('keys', [{'type': request.get('type'), 'key': key}
+                                       for key in owner.configuration.get(request.get('type'), {})])
+            return {'version': owner.configuration_version, 'values': [
+                {**key, 'value': json.dumps(owner.configuration[key['type']][key['key']])} for key in keys]}
+
+        return SimpleNamespace(workspace=binding.workspace, library=Library, request=request,
                                flow=lambda: SimpleNamespace(id=lambda flow_id: Flow()))
 
     async def ingestion_status(self, receipt):

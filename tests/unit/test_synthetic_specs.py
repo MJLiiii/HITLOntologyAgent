@@ -1,7 +1,8 @@
 import pytest
 from pydantic import ValidationError
 from oe_studio.schemas import TestSpec as Spec
-from oe_studio.testspecs import generate_specs
+from oe_studio import demo
+from oe_studio.testspecs import generate_suite
 
 
 def test_generated_python_is_rejected():
@@ -15,8 +16,10 @@ def test_synthetic_tests_cannot_target_held_out_split():
 
 
 def test_missing_data_is_not_owl_negation():
-    suite = generate_specs(["evidence-1"])
-    missing = next(t for t in suite if t["test_id"] == "SYN-missing-owner")
+    suite = generate_suite(candidate_ttl=demo.ONTOLOGY, shapes_ttl=demo.SHAPES, fixtures_ttl=demo.FIXTURES,
+                           questions=demo.QUESTIONS, changes={"additions": [], "deletions": []},
+                           evidence=[{"id": "evidence-1", "resolved": True}], bundle_digest="a" * 64)["tests"]
+    missing = next(t for t in suite if t["scenario"] == "missing_data")
     assert missing["kind"] == "shacl" and missing["expected_conforms"] is False
     assert all(t["oracle_status"] == "needs_review" for t in suite)
-    assert len(suite) == 4
+    assert {t["scenario"] for t in suite} >= {"positive", "negative", "boundary", "missing_data"}

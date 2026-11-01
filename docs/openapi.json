@@ -533,6 +533,17 @@
             ],
             "title": "Conversation Id"
           },
+          "corpus_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corpus Snapshot Id"
+          },
           "history": {
             "items": {
               "$ref": "#/components/schemas/Message"
@@ -854,6 +865,87 @@
         "title": "Submission",
         "type": "object"
       },
+      "SyntheticTaskJob": {
+        "additionalProperties": false,
+        "properties": {
+          "condition": {
+            "default": "all",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "all"
+            ],
+            "title": "Condition",
+            "type": "string"
+          },
+          "registration_digest": {
+            "pattern": "^sha256:[a-f0-9]{64}$",
+            "title": "Registration Digest",
+            "type": "string"
+          },
+          "registration_id": {
+            "title": "Registration Id",
+            "type": "string"
+          },
+          "replicate_ids": {
+            "items": {
+              "maximum": 3.0,
+              "minimum": 1.0,
+              "type": "integer"
+            },
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Replicate Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "registration_id",
+          "registration_digest"
+        ],
+        "title": "SyntheticTaskJob",
+        "type": "object"
+      },
+      "SyntheticTaskRegistration": {
+        "additionalProperties": false,
+        "properties": {
+          "bundle_digest": {
+            "title": "Bundle Digest",
+            "type": "string"
+          },
+          "instruction": {
+            "maxLength": 4000,
+            "minLength": 5,
+            "title": "Instruction",
+            "type": "string"
+          },
+          "proposal_id": {
+            "title": "Proposal Id",
+            "type": "string"
+          },
+          "revision": {
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "task_id": {
+            "pattern": "^[a-z][a-z0-9_-]{0,79}$",
+            "title": "Task Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "proposal_id",
+          "revision",
+          "bundle_digest",
+          "task_id",
+          "instruction"
+        ],
+        "title": "SyntheticTaskRegistration",
+        "type": "object"
+      },
       "TestGenerationRequest": {
         "additionalProperties": false,
         "properties": {
@@ -933,6 +1025,44 @@
           "object"
         ],
         "title": "Triple",
+        "type": "object"
+      },
+      "TrustGraphRecoveryRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "preparation_id": {
+            "title": "Preparation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "preparation_id"
+        ],
+        "title": "TrustGraphRecoveryRequest",
+        "type": "object"
+      },
+      "TrustGraphSnapshotRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "chunk_uris": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Chunk Uris",
+            "type": "array"
+          },
+          "ingestion_run_id": {
+            "title": "Ingestion Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ingestion_run_id",
+          "chunk_uris"
+        ],
+        "title": "TrustGraphSnapshotRequest",
         "type": "object"
       },
       "ValidationError": {
@@ -3344,6 +3474,144 @@
         "summary": "Seed Import"
       }
     },
+    "/api/v1/projects/{p}/synthetic-task-jobs": {
+      "post": {
+        "operationId": "synthetic_task_run_api_v1_projects__p__synthetic_task_jobs_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "p",
+            "required": true,
+            "schema": {
+              "title": "P",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "idempotency-key",
+            "required": true,
+            "schema": {
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyntheticTaskJob"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Synthetic Task Run"
+      }
+    },
+    "/api/v1/projects/{p}/synthetic-tasks": {
+      "get": {
+        "operationId": "synthetic_tasks_api_v1_projects__p__synthetic_tasks_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "p",
+            "required": true,
+            "schema": {
+              "title": "P",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Synthetic Tasks"
+      },
+      "post": {
+        "operationId": "register_synthetic_task_api_v1_projects__p__synthetic_tasks_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "p",
+            "required": true,
+            "schema": {
+              "title": "P",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyntheticTaskRegistration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Register Synthetic Task"
+      }
+    },
     "/api/v1/projects/{p}/test-generation-jobs": {
       "post": {
         "operationId": "generate_tests_api_v1_projects__p__test_generation_jobs_post",
@@ -3508,6 +3776,255 @@
           }
         },
         "summary": "Test Suites"
+      }
+    },
+    "/api/v1/projects/{p}/trustgraph-ingestion-recoveries": {
+      "post": {
+        "operationId": "trustgraph_recover_api_v1_projects__p__trustgraph_ingestion_recoveries_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "p",
+            "required": true,
+            "schema": {
+              "title": "P",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "idempotency-key",
+            "required": true,
+            "schema": {
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrustGraphRecoveryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trustgraph Recover"
+      }
+    },
+    "/api/v1/projects/{p}/trustgraph-ingestions": {
+      "get": {
+        "operationId": "trustgraph_ingestions_api_v1_projects__p__trustgraph_ingestions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "p",
+            "required": true,
+            "schema": {
+              "title": "P",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trustgraph Ingestions"
+      },
+      "post": {
+        "operationId": "trustgraph_ingest_api_v1_projects__p__trustgraph_ingestions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "p",
+            "required": true,
+            "schema": {
+              "title": "P",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "idempotency-key",
+            "required": true,
+            "schema": {
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trustgraph Ingest"
+      }
+    },
+    "/api/v1/projects/{p}/trustgraph-ingestions/{ingestion}/chunks": {
+      "get": {
+        "operationId": "trustgraph_chunks_api_v1_projects__p__trustgraph_ingestions__ingestion__chunks_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "p",
+            "required": true,
+            "schema": {
+              "title": "P",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ingestion",
+            "required": true,
+            "schema": {
+              "title": "Ingestion",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trustgraph Chunks"
+      }
+    },
+    "/api/v1/projects/{p}/trustgraph-snapshots": {
+      "post": {
+        "operationId": "trustgraph_snapshot_api_v1_projects__p__trustgraph_snapshots_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "p",
+            "required": true,
+            "schema": {
+              "title": "P",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "idempotency-key",
+            "required": true,
+            "schema": {
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrustGraphSnapshotRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trustgraph Snapshot"
       }
     },
     "/api/v1/projects/{p}/validation-jobs": {

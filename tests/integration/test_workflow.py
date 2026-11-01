@@ -338,7 +338,8 @@ def test_new_domain_oracle_needs_review(client):
         rev = studio.revision(s, p["id"], r["id"], 2)
         tests = json.loads(studio.artifacts.get_verified(rev.data["tests"]))
         assert {"CQ-01", "CQ-02"}.issubset(t["test_id"] for t in tests)
-        assert len(tests) == 6
+        assert {t['test_id'] for t in suite['tests']}.issubset(t['test_id'] for t in tests)
+        assert {t['scenario'] for t in suite['tests']} >= {"positive", "negative", "missing_data", "boundary", "regression"}
 
 
 def test_service_session_does_not_issue_human_cookie(client):

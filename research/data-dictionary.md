@@ -5,15 +5,16 @@ JSON is the complete record. CSV emits one row per run with nested fields encode
 | Field | Meaning |
 |---|---|
 | `id`, `protocol_id`, `task_id`, `condition`, `replicate` | Run identity. Logical unit is task × condition × replicate; deterministic demo replicates are not independent observations. |
-| `mode`, `study_status` | `deterministic_demo` or actual `model_pilot`; both remain `external_gates_pending`. |
+| `mode`, `study_status` | `deterministic_demo` or actual `model_pilot`, both `external_gates_pending`; registered `synthetic_model_task` remains `not_authorized_synthetic_only`. |
 | `status`, `evaluation_status` | Final workflow status and automated check status. D waits for a human even when checks fail. |
 | `task_packet_digest`, `source_bundle_digest` | Hash of shared task packet and supplied application bundle identity. |
+| `task_registration_digest` | `synthetic-task-v1` only: exact immutable registered packet identity, preserved in all arms and D post-review output. |
 | `agent_manifest` | Common synthetic sources and source hashes, plain questions, inference profile and initial/base digests. No answer oracles or held-out data. |
 | `evaluation_manifest` | Development test/question hashes and explicit absence of held-out study data. |
 | `initial_candidate_digest`, `candidate_digest`, `candidate_ttl` | Identical starting candidate and each frozen output's SHA-256 and Turtle. |
 | `budget`, `repair_history` | Frozen call/output/context/time/operation limits and actual steps/allowed feedback. Demo uses zero model calls. B receives no automated reports. |
 | `validation`, `assessment` | Real engine reports, manifests, statuses, raw measurements and limitations. These do not imply human approval. |
-| `case_counts` | Scheduled, passed, failed, error, timeout, unsupported, not-run; TP/FP/FN/TN and unevaluable ASK counts. |
+| `case_counts` | All-case scheduled/status counts; `answer_scheduled` and `non_answer_scheduled`; TP/FP/FN/TN and `unevaluable` apply only to ASK cases. |
 | `metrics` | Each metric stores value, numerator, denominator, unit, and missing reason. |
 | `reasoning_pass_rate` | In `metrics`: passed expected outcomes / all scheduled cases. |
 | `answer_precision`, `answer_recall` | Flat aliases of finite demo ASK metrics, distinct from vocabulary measures. Missing on incomplete evaluation. |
@@ -31,6 +32,6 @@ JSON is the complete record. CSV emits one row per run with nested fields encode
 | `workflow_review_reports` | Actual persisted reports authorizing the human review, distinct from the rerun of the original experiment workload. |
 | `expert_active_seconds`, `time_to_acceptance_right_censored` | Supplied observed active-time ledger total and whether the decision is unsuccessful. Missing ledger time stays null. |
 
-The record's `metrics.answer_accuracy_required` and `metrics.answer_accuracy_evaluable` expose both required and evaluable denominators. `model_cost` and `model_tokens` are null with `deterministic_demo_no_model`. Engine failure is preserved as its status with unavailable assessment values, never converted to a successful run.
+The record's `metrics.answer_accuracy_required` and `metrics.answer_accuracy_evaluable` expose required and evaluable ASK denominators. SELECT/SHACL cases remain in the all-case reasoning denominator without being counted as Boolean answers. `model_cost` and `model_tokens` are null with `deterministic_demo_no_model`. Engine failure is preserved as its status with unavailable assessment values, never converted to a successful run.
 
 For model pilots, token/cost totals are known only when every contributing call reports that quantity. A failed structured edit retains the raw output and usage but has no final candidate; every scheduled test remains in the denominator. `elapsed_seconds_scope` explains logical/shared timing, including C's diagnostic validation. Post-review elapsed wall time is not inferred from prior automated timing. These traces can contain source text and should follow the source retention policy.

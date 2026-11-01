@@ -10,9 +10,65 @@ const proposal: Proposal = {id:'proposal-d',experiment_run_id:pre.id,revision:2,
 const review: ReviewDecision = {id:'human-review',proposal_id:proposal.id,revision:2,revision_id:proposal.revision_id,actor:{kind:'human',subject:'reviewer'},decision:'request_changes',rationale:'The source needs a clearer ownership relation.',bundle_digest:'reviewed-bundle',validation_run_id:'validation',required_assessment_run_ids:['assessment']};
 const props = (experiments: Experiment[] = []) => ({project,session,experiments,proposals:[] as Proposal[],onRefresh:vi.fn().mockResolvedValue(undefined),onOpenProposal:vi.fn()});
 const choosePilot = () => fireEvent.change(screen.getByLabelText('Experiment protocol'),{target:{value:'model-pilot-v1'}});
+const chooseRegistered = () => fireEvent.change(screen.getByLabelText('Experiment protocol'),{target:{value:'synthetic-task-v1'}});
 afterEach(() => vi.unstubAllGlobals());
 
 describe('model pilot experiment workflow', () => {
+  it('registers the chosen exact revision only after a human supplies a task identity and instruction',async()=>{
+    const task={id:'registration',task_id:'ownership-task',instruction:'Inspect service ownership evidence.',proposal_id:proposal.id,revision:2,revision_id:proposal.revision_id,bundle_digest:proposal.bundle_digest,registration_digest:'packet-digest',protocol_id:'synthetic-task-v1',packet:{id:'packet',sha256:'packet-hash'}};
+    const writes:{path:string;body:unknown}[]=[];
+    vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
+      if(options.method==='POST'){writes.push({path,body:JSON.parse(String(options.body))});return new Response(JSON.stringify(task));}
+      return new Response(JSON.stringify({items:[]}));
+    }));
+    render(<ExperimentsView {...props()} proposals={[proposal]}/>);chooseRegistered();
+    await screen.findByLabelText('Registered synthetic task');
+    fireEvent.change(screen.getByLabelText('Candidate revision for task'),{target:{value:proposal.id}});
+    fireEvent.change(screen.getByLabelText('Synthetic task ID'),{target:{value:'ownership-task'}});
+    fireEvent.change(screen.getByLabelText('Task instruction'),{target:{value:'Inspect service ownership evidence.'}});
+    expect(writes).toEqual([]);
+    fireEvent.click(screen.getByRole('button',{name:'Register frozen synthetic task'}));
+    await screen.findByText(/Synthetic task registered/);
+    expect(writes).toEqual([{path:'/api/v1/projects/p/synthetic-tasks',body:{proposal_id:proposal.id,revision:2,bundle_digest:proposal.bundle_digest,task_id:'ownership-task',instruction:'Inspect service ownership evidence.'}}]);
+    expect(screen.getByLabelText('Registered synthetic task')).toHaveValue('registration');
+    expect(screen.getByText('packet-digest')).toBeInTheDocument();
+  });
+
+  it('executes the exact registered packet and shows only the selected task in comparisons and D review',async()=>{
+    const tasks=['one','two'].map(id=>({id:`registration-${id}`,task_id:`task-${id}`,instruction:`Synthetic task ${id}.`,revision:2,proposal_id:proposal.id,revision_id:proposal.revision_id,bundle_digest:proposal.bundle_digest,registration_digest:`digest-${id}`,protocol_id:'synthetic-task-v1',packet:{id:`packet-${id}`,sha256:`hash-${id}`}}));
+    const writes:{path:string;body:unknown;headers:Headers}[]=[];
+    vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
+      if(options.method==='POST'){writes.push({path,body:JSON.parse(String(options.body)),headers:new Headers(options.headers)});return new Response(JSON.stringify({job_id:'registered-job'}));}
+      if(path.endsWith('/jobs/registered-job'))return new Response(JSON.stringify({status:'succeeded',result:{runs:[]}}));
+      return new Response(JSON.stringify({items:tasks}));
+    }));
+    const runs=tasks.map((task,index)=>({...pre,id:`run-${index}`,protocol_id:'synthetic-task-v1',task_id:task.task_id,strict_fitness:index,vocabulary_coverage:index}));
+    render(<ExperimentsView {...props(runs)}/>);chooseRegistered();
+    await screen.findByRole('option',{name:'task-one'});
+    expect(screen.getByRole('button',{name:'Run A–D registered task'})).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Registered synthetic task'),{target:{value:'registration-two'}});
+    expect(screen.queryByRole('button',{name:'Inspect experiment run-0'})).not.toBeInTheDocument();
+    expect(screen.getByRole('button',{name:'Inspect experiment run-1'})).toBeInTheDocument();
+    expect(screen.queryByText('50%')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Run A–D registered task'}));
+    await screen.findByText(/Registered task runs recorded/);
+    expect(writes).toHaveLength(1);
+    expect(writes[0].path).toBe('/api/v1/projects/p/synthetic-task-jobs');
+    expect(writes[0].body).toEqual({registration_id:'registration-two',registration_digest:'digest-two',condition:'all',replicate_ids:[1]});
+    expect(writes[0].headers.get('Idempotency-Key')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button',{name:'Inspect experiment run-1'}));
+    expect(screen.getByRole('button',{name:'Stage condition D candidate'})).toBeInTheDocument();
+  });
+
+  it.each([
+    ['pending scope',{...project,scope_accepted:false},session],
+    ['service identity',project,{...session,actor:{...session.actor,kind:'service'}}],
+  ])('does not register a synthetic task with %s',async(_label,currentProject,currentSession)=>{
+    vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({items:[]}))));
+    render(<ExperimentsView {...props()} project={currentProject as Project} session={currentSession as Session} proposals={[proposal]}/>);chooseRegistered();
+    await screen.findByLabelText('Registered synthetic task');
+    expect(screen.getByRole('button',{name:'Register frozen synthetic task'})).toBeDisabled();
+  });
   it('uses the selected protocol only after an explicit run and retains fixed synthetic task/replicate inputs', async () => {
     const writes: {path:string;body:unknown;headers:Headers}[] = [];
     vi.stubGlobal('fetch',vi.fn(async (path:string,options:RequestInit={}) => {

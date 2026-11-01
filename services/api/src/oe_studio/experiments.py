@@ -10,17 +10,23 @@ import math
 from pathlib import Path
 from time import perf_counter
 from uuid import uuid4
+from typing import Literal as Choice
 
 from rdflib import URIRef
-from rdflib.namespace import RDFS
-from pydantic import Field
+from rdflib.namespace import RDF, RDFS, OWL, SH
+from rdflib.plugins.sparql import prepareQuery
+from rdflib.plugins.sparql.parserutils import CompValue
+from pydantic import ConfigDict, Field, StrictBool
 
 from .artifacts import canonical_json
 from .assessment import assess, SCORES
+from .assessment_contracts import ApprovedMapping
 from .demo import NS, ONTOLOGY, QUESTIONS, SHAPES, SOURCES, TESTS
 from .model import ModelClient, ProposalDraft, GeneratedChange, checked_proposal
 from .rdf import canonicalize, materialize, parse_ttl
 from .validation import validate
+from .schemas import CompetencyQuestion, StrictModel, TestSpec
+from .testspecs import query_terms
 
 
 def sha(value: str | bytes) -> str:
@@ -85,12 +91,16 @@ def measurements(report: dict, assessment: dict, tests: list[dict]) -> tuple[dic
     by_id = {c.get('id'): c for c in report.get('cases', [])}
     tp = fp = fn = tn = 0
     answer_errors = 0
+    answer_scheduled = 0
     for spec in tests:
         case = by_id.get(spec['test_id'], {})
         status = case.get('status', report.get('status', 'error'))
         if status not in counts or (not case and status in ('passed', 'failed')):
             status = 'not_run'
         counts[status] += 1
+        if spec.get('kind', 'ask') != 'ask':
+            continue
+        answer_scheduled += 1
         actual = case.get('actual')
         if status not in ('passed', 'failed') or not isinstance(actual, bool):
             answer_errors += 1
@@ -107,8 +117,8 @@ def measurements(report: dict, assessment: dict, tests: list[dict]) -> tuple[dic
                'answer_precision': ratio(tp, tp + fp, missing_reason=missing),
                'answer_recall': ratio(tp, tp + fn, missing_reason=missing),
                'answer_f1': ratio(2 * tp, 2 * tp + fp + fn, missing_reason=missing),
-               'answer_accuracy_required': ratio(tp + tn, len(tests)),
-               'answer_accuracy_evaluable': ratio(tp + tn, len(tests) - answer_errors)}
+               'answer_accuracy_required': ratio(tp + tn, answer_scheduled),
+               'answer_accuracy_evaluable': ratio(tp + tn, answer_scheduled - answer_errors)}
     denominator = assessment.get('denominators', {}).get('candidate', {})
     for name in SCORES:
         value = assessment.get(name) if assessment.get('status') == 'completed' else None
@@ -121,7 +131,8 @@ def measurements(report: dict, assessment: dict, tests: list[dict]) -> tuple[dic
                                 ('model_tokens', 'deterministic_demo_no_model', 'tokens')]:
         metrics[name] = {'value': None, 'numerator': None, 'denominator': None,
                          'unit': unit, 'missing_reason': reason}
-    counts.update(tp=tp, fp=fp, fn=fn, tn=tn, unevaluable=answer_errors, scheduled=len(tests))
+    counts.update(tp=tp, fp=fp, fn=fn, tn=tn, unevaluable=answer_errors, scheduled=len(tests),
+                  answer_scheduled=answer_scheduled, non_answer_scheduled=len(tests) - answer_scheduled)
     return metrics, counts
 
 
@@ -144,7 +155,7 @@ def execute_demo(ontology_ttl: str, *, bundle_digest: str, condition: str = 'all
     packet = freeze_task(ontology_ttl, bundle_digest)
     tests = json.loads(packet.tests_json)
     # Same namespace and semantics, with the ex: prefix required by the pinned adapter.
-    questions = [{**q, 'sparql_query': q['sparql_query'].replace('demo:', 'ex:')} for q in QUESTIONS]
+    questions = QUESTIONS
     records = []
     for replicate in replicates:
         for arm in ('ABCD' if condition == 'all' else condition):
@@ -238,6 +249,208 @@ class FrozenModelTask:
                                    'evaluation_sha256': sha(self.evaluation_json)}))
 
 
+class SyntheticEvidence(StrictModel):
+    model_config = ConfigDict(extra='forbid', strict=True, str_strip_whitespace=False)
+    id: str = Field(min_length=1, max_length=200)
+    document_id: str = Field(min_length=1, max_length=200)
+    quote: str = Field(min_length=1, max_length=16000)
+    resolved: Choice[True]
+    classification: Choice['synthetic']
+    source_sha256: str = Field(pattern=r'^[a-f0-9]{64}$')
+    locator: str | None = Field(default=None, max_length=1000)
+
+
+class SyntheticQuestion(CompetencyQuestion):
+    model_config = ConfigDict(extra='forbid', strict=True, str_strip_whitespace=False)
+    expected: StrictBool
+
+
+class RegisteredTest(TestSpec):
+    origin: Choice['synthetic', 'manual'] = 'manual'
+    oracle_status: Choice['required', 'accepted'] = 'required'
+    oracle_decision_id: str | None = Field(default=None, min_length=1, max_length=200)
+    name: str | None = Field(default=None, max_length=1000)
+    rationale: str = Field(default='Frozen required competency-question oracle.', min_length=5, max_length=2000)
+
+
+class SyntheticTaskPacket(StrictModel):
+    model_config = ConfigDict(extra='forbid', strict=True, str_strip_whitespace=False)
+    schema_version: Choice[1] = 1
+    protocol_id: Choice['synthetic-task-v1'] = 'synthetic-task-v1'
+    classification: Choice['synthetic'] = 'synthetic'
+    split: Choice['development'] = 'development'
+    real_study_approved: Choice[False] = False
+    namespace: Choice['https://example.org/oe-demo/'] = NS
+    profile: Choice['rdfs'] = 'rdfs'
+    task_id: str = Field(pattern=r'^[a-z][a-z0-9_-]{0,79}$')
+    instruction: str = Field(min_length=5, max_length=4000)
+    bundle_digest: str = Field(pattern=r'^(?:sha256:)?[a-f0-9]{64}$')
+    base_ontology: str = Field(max_length=1_048_576)
+    seed_ontology: str = Field(min_length=1, max_length=1_048_576)
+    questions: list[SyntheticQuestion] = Field(min_length=1, max_length=20)
+    tests: list[RegisteredTest] = Field(min_length=1, max_length=100)
+    shapes_ttl: str = Field(max_length=100000)
+    fixtures_ttl: str = Field(max_length=100000)
+    evidence: list[SyntheticEvidence] = Field(min_length=1, max_length=20)
+    mappings: list[ApprovedMapping] = Field(default_factory=list, max_length=100)
+
+
+@dataclass(frozen=True)
+class FrozenSyntheticTask:
+    packet_json: str
+
+    def to_dict(self):
+        return json.loads(self.packet_json)
+
+    @property
+    def digest(self):
+        return 'sha256:' + sha(self.packet_json)
+
+
+def _ask_signature(query):
+    query_terms(query)
+    patterns = []
+
+    def visit(value):
+        if isinstance(value, CompValue):
+            for key, child in value.items():
+                if key == 'triples':
+                    patterns.extend(tuple(term.n3() for term in triple) for triple in child)
+                elif key != '_vars':
+                    visit(child)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                visit(child)
+    visit(prepareQuery(query).algebra)
+    return sorted(patterns)
+
+
+def _admit_synthetic_graph(text, *, fixture=False):
+    graph = parse_ttl(text)
+    canonicalize(graph)
+    profile = json.loads((Path(__file__).resolve().parents[4] / 'config/modelling-profile.json').read_text())
+    declared = {s for s, _, o in graph.triples((None, RDF.type, None))
+                if o in {RDF.Property, OWL.ObjectProperty, OWL.DatatypeProperty, OWL.AnnotationProperty}}
+    reserved = (str(RDF), str(RDFS), str(OWL), str(SH))
+    for subject, predicate, obj in graph:
+        if not str(subject).startswith(NS):
+            raise ValueError('Synthetic ontology/fixture subject outside the admitted namespace')
+        if str(predicate) not in profile['allowed_predicates'] and not (
+                not str(predicate).startswith(reserved) and (fixture or predicate in declared)):
+            raise ValueError('Synthetic packet contains a predicate outside the RDFS profile')
+        if predicate == RDF.type and (not isinstance(obj, URIRef) or
+                (str(obj).startswith(reserved) and str(obj) not in profile['allowed_declaration_types'])):
+            raise ValueError('Synthetic packet contains an unsupported declaration')
+        if predicate in {RDFS.subClassOf, RDFS.subPropertyOf, RDFS.domain, RDFS.range} and not isinstance(obj, URIRef):
+            raise ValueError('Schema relationship objects must be named IRIs')
+
+
+def _checked_synthetic_packet(packet_json):
+    if len(packet_json.encode()) > 3_145_728:
+        raise ValueError('Synthetic task packet exceeds 3 MiB')
+    packet = SyntheticTaskPacket.model_validate_json(packet_json)
+    data = packet.model_dump(exclude_none=True)
+    if not packet.instruction.strip() or not all(e.quote.strip() for e in packet.evidence):
+        raise ValueError('Synthetic instruction and evidence must not be blank')
+    for values, key in ((data['evidence'], 'id'), (data['questions'], 'id'), (data['tests'], 'test_id')):
+        if len({v[key] for v in values}) != len(values):
+            raise ValueError('Duplicate frozen input identity')
+    for text in (packet.base_ontology, packet.seed_ontology):
+        _admit_synthetic_graph(text)
+    _admit_synthetic_graph(packet.fixtures_ttl, fixture=True)
+    # Shape parsing is local; the fixed Jena profile still determines executable support.
+    shapes = parse_ttl(packet.shapes_ttl)
+    allowed_shape_predicates = {'targetClass', 'targetNode', 'targetSubjectsOf', 'targetObjectsOf', 'property', 'path',
+        'minCount', 'maxCount', 'datatype', 'class', 'nodeKind', 'minLength', 'maxLength', 'minInclusive', 'maxInclusive',
+        'minExclusive', 'maxExclusive', 'pattern', 'flags', 'name', 'description', 'message', 'severity', 'node', 'closed',
+        'ignoredProperties', 'in', 'hasValue', 'and', 'or', 'not', 'xone', 'qualifiedValueShape', 'qualifiedMinCount',
+        'qualifiedMaxCount', 'qualifiedValueShapesDisjoint', 'equals', 'disjoint', 'lessThan', 'lessThanOrEquals',
+        'uniqueLang', 'languageIn'}
+    for _, predicate, obj in shapes:
+        if predicate == RDF.type:
+            if obj not in {SH.NodeShape, SH.PropertyShape}:
+                raise ValueError('Unsupported shape declaration')
+        elif predicate not in {RDF.first, RDF.rest, RDFS.label, RDFS.comment} and str(predicate) not in {
+                str(SH) + name for name in allowed_shape_predicates}:
+            raise ValueError('Unsupported shape predicate')
+        if predicate == SH.path and not isinstance(obj, URIRef):
+            raise ValueError('Only named SHACL paths are admitted')
+    questions = {q['id']: q for q in data['questions']}
+    for question in questions.values():
+        query_terms(question['sparql_query'])
+    required = set()
+    for test in data['tests']:
+        if test['kind'] != 'shacl':
+            query_terms(test['query'], test['kind'])
+        if 'fixtures_ttl' in test:
+            _admit_synthetic_graph(test['fixtures_ttl'], fixture=True)
+        if test.get('fixture_sha256') and test['fixture_sha256'] != sha(test.get('fixtures_ttl', packet.fixtures_ttl)):
+            raise ValueError('Frozen fixture hash differs from its test oracle metadata')
+        if test['oracle_status'] == 'required':
+            question = questions.get(test['test_id'])
+            if (question is None or test['kind'] != 'ask' or test['expected'] != question['expected']
+                    or _ask_signature(test['query']) != _ask_signature(question['sparql_query'])
+                    or 'fixtures_ttl' in test):
+                raise ValueError('A required test must match its frozen question; extra tests require oracle review')
+            required.add(test['test_id'])
+        elif not test.get('oracle_decision_id'):
+            raise ValueError('Additional development tests require a recorded oracle review')
+    if required != set(questions):
+        raise ValueError('Every frozen question must retain its required test')
+    if len(canonical_json(data['tests'])) > 1_048_576:
+        raise ValueError('Frozen tests exceed the Jena input limit')
+    evidence_ids = {e['id'] for e in data['evidence']}
+    if any(set(t['evidence_ids']) - evidence_ids for t in data['tests']):
+        raise ValueError('Test evidence falls outside the frozen packet')
+    if any(set(m['evidence_ids']) - evidence_ids for m in data['mappings']):
+        raise ValueError('Mapping evidence falls outside the frozen packet')
+    if len({m['requirement_iri'] for m in data['mappings']}) != len(data['mappings']):
+        raise ValueError('Duplicate mapping requirement')
+    return data
+
+
+def freeze_synthetic_task(*, task_id, instruction, bundle_digest, base_ontology, seed_ontology,
+                          questions, tests, shapes_ttl, fixtures_ttl, evidence, mappings=None):
+    """Freeze server-verified development inputs; caller authenticates oracle decisions."""
+    data = dict(task_id=task_id, instruction=instruction, bundle_digest=bundle_digest,
+                base_ontology=base_ontology, seed_ontology=seed_ontology,
+                questions=questions, tests=tests, shapes_ttl=shapes_ttl, fixtures_ttl=fixtures_ttl,
+                evidence=evidence, mappings=[] if mappings is None else mappings)
+    checked = _checked_synthetic_packet(canonical_json(data).decode())
+    packet = FrozenSyntheticTask(canonical_json(checked).decode())
+    _synthetic_model_packet(packet, checked)  # Freeze the same model context bound before registration.
+    return packet
+
+
+def _synthetic_model_packet(packet, data):
+    agent = {'task_id': data['task_id'], 'namespace': NS, 'profile': 'rdfs', 'instruction': data['instruction'],
+             'questions': [{'id': q['id'], 'question': q['question']} for q in data['questions']],
+             'evidence': data['evidence'], 'source_bundle_digest': data['bundle_digest'],
+             'base_ontology_digest': sha(data['base_ontology']), 'seed_ontology_digest': sha(data['seed_ontology']),
+             'seed_strategy': 'registered_candidate_revision', 'task_registration_digest': packet.digest}
+    if len(canonical_json(agent)) + len(data['seed_ontology'].encode()) > 65536:
+        raise ValueError('Frozen model context exceeds 64 KiB')
+    evaluation = {'split': 'development', 'held_out_available': False, 'base_ontology': data['base_ontology'],
+                  'tests': data['tests'], 'questions': data['questions'], 'shapes_ttl': data['shapes_ttl'],
+                  'fixtures_ttl': data['fixtures_ttl'], 'mappings': data['mappings'],
+                  'task_registration_digest': packet.digest,
+                  'feedback_test_ids': [q['id'] for q in data['questions']]}
+    return FrozenModelTask(data['bundle_digest'], data['base_ontology'], data['seed_ontology'],
+                           canonical_json(agent).decode(), canonical_json(evaluation).decode())
+
+
+def execute_synthetic_task(packet, *, registration_digest, settings, condition='all', replicate_ids=None,
+                           model_client=None, maximum_repairs=2):
+    if not isinstance(packet, FrozenSyntheticTask) or packet.digest != registration_digest:
+        raise ValueError('Registered synthetic task digest mismatch')
+    data = _checked_synthetic_packet(packet.packet_json)
+    frozen = _synthetic_model_packet(packet, data)
+    return _execute_model_task(frozen, settings=settings, condition=condition, replicate_ids=replicate_ids,
+                               model_client=model_client, maximum_repairs=maximum_repairs,
+                               protocol_id='synthetic-task-v1', task_id=data['task_id'],
+                               mode='synthetic_model_task', registration_digest=packet.digest)
+
+
 def freeze_model_task(ontology_ttl: str, bundle_digest: str, *, evidence: list[dict] | None = None,
                       use_current_seed: bool = False) -> FrozenModelTask:
     """Freeze the synthetic scope only; a different study scope needs a new registered protocol.
@@ -268,7 +481,7 @@ def freeze_model_task(ontology_ttl: str, bundle_digest: str, *, evidence: list[d
         raise ValueError('Frozen model context exceeds 64 KiB')
     evaluation = {'split': 'development_demo', 'base_ontology': packet.base_ontology,
                   'tests': json.loads(packet.tests_json), 'shapes_ttl': packet.shapes,
-                  'questions': [{**q, 'sparql_query': q['sparql_query'].replace('demo:', 'ex:')} for q in QUESTIONS],
+                  'questions': QUESTIONS,
                   'held_out_available': False}
     return FrozenModelTask(bundle_digest, packet.base_ontology, seed,
                            canonical_json(agent).decode(), canonical_json(evaluation).decode())
@@ -320,9 +533,9 @@ def _evaluate(candidate, evaluation):
         return ({'status': 'error', 'cases': [], 'limitations': ['No valid frozen candidate was produced.']},
                 {'status': 'not_run', 'limitations': ['No valid frozen candidate was produced.']})
     return (_run(validate, candidate, bundle_digest=sha(candidate), shapes_ttl=evaluation['shapes_ttl'],
-                 tests=evaluation['tests']),
+                 fixtures_ttl=evaluation.get('fixtures_ttl', ''), tests=evaluation['tests']),
             _run(assess, candidate, base_ttl=evaluation['base_ontology'], bundle_digest=sha(candidate),
-                 questions=evaluation['questions']))
+                 questions=evaluation['questions'], mappings=evaluation.get('mappings', [])))
 
 
 def _model_metrics(validation, assessment, evaluation, calls):
@@ -345,6 +558,20 @@ def execute_model(ontology_ttl: str, *, bundle_digest: str, settings, condition:
     exact automated path, including call IDs. All output candidates freeze before the
     common development assessment. No held-out workload is accepted by this interface.
     """
+    packet = frozen_task or freeze_model_task(ontology_ttl, bundle_digest)
+    if packet.source_bundle_digest != bundle_digest or packet.base_ontology != canonicalize(parse_ttl(ontology_ttl)):
+        raise ValueError('Request does not match the frozen task packet')
+    expected_evaluation = freeze_model_task(ontology_ttl, bundle_digest).evaluation_json
+    if packet.evaluation_json != expected_evaluation:
+        raise ValueError('The model pilot admits only its frozen development workload; held-out inputs are evaluator-only')
+    return _execute_model_task(packet, settings=settings, condition=condition, replicate_ids=replicate_ids,
+                               model_client=model_client, maximum_repairs=maximum_repairs,
+                               protocol_id='model-pilot-v1', task_id='demo-ownership', mode='model_pilot')
+
+
+def _execute_model_task(packet, *, settings, condition, replicate_ids, model_client, maximum_repairs,
+                        protocol_id, task_id, mode, registration_digest=None):
+    """Shared A–D mechanism; public wrappers each verify their distinct frozen protocol."""
     replicates = [1] if replicate_ids is None else list(replicate_ids)
     if condition not in ('A', 'B', 'C', 'D', 'all'):
         raise ValueError('Unknown model condition')
@@ -355,13 +582,8 @@ def execute_model(ontology_ttl: str, *, bundle_digest: str, settings, condition:
         raise ValueError('At most two repair attempts are permitted')
     if not settings.model_url or not settings.model_name or not 0 < settings.model_timeout <= 120:
         raise ValueError('Configure a model and a positive timeout of at most 120 seconds')
-    packet = frozen_task or freeze_model_task(ontology_ttl, bundle_digest)
-    if packet.source_bundle_digest != bundle_digest or packet.base_ontology != canonicalize(parse_ttl(ontology_ttl)):
-        raise ValueError('Request does not match the frozen task packet')
+    bundle_digest = packet.source_bundle_digest
     evaluation = json.loads(packet.evaluation_json)
-    expected_evaluation = freeze_model_task(ontology_ttl, bundle_digest).evaluation_json
-    if packet.evaluation_json != expected_evaluation:
-        raise ValueError('The model pilot admits only its frozen development workload; held-out inputs are evaluator-only')
     client = model_client or ModelClient(settings)
     arms = list('ABCD' if condition == 'all' else condition)
     root = Path(__file__).resolve().parents[4]
@@ -385,9 +607,11 @@ def execute_model(ontology_ttl: str, *, bundle_digest: str, settings, condition:
                 if path == 'C':
                     diagnostic_started = perf_counter()
                     report = _run(validate, candidate, bundle_digest=sha(candidate),
-                                  shapes_ttl=evaluation['shapes_ttl'], tests=evaluation['tests'])
+                                  shapes_ttl=evaluation['shapes_ttl'], fixtures_ttl=evaluation.get('fixtures_ttl', ''),
+                                  tests=evaluation['tests'])
                     diagnostic_seconds = perf_counter() - diagnostic_started
-                    permitted = {t['test_id']: t for t in evaluation['tests'] if t['kind'] == 'ask'}
+                    permitted = {t['test_id']: t for t in evaluation['tests'] if t['kind'] == 'ask'
+                                 and ('feedback_test_ids' not in evaluation or t['test_id'] in evaluation['feedback_test_ids'])}
                     feedback = [{'id': case['id'], 'status': 'failed', 'expected': permitted[case['id']]['expected'],
                                  'actual': case['actual']}
                                 for case in report.get('cases', []) if case.get('id') in permitted
@@ -419,19 +643,19 @@ def execute_model(ontology_ttl: str, *, bundle_digest: str, settings, condition:
                 evaluation_status = assessment['status']
             limit = 0 if arm == 'A' else maximum_repairs
             candidate_digest = sha(candidate) if candidate is not None else None
-            record = {'id': str(uuid4()), 'batch_id': batch_id, 'protocol_id': 'model-pilot-v1',
-                      'task_id': 'demo-ownership', 'replicate': replicate, 'condition': arm, 'mode': 'model_pilot',
+            record = {'id': str(uuid4()), 'batch_id': batch_id, 'protocol_id': protocol_id,
+                      'task_id': task_id, 'replicate': replicate, 'condition': arm, 'mode': mode,
                       'created_at': datetime.now(timezone.utc).isoformat(),
                       'status': 'generation_error' if candidate is None else ('waiting_human' if arm == 'D' else evaluation_status),
                       'evaluation_status': evaluation_status, 'study_status': 'external_gates_pending',
-                      'workload_id': 'demo-ownership-v1', 'phase': 'pre_review' if arm == 'D' else 'automated',
+                      'workload_id': task_id + '-v1', 'phase': 'pre_review' if arm == 'D' else 'automated',
                       'task_packet_digest': packet.digest, 'agent_manifest': packet.agent_manifest(),
                       'source_bundle_digest': bundle_digest, 'seed_ontology_digest': sha(packet.seed_ontology),
                       'initial_candidate_digest': sha(initial) if initial is not None else None,
                       'initial_generation_call_id': initial_call['id'],
                       'candidate_digest': candidate_digest, 'candidate_ttl': candidate,
                       'evaluation_inputs': evaluation,
-                      'evaluation_manifest': {'split': 'development_demo', 'held_out_available': False,
+                      'evaluation_manifest': {'split': evaluation['split'], 'held_out_available': False,
                                               'inputs_sha256': sha(packet.evaluation_json)},
                       'model': {'provider': 'ollama', 'name': settings.model_name, 'temperature': 0,
                                 'seed': None, 'seed_missing_reason': 'provider_seed_not_requested',
@@ -455,6 +679,9 @@ def execute_model(ontology_ttl: str, *, bundle_digest: str, settings, condition:
                                       'No independent held-out evaluation or human decision has been simulated.',
                                       'Temperature zero and repeated tasks do not establish independent model samples.',
                                       'Citation validity does not establish semantic correctness.']}
+            if registration_digest:
+                record['task_registration_digest'] = registration_digest
+                record['study_status'] = 'not_authorized_synthetic_only'
             for name in (*SCORES, 'answer_precision', 'answer_recall', 'correction_seconds'):
                 record[name] = metrics[name]['value']
             records.append(_seal(record))
@@ -469,9 +696,13 @@ def append_human_review(pre_run: dict, *, reviewed_revision: dict, review: dict,
     The caller verifies artifact integrity and supplies the complete active-time ledger.
     """
     verify_record(pre_run)
-    if (pre_run.get('protocol_id') != 'model-pilot-v1' or pre_run.get('condition') != 'D'
+    if (pre_run.get('protocol_id') not in {'model-pilot-v1', 'synthetic-task-v1'} or pre_run.get('condition') != 'D'
             or pre_run.get('phase') != 'pre_review' or pre_run.get('status') != 'waiting_human'):
         raise ValueError('Only a valid waiting D pre-review run can receive a human snapshot')
+    if pre_run['protocol_id'] == 'synthetic-task-v1' and (
+            not pre_run.get('task_registration_digest') or pre_run['task_registration_digest'] !=
+            pre_run.get('evaluation_inputs', {}).get('task_registration_digest')):
+        raise ValueError('Registered task identity must remain frozen through human review')
     actor = review.get('actor', {})
     if actor.get('kind') != 'human' or not actor.get('subject') or 'approver' not in actor.get('roles', []):
         raise ValueError('A recorded authorized human review is required')

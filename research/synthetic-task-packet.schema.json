@@ -1,0 +1,564 @@
+{
+  "$defs": {
+    "ApprovedMapping": {
+      "additionalProperties": false,
+      "properties": {
+        "requirement_iri": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Requirement Iri",
+          "type": "string"
+        },
+        "ontology_iri": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Ontology Iri",
+          "type": "string"
+        },
+        "relation_type": {
+          "const": "canonical_correspondence",
+          "title": "Relation Type",
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 5,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "reviewer": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "review_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Review Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requirement_iri",
+        "ontology_iri",
+        "relation_type",
+        "rationale",
+        "evidence_ids",
+        "reviewer",
+        "review_id"
+      ],
+      "title": "ApprovedMapping",
+      "type": "object"
+    },
+    "RegisteredTest": {
+      "additionalProperties": false,
+      "properties": {
+        "test_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Test Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "ask",
+            "select_rows",
+            "shacl"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "split": {
+          "const": "development",
+          "default": "development",
+          "title": "Split",
+          "type": "string"
+        },
+        "origin": {
+          "default": "manual",
+          "enum": [
+            "synthetic",
+            "manual"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "query": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Query"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected"
+        },
+        "expected_conforms": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Conforms"
+        },
+        "expected_violations": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "maxItems": 20,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Violations"
+        },
+        "comparison": {
+          "default": "exact",
+          "enum": [
+            "exact",
+            "contains"
+          ],
+          "title": "Comparison",
+          "type": "string"
+        },
+        "fixtures_ttl": {
+          "anyOf": [
+            {
+              "maxLength": 20000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fixtures Ttl"
+        },
+        "rationale": {
+          "default": "Frozen required competency-question oracle.",
+          "maxLength": 2000,
+          "minLength": 5,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "oracle_status": {
+          "default": "required",
+          "enum": [
+            "required",
+            "accepted"
+          ],
+          "title": "Oracle Status",
+          "type": "string"
+        },
+        "scenario": {
+          "anyOf": [
+            {
+              "enum": [
+                "positive",
+                "negative",
+                "boundary",
+                "contradictory",
+                "missing_data",
+                "regression"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scenario"
+        },
+        "question_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Question Ids",
+          "type": "array"
+        },
+        "change_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Change Ids",
+          "type": "array"
+        },
+        "assumptions": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10,
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "oracle_source": {
+          "default": "Human review required",
+          "maxLength": 1000,
+          "title": "Oracle Source",
+          "type": "string"
+        },
+        "target_ontology_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Ontology Sha256"
+        },
+        "fixture_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fixture Sha256"
+        },
+        "inference_mode": {
+          "const": "rdfs",
+          "default": "rdfs",
+          "title": "Inference Mode",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "const": 10,
+          "default": 10,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "oracle_decision_id": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Oracle Decision Id"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        }
+      },
+      "required": [
+        "test_id",
+        "kind"
+      ],
+      "title": "RegisteredTest",
+      "type": "object"
+    },
+    "SyntheticEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "document_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Document Id",
+          "type": "string"
+        },
+        "quote": {
+          "maxLength": 16000,
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        },
+        "resolved": {
+          "const": true,
+          "title": "Resolved",
+          "type": "boolean"
+        },
+        "classification": {
+          "const": "synthetic",
+          "title": "Classification",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locator"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "quote",
+        "resolved",
+        "classification",
+        "source_sha256"
+      ],
+      "title": "SyntheticEvidence",
+      "type": "object"
+    },
+    "SyntheticQuestion": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 1000,
+          "minLength": 5,
+          "title": "Question",
+          "type": "string"
+        },
+        "sparql_query": {
+          "maxLength": 4000,
+          "minLength": 5,
+          "title": "Sparql Query",
+          "type": "string"
+        },
+        "expected": {
+          "title": "Expected",
+          "type": "boolean"
+        },
+        "required": {
+          "const": true,
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "question",
+        "sparql_query",
+        "expected"
+      ],
+      "title": "SyntheticQuestion",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "protocol_id": {
+      "const": "synthetic-task-v1",
+      "default": "synthetic-task-v1",
+      "title": "Protocol Id",
+      "type": "string"
+    },
+    "classification": {
+      "const": "synthetic",
+      "default": "synthetic",
+      "title": "Classification",
+      "type": "string"
+    },
+    "split": {
+      "const": "development",
+      "default": "development",
+      "title": "Split",
+      "type": "string"
+    },
+    "real_study_approved": {
+      "const": false,
+      "default": false,
+      "title": "Real Study Approved",
+      "type": "boolean"
+    },
+    "namespace": {
+      "const": "https://example.org/oe-demo/",
+      "default": "https://example.org/oe-demo/",
+      "title": "Namespace",
+      "type": "string"
+    },
+    "profile": {
+      "const": "rdfs",
+      "default": "rdfs",
+      "title": "Profile",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "instruction": {
+      "maxLength": 4000,
+      "minLength": 5,
+      "title": "Instruction",
+      "type": "string"
+    },
+    "bundle_digest": {
+      "pattern": "^(?:sha256:)?[a-f0-9]{64}$",
+      "title": "Bundle Digest",
+      "type": "string"
+    },
+    "base_ontology": {
+      "maxLength": 1048576,
+      "title": "Base Ontology",
+      "type": "string"
+    },
+    "seed_ontology": {
+      "maxLength": 1048576,
+      "minLength": 1,
+      "title": "Seed Ontology",
+      "type": "string"
+    },
+    "questions": {
+      "items": {
+        "$ref": "#/$defs/SyntheticQuestion"
+      },
+      "maxItems": 20,
+      "minItems": 1,
+      "title": "Questions",
+      "type": "array"
+    },
+    "tests": {
+      "items": {
+        "$ref": "#/$defs/RegisteredTest"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Tests",
+      "type": "array"
+    },
+    "shapes_ttl": {
+      "maxLength": 100000,
+      "title": "Shapes Ttl",
+      "type": "string"
+    },
+    "fixtures_ttl": {
+      "maxLength": 100000,
+      "title": "Fixtures Ttl",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/SyntheticEvidence"
+      },
+      "maxItems": 20,
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "mappings": {
+      "items": {
+        "$ref": "#/$defs/ApprovedMapping"
+      },
+      "maxItems": 100,
+      "title": "Mappings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "task_id",
+    "instruction",
+    "bundle_digest",
+    "base_ontology",
+    "seed_ontology",
+    "questions",
+    "tests",
+    "shapes_ttl",
+    "fixtures_ttl",
+    "evidence"
+  ],
+  "title": "SyntheticTaskPacket",
+  "type": "object"
+}

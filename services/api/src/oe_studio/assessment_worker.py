@@ -42,6 +42,7 @@ def inspect_questions(questions):
     records = []
     ids = set()
     roles = {}
+    prefixes, parsed_terms = set(), []
     for question in questions:
         if not isinstance(question, dict):
             raise Unsupported('Every question must be an object with id and sparql_query.')
@@ -60,10 +61,13 @@ def inspect_questions(questions):
         body = re.sub(r'(?im)\bPREFIX\s+[\w-]*:\s*<[^>]*>', '', query)
         if re.search(r'<[^>]+>', body):
             raise Unsupported(f'{qid}: use local ASK/SELECT with explicit ex: terms; full-IRI terms and remote clauses are unsupported.')
-        if not re.search(r'(?i)PREFIX\s+ex:\s*<' + re.escape(NAMESPACE) + r'>', query):
-            raise Unsupported(f'{qid}: ex: must bind the frozen demo namespace.')
-        if not re.search(r'\bex:[A-Za-z_][\w-]*', body):
+        domain_prefixes = [prefix for prefix, namespace in parsed.prologue.namespace_manager.namespaces()
+                           if prefix and str(namespace) == NAMESPACE]
+        if not domain_prefixes:
+            raise Unsupported(f'{qid}: a named prefix must bind the frozen demo namespace.')
+        if not any(re.search(r'\b' + re.escape(prefix) + r':[A-Za-z_][\w-]*', body) for prefix in domain_prefixes):
             raise Unsupported(f'{qid}: no supported domain vocabulary was found.')
+        prefixes.update(domain_prefixes)
         # Upstream fitness flattens every BGP and silently drops path predicates.
         # Admit only the algebra whose required terms and edges it preserves.
         domain_terms = set()
@@ -103,7 +107,7 @@ def inspect_questions(questions):
                     inspect(value)
 
         inspect(parsed.algebra)
-        if domain_terms != _extract_terms_from_sparql(query, ['ex']):
+        if domain_terms != _extract_terms_from_sparql(query, domain_prefixes):
             raise Unsupported(f'{qid}: parsed task terms differ from upstream vocabulary extraction; comments, literals or aliases cannot change the denominator.')
         # Fitness must evaluate exactly the SPARQL workload also used by vocabulary coverage.
         # Client graph_query cannot silently replace this question's query semantics.
@@ -112,7 +116,12 @@ def inspect_questions(questions):
             raise Unsupported(f'{qid}: upstream fitness skipped the question.')
         strings.append(query)
         records.append(record)
-    return strings, records, roles
+        parsed_terms.append(domain_terms)
+    # OntoCheck takes one prefix list for the batch. An alias used elsewhere
+    # must not make words in this query's literals/comments count as task terms.
+    if any(expected != _extract_terms_from_sparql(query, sorted(prefixes)) for query, expected in zip(strings, parsed_terms)):
+        raise Unsupported('Cross-question aliases change the upstream vocabulary denominator.')
+    return strings, records, roles, sorted(prefixes)
 
 
 def inspect_graph(path):
@@ -170,11 +179,11 @@ def inspect_mappings(mappings, records, roles, graph):
     return result
 
 
-def measure(path, queries, records, mappings):
+def measure(path, queries, records, mappings, prefixes):
     from ontocheck import conceptual_fitness, structural_fitness, task_based_metric_v_0_0_1
     from ontocheck.task_based_metric import _get_ontology_terms, _extract_terms_from_sparql
     vocabulary = task_based_metric_v_0_0_1(
-        path, queries, domain_prefixes=['ex'], domain_ns_fragments=[NAMESPACE], auto_derive_fragments=False,
+        path, queries, domain_prefixes=prefixes, domain_ns_fragments=[NAMESPACE], auto_derive_fragments=False,
     )
     conceptual = asdict(conceptual_fitness(path, records, mappings=mappings, authorize_prefix_mapping=False))
     structural = asdict(structural_fitness(
@@ -185,7 +194,7 @@ def measure(path, queries, records, mappings):
             or len(structural['detail']['per_query']) != len(records)):
         raise Unsupported('Upstream fitness silently skipped a required development question.')
     ontology_terms, _ = _get_ontology_terms([path], [NAMESPACE])
-    task_terms = set().union(*(_extract_terms_from_sparql(query, ['ex']) for query in queries))
+    task_terms = set().union(*(_extract_terms_from_sparql(query, prefixes) for query in queries))
     return {'vocabulary': vocabulary, 'conceptual': conceptual, 'structural': structural,
             'term_sets': {'task': sorted(task_terms), 'ontology': sorted(ontology_terms),
                           'intersection': sorted(task_terms & ontology_terms)}}
@@ -213,7 +222,7 @@ def run(payload, folder):
     direct = json.loads(metadata.distribution('ontocheck').read_text('direct_url.json') or '{}')
     if direct.get('vcs_info', {}).get('commit_id') != COMMIT:
         raise RuntimeError('OntoCheck must be installed from the exact reviewed Git commit.')
-    query_strings, records, roles = inspect_questions(payload['questions'])
+    query_strings, records, roles, prefixes = inspect_questions(payload['questions'])
     mappings = payload.get('mappings', [])
     mapping_dict = {item['requirement_iri']: item['ontology_iri'] for item in mappings}
     mapping_hash = hashlib.sha256(json.dumps(
@@ -225,7 +234,7 @@ def run(payload, folder):
         'python': sys.version.split()[0],
         'resources': {'nltk_english_stopwords_sha256': STOPWORDS_SHA256},
         'packages': {name: metadata.version(name) for name in ('ontocheck', 'rdflib', 'networkx', 'nltk')},
-        'configuration': {'domain_prefixes': ['ex'], 'domain_ns_fragments': [NAMESPACE],
+        'configuration': {'domain_prefixes': prefixes, 'domain_ns_fragments': [NAMESPACE],
                           'authorize_prefix_mapping': False, 'mappings': mapping_dict,
                           'mappings_sha256': mapping_hash, 'weighting': 'canonical',
                           'max_hops': 8, 'lam': math.log(2)},
@@ -237,7 +246,7 @@ def run(payload, folder):
         path.write_text(content, encoding='utf-8')
         graph = inspect_graph(path)
         report['mapping_diagnostics'][label] = inspect_mappings(mappings, records, roles, graph)
-        raw = measure(path, query_strings, records, mapping_dict)
+        raw = measure(path, query_strings, records, mapping_dict, prefixes)
         raw['ontology_sha256'] = hashlib.sha256(content.encode()).hexdigest()
         raw['mappings_sha256'] = mapping_hash
         report['raw'][label] = raw

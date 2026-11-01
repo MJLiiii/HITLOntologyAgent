@@ -1,0 +1,30 @@
+# Candidate-derived development tests
+
+Task 7 now uses the candidate, frozen questions, changes, shapes, fixtures and resolved evidence to generate constrained development specs. It replaces the four fixed ownership examples. The mode is explicitly `deterministic_candidate_derived`; it does not call a language model or claim that a model has discovered valid domain expectations.
+
+`generate_suite(candidate_ttl, shapes_ttl, fixtures_ttl, questions, changes, evidence, bundle_digest)` returns tests, generator identity, a frozen input manifest and coverage gaps. The server loads verified revision artifacts. The manifest preserves the received bundle digest and hashes candidate/shape/fixture bytes, question and evidence packets, and content-addressed change operations. Each test includes target and fixture hashes, scenario, associated question/change IDs, rationale, assumptions, oracle source, fixed RDFS mode and a fixed ten-second query timeout. Evidence references are review context, not an automated source-support judgement.
+
+Supported generation is deliberately finite:
+
+| Input | Generated check |
+| --- | --- |
+| Frozen competency question | Same ASK and expected boolean as a regression case; candidate outcomes never redefine it |
+| Candidate subclass/subproperty/domain/range axiom | Fresh named-instance fixture and its RDFS entailment expectation; changed schema relationships receive priority |
+| Named `sh:NodeShape`, one named `sh:targetClass`, one to five simple property paths | A conforming fixture plus applicable missing-data, absent-relation, boundary and explicit incompatible-value cases |
+| `sh:minCount`/`sh:maxCount` | Counts from zero to three; test a stated maximum and one value beyond it, or multiple values when no maximum is declared |
+| `sh:nodeKind sh:IRI`/`sh:Literal`, supported datatype | Explicit incompatible node kind/datatype, with exact expected violation signatures |
+| Added literal triple present in candidate | SELECT `contains` oracle preserving exact lexical text, datatype and language tag |
+
+Datatype templates support string, integer, decimal and boolean. Fixture values are distinct. Boolean constraints requiring three distinct valid values are unsupported, rather than producing an impossible boundary case. Anonymous property shapes are supported only when their descriptions are leaves containing named/literal objects. Nested/path/list/class/value/regex/numeric-range/qualified constraints and non-violation severities remain visible coverage gaps. Arbitrary shape combinations can interact through the candidate's RDFS closure; generated expectations still require review and execution. Passing these checks does not establish exhaustive constraint coverage or semantic correctness.
+
+Generation is bounded to 40 cases and 800,000 serialized test bytes; individual generated fixtures are at most 20,000 UTF-8 bytes. The input limits are one MiB candidate, 100,000 bytes each for shapes/global fixtures, 20 development questions, 20 resolved evidence records and 100 change operations. Exceeding a supported generation bound is explicit; the generator never silently claims complete coverage. Required sentinels stay outside its editing power. Acceptance additionally respects the runner's total 100-case limit.
+
+The generator parses question algebra and admits local basic ASK/SELECT patterns with named predicates. It rejects dataset loading, SERVICE, updates, paths, functions and unsupported query forms. Actual Jena independently parses and checks every case under the fixed runner profile. Test specs cannot add imports, rules, Python, executable commands or process settings. Fixture IRIs use a deterministic fresh namespace tied to the input manifest and are checked for collisions with frozen inputs.
+
+SHACL expected failures compare the full normalized `(focusNode, path, sourceShape, severity)` multiset. This prevents an unrelated violation from satisfying a missing-data oracle. Named source shapes retain their IRI. For anonymous leaf shapes, both Python and Jena compute `urn:oe:shacl-leaf:sha256:…` from sorted statements: five length-prefixed UTF-8 fields encode predicate, object kind, lexical/IRI value, datatype and language; hexadecimal rows are sorted and hashed with newline delimiters. This is a fingerprint of the leaf description, not general RDF blank-node canonicalization. Complex anonymous shapes retain their raw IDs and are not used as generated exact-signature oracles. Raw SHACL RDF reports remain retained.
+
+Every generated test initially needs human oracle review. A temporary test harness can execute it to verify code, but that execution does not approve its domain expectation. The existing API decision binds the suite digest, creates an immutable successor, retains the original revision and fixed sentinels, and requires fresh checks. Only synthetic temporary stores were used to test that path; no application data, real expert decisions or study approval were created.
+
+Verification covers candidate-dependent cases, language literals, frozen false expectations, malformed/remote queries, held-out denial, evidence resolution, schema bounds and visible unsupported coverage. Real confined Jena tests execute all six scenario families, named/anonymous source-shape identities, typed literal boundaries and the accepted synthetic successor. Mutations removing an RDFS inference axiom or weakening a required shape produce failed cases. The development fixture under `research/development-tests/candidate-derived-v1/` retains generated specs and raw engine results as engineering evidence only.
+
+The final focused verification ran 27 tests successfully (52 unrelated tests deselected); Ruff passed. The retained fixture has 12 matching cases. Main and fresh-source Maven builds both produced JAR SHA-256 `6a6e7e3ed45f98607d20b935e1c6f15b973f6dcde5504eff1d4bc284a5abda53`. This is byte-reproduction evidence for the pinned cached environment, not a claim that external dependency acquisition was repeated.

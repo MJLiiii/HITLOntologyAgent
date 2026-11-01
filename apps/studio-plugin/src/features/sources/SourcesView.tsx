@@ -5,6 +5,7 @@ import { Badge, date, Empty, ErrorNotice, PanelHeading, short } from '../../comp
 import { Icon } from '../../components/Icons';
 import { ScopePanel } from './ScopePanel';
 import { SeedImportPanel } from './SeedImportPanel';
+import { TrustGraphPanel } from './TrustGraphPanel';
 export function SourceCard({source, onIngest, busy}: {source: SourceDocument; onIngest: (source: SourceDocument) => void; busy: boolean}) {
   const statusText: Record<string,string> = {uploaded: 'Uploaded · not yet processed', queued: 'Queued for processing', processing: 'Processing source', complete: 'Ready for retrieval', failed: 'Processing failed', incomplete: 'Extraction incomplete'};
   return <article className="source-card"><div className="source-card-top"><div className="source-file-icon"><Icon name="file" size={24}/></div><div><h3>{source.title}</h3><p>{source.edition || 'Unspecified edition'} · {source.classification}</p></div><Badge status={source.status}>{statusText[source.status] || source.status}</Badge></div><div className="source-card-meta"><span><Icon name="clock" size={14}/>{date(source.created_at)}</span><span>{source.chunk_count ?? 0} source chunks</span>{source.content_hash && <code title={source.content_hash}>{short(source.content_hash)}</code>}</div>{source.extraction?.diagnostics?.map((reason, i) => <p className="error-text" key={i}>{reason}</p>)}{source.error && <p className="error-text">{source.error}</p>}{source.text && <details className="source-preview"><summary>Preview source text</summary><p>{source.text}</p></details>}{['uploaded','failed','incomplete'].includes(source.status) && <button className="button button-secondary small" disabled={busy} onClick={() => onIngest(source)}><Icon name="refresh" size={14}/>Process source</button>}</article>;
@@ -44,6 +45,7 @@ export function SourcesView({project, session, sources, onRefresh, onOpenProposa
     {busy && <div role="status" className="inline-loading"><span className="spinner"/>{stage || 'Updating workspace'}…</div>}
     {sources.length ? <div className="source-grid">{sources.map(source => <SourceCard key={source.id} source={source} onIngest={s => void ingest(s)} busy={busy}/>)}</div> : <Empty icon="sources" title="Give your ontology a source">Upload a public or synthetic document, then process it to resolve evidence.</Empty>}
     <div className="panel corpus-panel"><div><div className="card-eyebrow">CURRENT CORPUS SNAPSHOT</div><h3><Icon name="branch" size={17}/><code>{short(project.corpus_snapshot_id)}</code></h3><p>Snapshots freeze the exact source editions behind a proposal. A new snapshot leaves previous evidence intact.</p></div><button className="button button-secondary" disabled={busy || !sources.some(s => s.status === 'complete' && s.ingestion_run_id)} onClick={() => void freeze()}>Freeze corpus snapshot</button></div>
+    <TrustGraphPanel key={project.id} projectId={project.id} sources={sources} onRefresh={onRefresh}/>
     <SeedImportPanel project={project} session={session} onRefresh={onRefresh} onOpenProposal={onOpenProposal}/>
   </div>;
 }

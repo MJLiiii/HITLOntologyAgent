@@ -12,8 +12,7 @@ def engine_readiness(configuration_digest, time_bucket, assessment_python):
     from .demo import ONTOLOGY, SHAPES, FIXTURES, TESTS, QUESTIONS
     probe_digest = digest({"purpose": "readiness", "configuration": configuration_digest})
     validation = validate(ONTOLOGY, bundle_digest=probe_digest, shapes_ttl=SHAPES, fixtures_ttl=FIXTURES, tests=TESTS)
-    questions = [{**q, "sparql_query": q["sparql_query"].replace("demo:", "ex:")} for q in QUESTIONS]
-    assessment = assess(ONTOLOGY, bundle_digest=probe_digest, questions=questions)
+    assessment = assess(ONTOLOGY, bundle_digest=probe_digest, questions=QUESTIONS)
     return {"jena": "available" if validation["status"] == "passed" else validation["status"],
             "ontocheck": "available" if assessment["status"] == "completed" else assessment["status"]}
 

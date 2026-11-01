@@ -63,4 +63,4 @@ docker compose --env-file infra/portal/runtime/.env -f infra/portal/compose.yaml
 - Synthetic native GraphRAG/OntologyRAG and exact source/chunk/subgraph provenance are now exercised in the pipeline overlay. Global completion, PDF/page lineage and approved immutable corpus activation remain open; upload acknowledgement alone does not prove completion.
 - Unresolved-provenance and cross-workspace denial tests in that complete dataflow.
 - Shared deployment workspace/actor mapping; the application remains explicitly local-only.
-- Native editor/service mutation versus Studio publication-head boundary under the complete dataflow. The observed native-credential/session separation is narrower evidence and is not substituted for those tests.
+- The real native ontology editor mutation now has [candidate-store/canonical-release invariance evidence](native-editor-boundary.md), including a populated disposable approved ref and actual native-JWT publication denial. OS publisher isolation, shared identity, and arbitrary native/dataflow feature coverage remain open.
