@@ -1,0 +1,92 @@
+{
+  "profiles": [
+    {
+      "id": "go-glm-flash",
+      "provider": "opencode_go",
+      "model": "glm-5.3-flash",
+      "base_url": "https://opencode.ai/inference/go/openai/v1",
+      "api_key_env": "OPENCODE_API_KEY",
+      "purposes": [
+        "chat",
+        "proposal",
+        "repair",
+        "experiment",
+        "extraction"
+      ],
+      "timeout": 120.0,
+      "max_output_tokens": 4096,
+      "temperature": 0.0,
+      "structured_output": "json_schema",
+      "max_response_bytes": 1048576
+    },
+    {
+      "id": "go-kimi-code",
+      "provider": "opencode_go",
+      "model": "kimi-k2.7-code",
+      "base_url": "https://opencode.ai/inference/go/openai/v1",
+      "api_key_env": "OPENCODE_API_KEY",
+      "purposes": [
+        "chat",
+        "proposal",
+        "repair",
+        "experiment",
+        "extraction"
+      ],
+      "timeout": 120.0,
+      "max_output_tokens": 4096,
+      "temperature": null,
+      "structured_output": "json_schema",
+      "max_response_bytes": 1048576
+    },
+    {
+      "id": "go-beam-free",
+      "provider": "opencode_go",
+      "model": "beam-free",
+      "base_url": "https://opencode.ai/inference/go/openai/v1",
+      "api_key_env": "OPENCODE_API_KEY",
+      "purposes": [
+        "chat",
+        "proposal",
+        "repair",
+        "experiment",
+        "extraction"
+      ],
+      "timeout": 120.0,
+      "max_output_tokens": 4096,
+      "temperature": 0.0,
+      "structured_output": "json_schema",
+      "max_response_bytes": 1048576
+    },
+    {
+      "id": "go-iceman-free",
+      "provider": "opencode_go",
+      "model": "iceman-contributor-free",
+      "base_url": "https://opencode.ai/inference/go/openai/v1",
+      "api_key_env": "OPENCODE_API_KEY",
+      "purposes": [
+        "chat",
+        "proposal",
+        "repair",
+        "experiment",
+        "extraction"
+      ],
+      "timeout": 120.0,
+      "max_output_tokens": 4096,
+      "temperature": 0.0,
+      "structured_output": "prompt_json",
+      "max_response_bytes": 1048576
+    }
+  ],
+  "projects": {
+    "synthetic-smoke": [
+      "go-glm-flash",
+      "go-kimi-code",
+      "go-beam-free",
+      "go-iceman-free"
+    ],
+    "REPLACE_WITH_PROJECT_ID": [
+      "go-glm-flash",
+      "go-kimi-code"
+    ]
+  }
+}
