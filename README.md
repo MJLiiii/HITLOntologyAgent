@@ -19,6 +19,8 @@ Open the local session URL printed in the terminal by `make demo`. It points to 
 
 For development, run `make dev-api` and `make dev-ui` in separate terminals. The Vite frontend proxies `/api` to the loopback backend. Optional `OE_MODEL_URL`, `OE_MODEL_NAME` and `OE_MODEL_API_KEY` configure model generation; empty model settings keep the clearly labelled deterministic fallback. Model output cannot authorize publication.
 
+Server-owned, project-allowlisted profiles also support OpenAI, Claude, Ollama, OpenAI-compatible gateways, a LiteLLM proxy and OpenCode Go through a shared SDK runtime. API requests can select an authorized profile; queued jobs retain its frozen non-secret configuration. See [multi-LLM configuration and bounded comparison](docs/multi-llm.md). The website keeps its existing workflow.
+
 The optional model adapter uses the Ollama-compatible `/api/chat` protocol. Set `OE_MODEL_URL` to the server base URL, for example `http://127.0.0.1:11434`, and `OE_MODEL_NAME` to an already installed model's exact identifier; the adapter appends `/api/chat`. An optional API key is sent server-side only. Model setup/download is separate from `make setup`.
 
 On Apple Silicon, the bundled setup pins and verifies Ollama 0.40.13 and Qwen3 1.7B from official sources, storing the runtime and model under `.runtime/`:

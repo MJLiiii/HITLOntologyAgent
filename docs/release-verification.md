@@ -1,5 +1,7 @@
 # Local release verification — 1 November 2026
 
+The subsequent multi-LLM increment is documented in [multi-LLM verification](multi-llm-verification.md). The counts and artifacts below describe the earlier release snapshots.
+
 This record covers the local synthetic application. The user confirmed on 1 November that no real study is approved. No recruitment, real source collection, study approval, expert observation or confirmatory result is claimed.
 
 ## Generated contracts and export verification
