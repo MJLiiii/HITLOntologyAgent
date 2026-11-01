@@ -1,0 +1,32 @@
+_defaults: &defaults
+  pubsub_backend: rabbitmq
+  rabbitmq_host: rabbitmq
+  cassandra_host: cassandra
+  cassandra_replication_factor: 1
+  log_level: INFO
+
+processors:
+  - class: trustgraph.config.service.Processor
+    params:
+      <<: *defaults
+      id: config-svc
+  - class: trustgraph.iam.service.Processor
+    params:
+      <<: *defaults
+      id: iam-svc
+  - class: trustgraph.flow.service.Processor
+    params:
+      <<: *defaults
+      id: flow-svc
+  - class: trustgraph.bootstrap.bootstrapper.Processor
+    params:
+      <<: *defaults
+      id: bootstrap
+      initialisers:
+        - class: trustgraph.bootstrap.initialisers.WorkspaceInit
+          name: smoke-workspace
+          flag: v1
+          params:
+            workspace: default
+            source: seed-file
+            seed_file: /smoke/seed.json

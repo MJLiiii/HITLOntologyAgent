@@ -1,0 +1,18 @@
+{
+  "title": "Ontology Engineering",
+  "description": "Source-grounded ontology work with explicit human approval",
+  "tab": "ontology-engineering",
+  "navLabel": "Ontology Studio",
+  "navIcon": "◇",
+  "components": [
+    {
+      "id": "ontology-studio",
+      "title": "Ontology Studio",
+      "icon": "◇",
+      "paletteKey": "cyan",
+      "description": "Local synthetic ontology chat, review and experiments",
+      "url": "/plugins/ontology-studio.iife.js",
+      "globalName": "OntologyStudioPlugin"
+    }
+  ]
+}

@@ -1,0 +1,451 @@
+{
+  "schema_version": "2.0",
+  "suite_id": "jena-rdfs-compat-v1",
+  "domain": "synthetic-engine-conformance",
+  "context": {
+    "ontology_version": "synthetic-v1",
+    "ontology_commit": "sha256:6c2803f3474f50863956325fc345bc96abca01dd2d3f559741a8a4d0cabeb583",
+    "data_version": "engineering-known-answer-v1",
+    "data_commit": "not-a-study-or-git-commit; see manifest.json",
+    "metric_version": "ontocheck-69d42e38979f381fe531ae547fcc49b8ad58ef15"
+  },
+  "namespaces": {
+    "ex": "https://example.org/oe-compat/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "inference": {
+    "profile": "jena_rdfs_simple"
+  },
+  "cases": [
+    {
+      "id": "subclass-transitivity",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: subclass-transitivity",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "subclass-transitivity",
+            "query": "ASK { ex:CriticalService rdfs:subClassOf ex:Asset }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "subclass-transitivity": "entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "rdfs11",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    },
+    {
+      "id": "inherited-instance-type",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: inherited-instance-type",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "inherited-instance-type",
+            "query": "ASK { ex:Payroll a ex:Asset }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "inherited-instance-type": "entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "rdfs9",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    },
+    {
+      "id": "subproperty-transitivity",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: subproperty-transitivity",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "subproperty-transitivity",
+            "query": "ASK { ex:operatedBy rdfs:subPropertyOf ex:ownedBy }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "subproperty-transitivity": "entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "rdfs5",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    },
+    {
+      "id": "inherited-property-assertion",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: inherited-property-assertion",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "inherited-property-assertion",
+            "query": "ASK { ex:Payroll ex:ownedBy ex:Operations }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "inherited-property-assertion": "entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "rdfs7",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    },
+    {
+      "id": "property-domain",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: property-domain",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "property-domain",
+            "query": "ASK { ex:Inventory a ex:Asset }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "property-domain": "entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "rdfs2",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    },
+    {
+      "id": "property-range",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: property-range",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "property-range",
+            "query": "ASK { ex:Warehouse a ex:Owner }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "property-range": "entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "rdfs3",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    },
+    {
+      "id": "range-after-subproperty",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: range-after-subproperty",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "range-after-subproperty",
+            "query": "ASK { ex:Operations a ex:Owner }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "range-after-subproperty": "entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "rdfs7+rdfs3",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    },
+    {
+      "id": "no-inverse-assertion",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: no-inverse-assertion",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "no-inverse-assertion",
+            "query": "ASK { ex:Operations ex:ownedBy ex:Payroll }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "no-inverse-assertion": "not_entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "No inverse rule exists in RDFS",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    },
+    {
+      "id": "no-narrower-type",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: no-narrower-type",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "no-narrower-type",
+            "query": "ASK { ex:Operations a ex:Team }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "no-narrower-type": "not_entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "Superclass membership does not imply subclass membership",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    },
+    {
+      "id": "no-owner-domain-confusion",
+      "family_id": "rdfs-known-answer-conformance",
+      "level": "constrained_generation",
+      "task_type": "constrained_plan",
+      "prompt": "Check the frozen RDFS entailment expectation: no-owner-domain-confusion",
+      "query": {
+        "language": "sparql_constraints",
+        "checks": [
+          {
+            "id": "no-owner-domain-confusion",
+            "query": "ASK { ex:Inventory a ex:Owner }"
+          }
+        ]
+      },
+      "expected": {
+        "kind": "constraint_checks",
+        "values": {
+          "no-owner-domain-confusion": "not_entailed"
+        }
+      },
+      "scoring": {
+        "answer_weight": 0.0,
+        "evidence_weight": 0.0,
+        "constraint_weight": 1.0
+      },
+      "assumptions": [
+        "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+      ],
+      "constraints": [
+        "Domain and range have distinct subjects",
+        "not_entailed denotes absence from this closure, not an assertion of logical negation."
+      ],
+      "provenance": {
+        "sources": [
+          "https://www.w3.org/TR/rdf11-mt/#patterns-of-rdfs-entailment"
+        ],
+        "curator": "Project-authored engineering fixture; not an expert-reviewed domain benchmark",
+        "reviewers": []
+      },
+      "split": "development",
+      "leakage_group": "public-engine-conformance-v1"
+    }
+  ]
+}

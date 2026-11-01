@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "runtime": {
+    "name": "ollama", "version": "0.40.13", "platform": "darwin-arm64",
+    "url": "https://github.com/ollama/ollama/releases/download/v0.40.13/ollama-darwin.tgz",
+    "sha256": "bae29252232b9e1358cf5801a7d65a07442af18fb5467cb68c7fc3711f59c511"
+  },
+  "model": {
+    "name": "qwen3:1.7b", "license": "Apache-2.0",
+    "manifest_url": "https://registry.ollama.ai/v2/library/qwen3/manifests/1.7b",
+    "manifest_sha256": "8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7",
+    "blob_base_url": "https://registry.ollama.ai/v2/library/qwen3/blobs/",
+    "total_model_bytes": 1359293444
+  }
+}

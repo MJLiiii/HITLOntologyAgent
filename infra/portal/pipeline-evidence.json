@@ -1,0 +1,100 @@
+{
+  "recorded_at": "2026-11-01",
+  "scope": "Synthetic engineering pipeline only; no real study approved",
+  "runtime": "TrustGraph2.11.1 unchanged pinned source/image; separate bounded Ollama extension",
+  "inputs": {
+    "source_byte_length": 98,
+    "source_sha256": "59f0eaa2db6f30b65c480dc75a76de7b570f262ed24c629842f7ed279703ddf8",
+    "seed_ontology_elements": 3
+  },
+  "flows": {
+    "oe-graph-v4": {
+      "stored_chunks": 1,
+      "extracted_statement_count": 4,
+      "response": "The team that owns the Atlas service is the Platform team.",
+      "sources": [
+        {
+          "uri": "urn:oe:synthetic:oe-graph-v4:ownership-v4",
+          "title": "Synthetic Atlas ownership"
+        }
+      ],
+      "retrieval_trace_rows": 46,
+      "known_answer_correct": true
+    },
+    "oe-ontology-v4": {
+      "stored_chunks": 1,
+      "extracted_statement_count": 8,
+      "response": "The team that owns the Atlas service is not directly specified in the provided knowledge statements. However, if we infer based on the relationships, the ownership information is linked to a synthetic atlas ownership, which is a label associated with the service. Without explicit information linking a team to the synthetic atlas ownership, we cannot definitively determine the owning team.",
+      "sources": [
+        {
+          "uri": "urn:oe:synthetic:oe-ontology-v4:ownership-v4",
+          "title": "Synthetic Atlas ownership"
+        }
+      ],
+      "retrieval_trace_rows": 50,
+      "known_answer_correct": false
+    }
+  },
+  "bounded_snapshot_verified": true,
+  "global_ingestion_completion_supported": false,
+  "studio_provider_activated": false,
+  "known_limitations": [
+    "Ontology RAG returned a citation but did not identify the known Platform answer",
+    "Librarian has no terminal processing state",
+    "Seed diagnostic hash was observed after ingestion, not an approved pre-ingestion Studio binding",
+    "No shared identity/remote immutable corpus contract"
+  ],
+  "artifacts": {
+    "research/results/trustgraph-pipeline/run-20261101-v4/frozen-packet.json": {
+      "sha256": "cdb686edd41089e5d15c0ed26ffb5e3e4adf94399b34ad742c1358d6a27de325",
+      "bytes": 970
+    },
+    "research/results/trustgraph-pipeline/run-20261101-v4/flow-config.json": {
+      "sha256": "bfc49e67010fcb941bf39023b1bdb7dd29cb13fa05b0109067977e54e7a3aa5b",
+      "bytes": 95641
+    },
+    "research/results/trustgraph-pipeline/run-20261101-v4/pipeline-pins.json": {
+      "sha256": "d10fa4596363dd86e92d61b31b0d777388e7db7cc8bc24267f7966768bb53e06",
+      "bytes": 1072
+    },
+    "research/results/trustgraph-pipeline/run-20261101-v4/observations.json": {
+      "sha256": "4ae611a969738ceac2fea3aa7582b0d7a18d43824405b99dcd22f6f8797c1dfe",
+      "bytes": 131145
+    },
+    "research/results/trustgraph-pipeline/run-20261101-v4/retrieval.json": {
+      "sha256": "9890d4b1c6e8d28459e89cd65ba311b4ac66c897fec561066635826cc5f1078a",
+      "bytes": 43615
+    },
+    "research/results/trustgraph-pipeline/run-20261101-v4/reconciliation.json": {
+      "sha256": "8785df8fa2f7cb5dfd0eaed0b43e94a7bcf1e6e0473ee5a6b0a82a1463a683a4",
+      "bytes": 6050
+    },
+    "research/results/trustgraph-pipeline/run-20261101-v4/adapter.json": {
+      "sha256": "11fa72fa79ccdc95686b4467688ec08f7b33a5b0c7900991aace77a7e5cdfe1e",
+      "bytes": 9394
+    },
+    "infra/portal/bounded_ollama.py": {
+      "sha256": "b61f047adf0ddb91094387e614370555ac9f9a937f12e8d509bd5a1c5bc267dd",
+      "bytes": 1012
+    },
+    "infra/portal/bounded_ollama_client.py": {
+      "sha256": "fff73187dd3a5f5ee12fef21ba249441dd4ce3f081daea12fb658f0638549fce",
+      "bytes": 960
+    },
+    "infra/portal/pipeline.compose.yaml": {
+      "sha256": "3f4fb1b94b84c3b03aca1e1de698fa3366ef5cbf11d4fa9c06dd812a1980ace4",
+      "bytes": 1334
+    },
+    "infra/portal/pipeline-pins.json": {
+      "sha256": "d10fa4596363dd86e92d61b31b0d777388e7db7cc8bc24267f7966768bb53e06",
+      "bytes": 1072
+    }
+  },
+  "failed_attempts": {
+    "v1": "Ontology JSONL parsed zero content triples; GraphRAG succeeded",
+    "v2": "Structured generation exceeded observation budget; synthetic ontology flow stopped",
+    "v3": "512-token cap consumed in reasoning, empty response and JSON parse failure",
+    "v4": "Explicit think=False provider fixed extraction/provenance; ontology answer quality still failed"
+  },
+  "focused_contract_verification": "23 passed,1 opt-in live probe skipped; real adapter smoke separately exercised"
+}

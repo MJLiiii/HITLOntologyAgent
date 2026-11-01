@@ -1,0 +1,57 @@
+name: oe-portal-smoke
+services:
+  rabbitmq:
+    image: rabbitmq@sha256:bf215c927c885b6d28bc52e02b0f2e1c033f2b439ec946c643834be93312ec4d
+    environment:
+      RABBITMQ_DEFAULT_USER: oe_portal
+      RABBITMQ_DEFAULT_PASS: ${OE_PORTAL_BUS_PASSWORD:?Run prepare_runtime.py}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    mem_limit: 768m
+  cassandra:
+    image: cassandra@sha256:259578bbeac315a7326c2a99e60eab86f3415e9e895207bf2a032af4de8c16b5
+    environment:
+      MAX_HEAP_SIZE: 1024M
+      HEAP_NEWSIZE: 256M
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'SELECT release_version FROM system.local' >/dev/null"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+    mem_limit: 2g
+  control:
+    image: trustgraph/trustgraph-flow@sha256:29ab8fbb59fcb05318dc9208d946d4a1b2b74e6863099b9f752fc72ffc52bc0e
+    command: ["processor-group", "-c", "/smoke/control.yaml"]
+    environment: &backend_environment
+      PUBSUB_BACKEND: rabbitmq
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USERNAME: oe_portal
+      RABBITMQ_PASSWORD: ${OE_PORTAL_BUS_PASSWORD:?Run prepare_runtime.py}
+      IAM_BOOTSTRAP_MODE: token
+      IAM_BOOTSTRAP_TOKEN: ${OE_PORTAL_BOOTSTRAP_TOKEN:?Run prepare_runtime.py}
+    volumes:
+      - ./control.yaml:/smoke/control.yaml:ro
+      - ./seed.json:/smoke/seed.json:ro
+    depends_on:
+      rabbitmq: {condition: service_healthy}
+      cassandra: {condition: service_healthy}
+    mem_limit: 1g
+  gateway:
+    image: trustgraph/trustgraph-flow@sha256:29ab8fbb59fcb05318dc9208d946d4a1b2b74e6863099b9f752fc72ffc52bc0e
+    command: ["api-gateway", "--pubsub-backend", "rabbitmq", "--port", "8888", "--timeout", "30"]
+    environment: *backend_environment
+    depends_on:
+      control: {condition: service_started}
+    ports:
+      - "127.0.0.1:18888:8888"
+    mem_limit: 768m
+volumes:
+  rabbitmq_data:
+  cassandra_data:

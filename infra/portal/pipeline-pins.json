@@ -1,0 +1,22 @@
+{
+  "deployment_template_repository": "https://github.com/trustgraph-ai/trustgraph-templates",
+  "commit": "5c9853804b2c3aaa30db913cd8c0751b65a3d722",
+  "archive_sha256": "c23565987bb74adab379bea6b829e22c5c6837606937c9cf9224ff81e5ff9698",
+  "engine": "gojsonnet==0.21.0",
+  "images": [
+    "trustgraph/trustgraph-flow@sha256:29ab8fbb59fcb05318dc9208d946d4a1b2b74e6863099b9f752fc72ffc52bc0e",
+    "qdrant/qdrant@sha256:f1c7272cdac52b38c1a0e89313922d940ba50afd90d593a1605dbbc214e66ffb",
+    "dxflrs/garage@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690"
+  ],
+  "embedding_model": "all-minilm:latest",
+  "embedding_manifest_sha256": "1b226e2802dbb772b5fc32a58f103ca1804ef7501331012de126ab22f67475ef",
+  "bounded_generation_model": {
+    "name": "oe-qwen3-smoke:1.7b",
+    "from": "qwen3:1.7b",
+    "num_predict": 512,
+    "num_ctx": 4096,
+    "temperature": 0,
+    "digest": "84c467420f6d51cae7ca58914d67196eaa658b26d90b8af6705b7192b3947002"
+  },
+  "scope": "Synthetic engineering smoke; no study approved; completion is not supplied by librarian"
+}

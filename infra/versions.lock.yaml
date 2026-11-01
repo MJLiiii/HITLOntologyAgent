@@ -1,0 +1,168 @@
+{
+  "recorded_at": "2026-11-01",
+  "verification_scope": "Local source-grounded Studio with real isolated Jena/OntoCheck/PDF, actual local model chat, pinned TrustGraph host and bounded synthetic pipeline, clean cached reproduction and PostgreSQL recovery; generic remote corpus activation and real study remain gated",
+  "runtime": {
+    "python": "3.12.14",
+    "java": "OpenJDK Homebrew 21.0.13.0.3",
+    "maven": "3.10.0",
+    "node": "26.13.0",
+    "uv": "0.13.6"
+  },
+  "jena": {
+    "version": "6.2.0",
+    "license": "Apache-2.0",
+    "runner_version": "0.1.0",
+    "profile": "rdfs",
+    "artifacts": [
+      {
+        "artifact": "org.apache.jena:jena-arq:6.2.0",
+        "sha256": "154ec73b3a5a2b1e1a664d563b39d1674855c79553dd0da1a030de8128ee118e"
+      },
+      {
+        "artifact": "org.apache.jena:jena-base:6.2.0",
+        "sha256": "2c5c9ed7f5c4ad1c976abbf5b002710f5b8f31bd4270fca2699b5d891af1273c"
+      },
+      {
+        "artifact": "org.apache.jena:jena-core:6.2.0",
+        "sha256": "697bd31b75b4c95bbfa3f73103fc54aea7452de69da099c50124f202f447b1aa"
+      },
+      {
+        "artifact": "org.apache.jena:jena-iri3986:6.2.0",
+        "sha256": "8f9b2ec3f0de18bc40f416f62f99e9e818b187674490f82999e3168beec4da7e"
+      },
+      {
+        "artifact": "org.apache.jena:jena-langtag:6.2.0",
+        "sha256": "54d3066af347853d48fddb5aac9f26ce79d71263b21271abf78464e6f01932e3"
+      },
+      {
+        "artifact": "org.apache.jena:jena-shacl:6.2.0",
+        "sha256": "4ca38c60f3c4f0473368d51e01977ac8d1d257ba8c0eb493dcfac855b620d904"
+      }
+    ],
+    "runner_jar_sha256": "572fd5730cea46f9bab467b61684c4675dfc15f6cccf041076864ef21c013bf3",
+    "source": "services/jena-runner/pom.xml",
+    "packaging": "Fixed UTC output timestamp, forced fresh unshaded input, retained LICENSE/NOTICE/DEPENDENCIES; three repeated/cross-directory build hashes match"
+  },
+  "ontocheck": {
+    "repository": "https://github.com/cwru-sdle/OntoCheck",
+    "commit": "69d42e38979f381fe531ae547fcc49b8ad58ef15",
+    "distribution_version": "0.1.3",
+    "license": "CC-BY-4.0",
+    "attribution": "SDLE Research Center, Case Western Reserve University",
+    "wheel_sha256": "69adeecf9d0c6c6286d55860a4b582b9d1ba08dff60c85c2adc838a0b5ef6307",
+    "source_and_installed_python_files_compared": 40,
+    "source_mismatches": 0,
+    "requirements": "requirements-ontocheck.lock",
+    "requirements_sha256": "a8653a95ae4a946955704c1bb66ebdcbee1a8087b782b09d104a1a30695450be",
+    "network": "macOS Seatbelt network and file confinement, supplemented by Python audit hook",
+    "metrics": [
+      "task_based_metric_v_0_0_1",
+      "conceptual_fitness",
+      "structural_fitness"
+    ],
+    "benchmark_equivalence": "Verified only for explicit development constrained_plan/positive ASK on frozen Jena RDFS Simple closure; published XRD/MatProc, OWL/proof/hop semantics and actual held-out study remain unsupported/unverified",
+    "resources": {
+      "nltk_stopwords_archive_sha256": "48c0e52d8b52546e827f53761fb30300c0ab94f70660d28bd65ba0a86270946b",
+      "english_sha256": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b",
+      "location": "resources/nltk",
+      "license": "Unspecified in upstream corpus metadata; organizational review remains open"
+    },
+    "benchmark_bridge": {
+      "fixture": "research/development-assessment/jena-rdfs-compat-v1",
+      "fixture_manifest_sha256": "77b44f2e7b55330ce720388b80c28b3ca4767f909e6c9cc04282800cd5f66442",
+      "verification_sha256": "fa42bcaa1d0d111b3629e350bed456e048b5da5bcef6fb98d46f56812996c793",
+      "known_answer_checks": 10,
+      "jena_backed_score": 1.0,
+      "graph_path_counterexample_score": 0.5,
+      "tests": "17 passed in 9.63 seconds; real isolated engines, no skips",
+      "upstream_suite_sha256": {
+        "XRD-graph-path.json": "804f3006a93b2bf6b5a4e09954968ab0d7ab6777e8013256e28e53b5279d02b1",
+        "MatProc-sps.json": "a664f83b586dfe819f35ed97c01b607e1591098080987502c6aa6edc25f7a5c0"
+      }
+    }
+  },
+  "frontend": {
+    "package_lock": "apps/studio-plugin/package-lock.json",
+    "sha256": "db1be2a1ab8fe21e8d9b82120a7b1cc8958de6bab9adcae06b848ebbf8c3d76d"
+  },
+  "trustgraph": {
+    "backend_commit": "25d5d56ef6ee32a15dcd6710b9e1ab8c42419027",
+    "workbench_commit": "02efcac8adf04a1de1a4f601c1ecbb70ed910d6d",
+    "template_commit": "9b8763e0e9c833477004c59aafb5d5530d13d4a9",
+    "source_inspected_at": "2026-11-01",
+    "source_license": "Apache-2.0",
+    "workbench_client_metadata_version": "1.7.2",
+    "workbench_provider_metadata_version": "1.4.0",
+    "template_provider_dependency_range": "^2.0.3",
+    "compatible_release_pair_verified": false,
+    "loader_fixture_sha256": "9fedf934890719e70674f385cfa42096cd3688b5740917d8087d6e27fcb4fde2",
+    "optional_python_sdk": {
+      "version": "2.11.1",
+      "artifact": "trustgraph_base-2.11.1.tar.gz",
+      "sha256": "5af4a53f1dbdfc20f9fbcc0c5b9819d32e86413228ee43193c198dc488d8098a",
+      "source_comparison": "api.py and types.py exact; flow.py and library.py identical apart from trailing blank line removed by inspected snapshot writer",
+      "runtime_source_hashes_verified": true,
+      "undeclared_import_dependency": "aiohttp==3.14.5",
+      "verification": "23 focused gateway/reconciliation/providerbounds tests passed,1genericliveprobe skipped; actual live diagnostic adapter resolved evidence in both v4flows",
+      "backend_compatibility": "Actual pinned2.11.1 synthetic backend exercised; unsupported SDK get-document/list-children operations corrected or avoided"
+    },
+    "image_digests": [
+      "trustgraph/trustgraph-flow@sha256:29ab8fbb59fcb05318dc9208d946d4a1b2b74e6863099b9f752fc72ffc52bc0e",
+      "qdrant/qdrant@sha256:f1c7272cdac52b38c1a0e89313922d940ba50afd90d593a1605dbbc214e66ffb",
+      "dxflrs/garage@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690"
+    ],
+    "status": "Real synthetic host and data pipeline verified at documented subset; ontology RAG known-answer failure retained; globalcompletion/approvedseed-ledger/sharedidentity activation gates remain",
+    "deployment_config": {
+      "deployment_template_repository": "https://github.com/trustgraph-ai/trustgraph-templates",
+      "commit": "5c9853804b2c3aaa30db913cd8c0751b65a3d722",
+      "archive_sha256": "c23565987bb74adab379bea6b829e22c5c6837606937c9cf9224ff81e5ff9698",
+      "engine": "gojsonnet==0.21.0",
+      "images": [
+        "trustgraph/trustgraph-flow@sha256:29ab8fbb59fcb05318dc9208d946d4a1b2b74e6863099b9f752fc72ffc52bc0e",
+        "qdrant/qdrant@sha256:f1c7272cdac52b38c1a0e89313922d940ba50afd90d593a1605dbbc214e66ffb",
+        "dxflrs/garage@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690"
+      ],
+      "embedding_model": "all-minilm:latest",
+      "embedding_manifest_sha256": "1b226e2802dbb772b5fc32a58f103ca1804ef7501331012de126ab22f67475ef",
+      "bounded_generation_model": {
+        "name": "oe-qwen3-smoke:1.7b",
+        "from": "qwen3:1.7b",
+        "num_predict": 512,
+        "num_ctx": 4096,
+        "temperature": 0,
+        "digest": "84c467420f6d51cae7ca58914d67196eaa658b26d90b8af6705b7192b3947002"
+      },
+      "scope": "Synthetic engineering smoke; no study approved; completion is not supplied by librarian"
+    },
+    "verified_subset": [
+      "Unchanged real host/template mounted with real IAM",
+      "Studio independent session boundary",
+      "Synthetic librarian/chunk/extraction/vector/GraphRAG source-provenance reads",
+      "Actual optionalSDK exact child resolution; review remains disabled"
+    ],
+    "evidence": "infra/portal/pipeline-evidence.json"
+  },
+  "postgres": {
+    "image": "postgres:17.6-alpine3.22@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+    "verification": "Pinned17.6 isolatedcontainer: six migration/concurrency/recovery tests and six coordinated restore checks passed; ownedcontainerremoved. Evidence research/results/postgres-check/run-20261101/report.json"
+  },
+  "engine_isolation": {
+    "platform": "macOS 27.2 (26B123)",
+    "mode": "macos-seatbelt",
+    "launcher": "/usr/bin/sandbox-exec",
+    "launcher_deprecated": true,
+    "profile": "config/macos-engine.sb",
+    "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+    "verification": "63 focused real-engine and OS-boundary tests passed in 22.23 seconds; no engine skips or unconfined fallback"
+  },
+  "pdf_extraction": {
+    "package": "pypdf",
+    "version": "6.21.4",
+    "license": "BSD-3-Clause",
+    "source": "https://pypi.org/project/pypdf/6.21.4/",
+    "wheel_sha256": "33e4fb41ca352810eb4e9838aa0d82d6888a5f8bf682f43e99cce5faa666255c",
+    "sdist_sha256": "c8817e3f888d47a087872ded69812c1ef30cacb871d6e053e0c00bbaf0bc2163",
+    "configuration": "services/api/src/oe_studio/pdf_worker.py",
+    "verification": "17 real confined PDF adapter tests passed in 2.23 seconds; malformed/scanned/partial/encrypted/over-limit inputs never complete"
+  }
+}

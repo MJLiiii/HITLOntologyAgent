@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "split": "development",
+  "purpose": "Independent known-answer engine conformance; no held-out study claim",
+  "oracle_method": "Expected states authored from named RDFS rules and explicit counterexamples, never generated from either engine output",
+  "files": {
+    "ontology.ttl": "6c2803f3474f50863956325fc345bc96abca01dd2d3f559741a8a4d0cabeb583",
+    "suite.json": "78689d5e89295fbf6eb9e9de4c6f1f8df52a2eca4da2b9c206c9d29a65bcba64"
+  }
+}

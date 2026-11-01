@@ -1,0 +1,30 @@
+{
+  "observed_at": "2026-11-01",
+  "scope": "real portal mount/auth/theme/reload and Studio read; not complete TrustGraph ingestion or shared identity",
+  "original_upstream_file_mismatches": 0,
+  "checks": [
+    "unchanged_template_build",
+    "unchanged_portal_build",
+    "real_iam_login",
+    "native_websocket_authenticated",
+    "template_host_mount",
+    "studio_host_mount",
+    "light_and_midnight_host_themes",
+    "studio_unmount_remount",
+    "hard_reload",
+    "native_jwt_cannot_unlock_studio",
+    "grounded_chat_three_citations_three_triples"
+  ],
+  "artifacts": {
+    "infra/portal/compose.yaml": "7f491d35bc49ae0bc61958c7f0808494904665e12e4b3e548582a5aa0fdfd307",
+    "infra/portal/control.yaml": "8cc742983654d153eb72453445ae6d21162b573c2122972666e10ab3dfc9ba9f",
+    "infra/portal/components-entry.json": "56c088e03a8dd9ced7d1f0f83690f30fd31c1195b4cc9b4f02be0cd431cc714a",
+    "infra/portal/serve.py": "b296020a44676bce27f008f411b3ba4d0ec2069ef67c8a6b79c6ac2ef6893393",
+    "apps/studio-plugin/dist-plugin/ontology-studio.iife.js": "6dd4810932286e3e87d606f4a3546157e51c4bd7fd9fe1f975dbd2f277f7f112",
+    "apps/studio-plugin/dist-plugin/ontology-studio.css": "9579d44a0d9ea4b20a09cca249d3606fb765ef6d9b982fb464de152d14c2b706",
+    "docs/screenshots/trustgraph-template-light.jpg": "2e8ddc45bbe321c9ad6f73a8f5ebd268e0cae75b7d9e13ceafe72a051c7680df",
+    "docs/screenshots/trustgraph-studio-mounted.jpg": "236fd6b4153f2b3028d8e8df9004b72707b6e25157a14582bbfea41ae4b0d091",
+    "docs/screenshots/trustgraph-studio-grounded.jpg": "e42070e6e4f497e43219400fbe047674413e319c54f422f3001fc2cca1770ab0",
+    "docs/screenshots/trustgraph-studio-midnight.jpg": "1a5fc830ce9f3e7d288155af9a6d9350809570ee1e88d7de5fc54f8ef1feeaa2"
+  }
+}

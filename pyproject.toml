@@ -1,0 +1,39 @@
+[project]
+name = "ontology-studio"
+version = "0.1.0"
+description = "Local source-grounded ontology chat and human-reviewed ontology engineering"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi==0.115.12",
+  "uvicorn==0.34.2",
+  "sqlalchemy==2.0.40",
+  "alembic==1.15.2",
+  "psycopg[binary]==3.2.6",
+  "rdflib==7.1.4",
+  "httpx==0.28.1",
+  "python-multipart==0.0.20",
+  "pydantic-settings==2.9.1",
+  "pypdf==6.21.4",
+]
+
+[project.optional-dependencies]
+trustgraph = [
+  "trustgraph-base @ https://files.pythonhosted.org/packages/c7/11/3df5dc91297d4755a6f39010a0448eb804d5a89877d3d3741e6d64d13594/trustgraph_base-2.11.1.tar.gz#sha256=5af4a53f1dbdfc20f9fbcc0c5b9819d32e86413228ee43193c198dc488d8098a",
+  # The pinned SDK imports aiohttp in trustgraph.api but omits it from requirements.
+  "aiohttp==3.14.5",
+]
+
+[dependency-groups]
+dev = ["pytest==8.3.5", "ruff==0.11.8"]
+
+[tool.pytest.ini_options]
+pythonpath = ["services/api/src", "."]
+testpaths = ["tests"]
+markers = ["live: requires separately configured external services"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

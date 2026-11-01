@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "protocol_id": "external-evaluation-v1",
+  "status": "engineering_infrastructure_external_study_gates_pending",
+  "observations_collected": false,
+  "entrypoint": "scripts/evaluate_frozen.py",
+  "identity": "separately_provisioned_evaluator",
+  "input_schema": "research/evaluator-manifest.schema.json",
+  "task_packet_schema": "research/evaluator-packet.schema.json",
+  "output_freeze": "sealed_model_pilot_records_plus_evaluator_manifest_file_digest",
+  "held_out_location": "external_private_evaluator_mount_never_repository_or_application_data",
+  "api_access": "no_route_no_model_or_development_review_access",
+  "source_and_mapping_policy": "same_frozen_per_task_inputs_for_all_conditions",
+  "inference_profile": "rdfs",
+  "supported_answer_oracle": "finite_ask_boolean",
+  "unsupported_workloads": "preserve_error_or_unsupported_status_never_relabel_as_success",
+  "missing_candidates": "retain_all_scheduled_cases_as_errors",
+  "rq3_allocation": "seeded_task_exposure_v1_two_distinct_reviewers_per_case",
+  "rq3_display_policy": "identical_source_and_development_assessment_digests_no_held_out_reports",
+  "rq4_time_policy": "all_active_inspection_and_rework_intervals_across_reviewers",
+  "rq4_unsuccessful_policy": "right_censor_at_explicit_observation_end",
+  "analysis": "paired_task_means_replicates_nested_missing_pairs_retained_descriptive_only",
+  "external_gates": [
+    "domain_scope_rights_consent_and_expert_access",
+    "independently_approved_held_out_answers_mappings_and_common_acceptance_standard",
+    "separate_os_or_service_identity_and_agent_inaccessible_mounts",
+    "reviewer_allocation_and_blinding_approval",
+    "frozen_real_task_and_replicate_schedule",
+    "preregistered_rubric_exclusions_analysis_and_signed_protocol_hashes"
+  ]
+}

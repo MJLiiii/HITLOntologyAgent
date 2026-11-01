@@ -1,0 +1,113 @@
+{
+  "$defs": {
+    "AskOracle": {
+      "additionalProperties": false,
+      "properties": {
+        "expected": {
+          "title": "Expected",
+          "type": "boolean"
+        },
+        "kind": {
+          "const": "ask",
+          "title": "Kind",
+          "type": "string"
+        },
+        "query": {
+          "maxLength": 4000,
+          "minLength": 5,
+          "title": "Query",
+          "type": "string"
+        },
+        "test_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Test Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "test_id",
+        "kind",
+        "query",
+        "expected"
+      ],
+      "title": "AskOracle",
+      "type": "object"
+    },
+    "EvaluationQuestion": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 1000,
+          "minLength": 5,
+          "title": "Question",
+          "type": "string"
+        },
+        "sparql_query": {
+          "maxLength": 4000,
+          "minLength": 5,
+          "title": "Sparql Query",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "question",
+        "sparql_query"
+      ],
+      "title": "EvaluationQuestion",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "base_ontology": {
+      "maxLength": 1048576,
+      "title": "Base Ontology",
+      "type": "string"
+    },
+    "questions": {
+      "items": {
+        "$ref": "#/$defs/EvaluationQuestion"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Questions",
+      "type": "array"
+    },
+    "shapes_ttl": {
+      "default": "",
+      "maxLength": 100000,
+      "title": "Shapes Ttl",
+      "type": "string"
+    },
+    "split": {
+      "const": "held_out",
+      "title": "Split",
+      "type": "string"
+    },
+    "tests": {
+      "items": {
+        "$ref": "#/$defs/AskOracle"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Tests",
+      "type": "array"
+    }
+  },
+  "required": [
+    "split",
+    "base_ontology",
+    "tests",
+    "questions"
+  ],
+  "title": "FrozenEvaluationPacket",
+  "type": "object"
+}

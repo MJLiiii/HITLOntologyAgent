@@ -1,0 +1,14 @@
+@prefix ex: <https://example.org/oe-compat/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:Asset a rdfs:Class .
+ex:Service a rdfs:Class ; rdfs:subClassOf ex:Asset .
+ex:CriticalService a rdfs:Class ; rdfs:subClassOf ex:Service .
+ex:Owner a rdfs:Class .
+ex:Team a rdfs:Class ; rdfs:subClassOf ex:Owner .
+ex:ownedBy a rdf:Property ; rdfs:domain ex:Asset ; rdfs:range ex:Owner .
+ex:maintainedBy a rdf:Property ; rdfs:subPropertyOf ex:ownedBy .
+ex:operatedBy a rdf:Property ; rdfs:subPropertyOf ex:maintainedBy .
+ex:Payroll a ex:CriticalService ; ex:operatedBy ex:Operations .
+ex:Inventory ex:ownedBy ex:Warehouse .

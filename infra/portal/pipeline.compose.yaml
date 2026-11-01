@@ -1,0 +1,45 @@
+services:
+  garage:
+    image: dxflrs/garage@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
+    command:
+    - /garage
+    - -c
+    - /etc/garage.toml
+    - server
+    volumes:
+    - ./runtime/garage.toml:/etc/garage.toml:ro
+    - pipeline_garage_meta:/var/lib/garage/meta
+    - pipeline_garage_data:/var/lib/garage/data
+    mem_limit: 256m
+  qdrant:
+    image: qdrant/qdrant@sha256:f1c7272cdac52b38c1a0e89313922d940ba50afd90d593a1605dbbc214e66ffb
+    volumes:
+    - pipeline_qdrant:/qdrant/storage
+    mem_limit: 512m
+  pipeline:
+    image: trustgraph/trustgraph-flow@sha256:29ab8fbb59fcb05318dc9208d946d4a1b2b74e6863099b9f752fc72ffc52bc0e
+    command:
+    - processor-group
+    - -c
+    - /smoke/pipeline.yaml
+    environment:
+      PUBSUB_BACKEND: rabbitmq
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USERNAME: oe_portal
+      RABBITMQ_PASSWORD: ${OE_PORTAL_BUS_PASSWORD}
+      PYTHONPATH: /smoke
+    volumes:
+    - ./runtime/pipeline.yaml:/smoke/pipeline.yaml:ro
+    - pipeline_reranker:/app/.cache
+    - ./bounded_ollama.py:/smoke/bounded_ollama.py:ro
+    - ./bounded_ollama_client.py:/smoke/bounded_ollama_client.py:ro
+    mem_limit: 2g
+    depends_on:
+    - garage
+    - qdrant
+    - control
+volumes:
+  pipeline_garage_meta: {}
+  pipeline_garage_data: {}
+  pipeline_qdrant: {}
+  pipeline_reranker: {}

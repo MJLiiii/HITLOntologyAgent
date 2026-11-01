@@ -1,0 +1,73 @@
+import { useEffect, useState } from 'react';
+import type { Evidence, MappingConfig, MappingEntry, MappingSet, Project, Session } from '../../api/generated';
+import type { MappingDecision, MappingDraft, MappingSetRequest } from '../../api/openapi';
+import { errorMessage, list, post, request } from '../../api/client';
+import { Badge, date, ErrorNotice, EvidenceList, Loading, short } from '../../components/ui';
+import { Icon } from '../../components/Icons';
+
+function MappingRecords({mappings,evidence,reviewed=false}: {mappings:MappingEntry[];evidence:Evidence[];reviewed?:boolean}) {
+  return <div className="mapping-records">{mappings.map((mapping,index)=><article className="mapping-record" key={`${mapping.requirement_iri}:${index}`}><div className="mapping-terms"><div><span>Requirement term</span><code>{mapping.requirement_iri}</code></div><Icon name="chevron" size={16}/><div><span>Ontology term</span><code>{mapping.ontology_iri}</code></div></div><p>{mapping.rationale}</p><span className="mapping-semantics">Canonical tool correspondence · no OWL equivalence axiom</span>{reviewed&&<div className="mapping-review-meta">Reviewer <strong>{mapping.reviewer||'Not recorded'}</strong> · Decision <code>{mapping.review_id||'Not recorded'}</code></div>}<details className="mapping-evidence"><summary>Inspect evidence ({mapping.evidence_ids.length})</summary><EvidenceList evidence={mapping.evidence_ids.map(id=>evidence.find(item=>item.id===id)||{id,document_id:'',title:`Evidence ${id}`,quote:'This evidence is not available in the current corpus view.',resolved:false})}/></details></article>)}</div>;
+}
+
+export function MappingPanel({project,session,onRefresh}: {project:Project;session:Session;onRefresh:()=>Promise<void>}) {
+  const [config,setConfig]=useState<MappingConfig|null>(null);
+  const [sets,setSets]=useState<MappingSet[]>([]);
+  const [evidence,setEvidence]=useState<Evidence[]>([]);
+  const [draft,setDraft]=useState<MappingDraft[]|null>(null);
+  const [draftBasis,setDraftBasis]=useState<{scope:string;digest:string;decision:string|null}|null>(null);
+  const [selected,setSelected]=useState('');
+  const [rationale,setRationale]=useState('');
+  const [loading,setLoading]=useState(true);
+  const [busy,setBusy]=useState(false);
+  const [error,setError]=useState('');
+  const [notice,setNotice]=useState('');
+  const [reload,setReload]=useState(0);
+  const base=`/projects/${encodeURIComponent(project.id)}`;
+  const human=session.actor.kind==='human';
+  const canEdit=human&&session.actor.roles.includes('researcher')&&!project.pending_publication_id;
+  const candidate=sets.find(set=>set.id===selected)||sets.find(set=>set.status==='needs_review')||sets.at(-1);
+  const currentCandidate=!!candidate&&candidate.scope_digest===project.scope_digest&&candidate.status==='needs_review';
+  const unresolved=!!candidate&&candidate.mappings.some(mapping=>mapping.evidence_ids.some(id=>!evidence.find(item=>item.id===id&&item.resolved)));
+  useEffect(()=>{
+    let active=true;setLoading(true);setError('');
+    Promise.all([request<MappingConfig>(`${base}/mapping-config`),list<MappingSet>(`${base}/mapping-sets`),list<Evidence>(`${base}/corpus-evidence`)]).then(([activeConfig,history,corpus])=>{if(active){setConfig(activeConfig);setSets(history);setEvidence(corpus);}}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
+    return()=>{active=false;};
+  },[base,project.scope_digest,project.corpus_snapshot_id,project.assessment_mapping_decision_id,project.assessment_mappings_digest,reload]);
+  function edit() {
+    if(!config)return;
+    setDraft(config.mappings.map(({requirement_iri,ontology_iri,relation_type,rationale,evidence_ids})=>({requirement_iri,ontology_iri,relation_type,rationale,evidence_ids:[...evidence_ids]})));setDraftBasis({scope:project.scope_digest,digest:config.digest,decision:config.decision_id});setError('');setNotice('');
+  }
+  function update(index:number,patch:Partial<MappingDraft>) {setDraft(rows=>rows?.map((row,i)=>i===index?{...row,...patch}:row)||null);}
+  async function save(event:React.FormEvent) {
+    event.preventDefault();if(!draft||!draftBasis||!canEdit||busy)return;
+    if(new Set(draft.map(mapping=>mapping.requirement_iri)).size!==draft.length){setError('Each requirement IRI may have only one correspondence.');return;}
+    if(draft.some(mapping=>mapping.evidence_ids.length===0)){setError('Select at least one resolved evidence passage for each correspondence.');return;}
+    setBusy(true);setError('');setNotice('');
+    try {
+      const [current,active]=await Promise.all([request<Project>(base),request<MappingConfig>(`${base}/mapping-config`)]);
+      if(current.scope_digest!==draftBasis.scope||current.pending_publication_id||active.digest!==draftBasis.digest||active.decision_id!==draftBasis.decision){await onRefresh();setReload(value=>value+1);throw new Error('The scope, active mappings, or publication state changed. Review the refreshed configuration before proposing a replacement.');}
+      const result=await post<MappingSet>(`${base}/mapping-sets`,{mappings:draft} satisfies MappingSetRequest);
+      setSets(await list<MappingSet>(`${base}/mapping-sets`));setSelected(result.id);setDraft(null);setRationale('');
+      setNotice('A mapping set was proposed for human review. Active mappings and ontology axioms are unchanged.');
+    }catch(err){setError(errorMessage(err));}finally{setBusy(false);}
+  }
+  async function decide(decision:'accept'|'reject') {
+    if(!candidate||!config||!human||busy||rationale.trim().length<5)return;
+    setBusy(true);setError('');setNotice('');
+    try {
+      const [current,history,active]=await Promise.all([request<Project>(base),list<MappingSet>(`${base}/mapping-sets`),request<MappingConfig>(`${base}/mapping-config`)]);
+      const fresh=history.find(set=>set.id===candidate.id);
+      if(current.pending_publication_id||current.scope_digest!==candidate.scope_digest||fresh?.digest!==candidate.digest||fresh.status!=='needs_review'||active.digest!==config.digest||active.decision_id!==config.decision_id){await onRefresh();setReload(value=>value+1);throw new Error('The mapping set, scope, or active configuration changed. Review the refreshed records before deciding.');}
+      await post(`${base}/mapping-decisions`,{mapping_set_id:candidate.id,digest:candidate.digest,decision,rationale:rationale.trim()} satisfies MappingDecision);
+      await onRefresh();setReload(value=>value+1);setRationale('');
+      setNotice(decision==='accept'?`The mapping set was accepted${candidate.mappings.length?'':' and active correspondences were cleared'}. Create a successor candidate and rerun validation, assessment, and release review. No OWL equivalence axiom was added and no ontology was approved.`:'The mapping proposal was rejected. Active assessment mappings are unchanged.');
+    }catch(err){setError(errorMessage(err));}finally{setBusy(false);}
+  }
+  return <section className="panel mapping-panel"><div className="report-heading"><div className="report-icon"><Icon name="branch" size={23}/></div><div><span className="card-eyebrow">REVIEWED ASSESSMENT CORRESPONDENCES</span><h3>Connect task terms to ontology terms</h3><p>Mappings configure assessment. They do not assert OWL equivalent classes or properties.</p></div><button className="button button-secondary small" disabled={loading||busy||!canEdit||!config} onClick={edit}><Icon name="plus" size={14}/>Propose mapping set</button></div><div className="mapping-panel-body">
+    {error&&<ErrorNotice message={error}/>} {notice&&<div className="notice notice-info" role="status"><Icon name="shield"/><span>{notice}</span></div>}
+    {loading?<Loading label="Loading mappings and source evidence…"/>:config&&<><div className="mapping-config-summary"><div><strong>{config.mappings.length} active reviewed correspondences</strong><p>{config.decision_id?<>Decision <code>{config.decision_id}</code></>:'No mapping decision is active for this scope.'}</p><p>Mapping digest <code title={config.digest}>{short(config.digest)}</code> · Scope <code>{short(config.scope_digest)}</code></p></div><Badge status={config.decision_id?'approved':'none'}>{config.decision_id?'Human-reviewed configuration':'No active mappings'}</Badge></div>{!!config.mappings.length&&<details className="active-mappings"><summary>Inspect active correspondences and their reviewers</summary><MappingRecords mappings={config.mappings} evidence={evidence} reviewed/></details>}</>}
+    {draft&&<form className="mapping-editor" onSubmit={event=>void save(event)}><div className="notice notice-info"><Icon name="branch"/><span>This draft replaces the complete mapping configuration if a human accepts it. Every nonempty correspondence needs full HTTP(S) IRIs, a rationale, and resolved corpus evidence.</span></div><div className="section-heading"><h4>Draft correspondences <span className="count">{draft.length}</span></h4><div className="mapping-edit-actions"><button className="text-button small" type="button" disabled={busy||draft.length===0} onClick={()=>setDraft([])}>Clear all draft mappings</button><button className="text-button small" type="button" disabled={busy||draft.length>=100} onClick={()=>setDraft([...draft,{requirement_iri:'',ontology_iri:'',relation_type:'canonical_correspondence',rationale:'',evidence_ids:[]}])}><Icon name="plus" size={13}/>Add correspondence</button></div></div>{draft.length===0&&<p className="empty-mapping-note">This empty mapping set will clear active correspondences only after a separate human acceptance.</p>}{draft.map((mapping,index)=><article className="mapping-draft-row" key={index}><div className="section-heading"><h4>Correspondence {index+1}</h4><button className="icon-button" type="button" aria-label={`Remove correspondence ${index+1}`} disabled={busy} onClick={()=>setDraft(draft.filter((_,i)=>i!==index))}><Icon name="close" size={15}/></button></div><div className="form-grid"><label>Requirement IRI {index+1}<input type="url" pattern="https?://.+" value={mapping.requirement_iri} onChange={event=>update(index,{requirement_iri:event.target.value})} maxLength={2048} required disabled={busy} placeholder="https://example.org/task/Service"/></label><label>Ontology IRI {index+1}<input type="url" pattern="https?://.+" value={mapping.ontology_iri} onChange={event=>update(index,{ontology_iri:event.target.value})} maxLength={2048} required disabled={busy} placeholder="https://example.org/oe-demo/Service"/></label></div><label>Correspondence rationale {index+1}<textarea value={mapping.rationale} onChange={event=>update(index,{rationale:event.target.value})} minLength={5} maxLength={4000} rows={2} required disabled={busy}/></label><fieldset className="mapping-evidence-picker"><legend>Supporting corpus evidence for correspondence {index+1}</legend>{evidence.map(item=><label key={item.id}><input type="checkbox" checked={mapping.evidence_ids.includes(item.id)} disabled={busy||!item.resolved||(!mapping.evidence_ids.includes(item.id)&&mapping.evidence_ids.length>=20)} onChange={event=>update(index,{evidence_ids:event.target.checked?[...mapping.evidence_ids,item.id]:mapping.evidence_ids.filter(id=>id!==item.id)})}/><span><strong>{item.title}</strong><small>{item.locator||short(item.id)} · {item.resolved?'Resolved':'Unresolved'}</small></span></label>)}{!evidence.length&&<p>No evidence is available in the current corpus. Process sources and freeze a corpus first.</p>}</fieldset><p className="field-help">Use requirement IRIs from the competency queries and ontology targets of the same term kind. Acceptance records a tool correspondence, not logical equivalence.</p></article>)}<div className="form-actions"><button className="button button-secondary" type="button" disabled={busy} onClick={()=>setDraft(null)}>Cancel mapping draft</button><button className="button button-primary" type="submit" disabled={busy||!canEdit}>Submit mapping proposal</button></div></form>}
+    {!loading&&sets.length>0&&!draft&&<section className="mapping-proposals"><div className="section-heading"><h4>Mapping proposals and decisions</h4><label><span className="sr-only">Mapping set</span><select value={candidate?.id||''} onChange={event=>{setSelected(event.target.value);setRationale('');}}>{sets.map(set=><option key={set.id} value={set.id}>{set.mappings.length} correspondences · {set.status.replaceAll('_',' ')} · {short(set.digest)}</option>)}</select></label></div>{candidate&&<><div className="mapping-set-meta"><Badge status={candidate.status}/><span>{date(candidate.created_at)} · Set <code title={candidate.digest}>{short(candidate.digest)}</code> · Scope <code>{short(candidate.scope_digest)}</code></span></div>{candidate.mappings.length?<MappingRecords mappings={candidate.mappings} evidence={evidence}/>:<p className="empty-mapping-note">Empty set: accepting this proposal clears the active mapping configuration.</p>}{candidate.scope_digest!==project.scope_digest&&<p className="action-reason">This immutable proposal belongs to an earlier scope and cannot change the current configuration.</p>}{candidate.status==='needs_review'&&<div className="mapping-human-decision"><label>Mapping decision rationale<textarea value={rationale} onChange={event=>setRationale(event.target.value)} rows={3} minLength={5} maxLength={4000} disabled={busy||!human||!currentCandidate} placeholder="Explain the evidence and term compatibility behind your decision…"/></label><div className="form-actions"><button className="button button-secondary" disabled={busy||!human||!currentCandidate||!!project.pending_publication_id||rationale.trim().length<5} onClick={()=>void decide('reject')}>Reject mapping set</button><button className="button button-primary" disabled={busy||!human||!currentCandidate||unresolved||!!project.pending_publication_id||rationale.trim().length<5} onClick={()=>void decide('accept')}><Icon name="check" size={15}/>Accept mapping set</button></div>{unresolved&&<p className="action-reason">All cited evidence must be resolved in the current corpus before acceptance.</p>}<p className="action-reason">Only an explicit human decision activates this full set. Existing candidates retain frozen mappings; create a successor and rerun checks, assessment, and review.</p></div>}</>}</section>}
+    {project.pending_publication_id&&<p className="action-reason">A pending publication must finish before the mapping configuration can change.</p>}{busy&&<div className="inline-loading" role="status"><span className="spinner"/>Recording the requested mapping action…</div>}
+  </div></section>;
+}

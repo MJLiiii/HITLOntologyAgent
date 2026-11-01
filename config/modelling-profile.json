@@ -1,0 +1,36 @@
+{
+  "id": "rdfs",
+  "version": "1",
+  "inference_mode": "rdfs",
+  "validation_graph": "asserted_plus_inferred",
+  "named_triples_only": true,
+  "external_imports": false,
+  "allow_declared_data_predicates": true,
+  "allowed_predicates": [
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+    "http://www.w3.org/2000/01/rdf-schema#subPropertyOf",
+    "http://www.w3.org/2000/01/rdf-schema#domain",
+    "http://www.w3.org/2000/01/rdf-schema#range",
+    "http://www.w3.org/2000/01/rdf-schema#label",
+    "http://www.w3.org/2000/01/rdf-schema#comment"
+  ],
+  "allowed_declaration_types": [
+    "http://www.w3.org/2002/07/owl#Ontology",
+    "http://www.w3.org/2002/07/owl#Class",
+    "http://www.w3.org/2002/07/owl#ObjectProperty",
+    "http://www.w3.org/2002/07/owl#DatatypeProperty",
+    "http://www.w3.org/2002/07/owl#AnnotationProperty",
+    "http://www.w3.org/2000/01/rdf-schema#Class",
+    "http://www.w3.org/2000/01/rdf-schema#Datatype",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
+  ],
+  "limitations": [
+    "Required checks use Apache Jena RDFS inference, not a complete OWL DL reasoner.",
+    "OWL imports, restrictions, lists, equivalence, inverse, transitivity and disjointness are unsupported in ontology/data graphs.",
+    "Domain and range infer types; required values are checked with SHACL.",
+    "A false ASK result means not entailed under this profile, not proof of negation.",
+    "SPARQL is limited to local ASK/SELECT graph patterns and safe comparison filters; extension functions, paths, aggregates, SERVICE and dataset loading are blocked.",
+    "SHACL uses the asserted graph plus RDFS closure and a restricted SHACL Core vocabulary."
+  ]
+}

@@ -1,0 +1,104 @@
+schema_version: 1
+protocol_id: demo-v1
+classification: synthetic_engineering_demonstration
+study_status: external_gates_pending
+confirmatory_study_started: false
+selected_domain: null
+scope_document: docs/domain-scope.md
+external_gates:
+  - signed_domain_and_use_case_scope
+  - expert_access_consent_and_reviewer_allocation
+  - source_rights_confidentiality_and_retention_agreement
+  - independent_held_out_questions_answers_and_mappings
+  - model_prompt_budget_and_environment_freeze
+  - pilot_amendments_and_preregistered_analysis
+demo:
+  task_ids: [demo-ownership]
+  implementation: services/api/src/oe_studio/experiments.py
+  generation: deterministic_scripted_strategies_no_model
+  replicate_ids: [1, 2, 3]
+  independent_model_samples: false
+  evidence: three_synthetic_documents_frozen_once_per_execute_demo
+  profile: rdfs
+  evaluation_split: development_demo
+  held_out_available: false
+  automated_calls_per_condition: 0
+  maximum_repairs: {A: 0, B: 1, C: 1, D: 1}
+  human_actions_simulated: false
+  d_post_review: null
+model_pilot:
+  protocol_id: model-pilot-v1
+  classification: synthetic_model_engineering_pilot
+  task_ids: [demo-ownership]
+  generation: configured_ollama_ModelClient
+  shared_initial_calls_per_replicate: 1
+  replicate_ids: [1, 2, 3]
+  independent_tasks_available: 1
+  maximum_repairs: {A: 0, B: 2, C: 2, D: 2}
+  maximum_output_tokens_per_call: 4096
+  maximum_input_bytes_per_call: 65536
+  maximum_triple_operations_per_call: 100
+  timeout_seconds: configured_positive_at_most_120
+  cd_automated_stage: same_candidate_history_and_physical_call_ids
+  assessment_timing: after_all_automated_outputs_are_frozen
+  model_weight_digest: unavailable_until_live_tag_digest_is_verified
+  condition_order: fixed_B_then_C_engineering_only_not_counterbalanced_study
+  seed: explicit_incomplete_demo_fixture_in_cli_or_current_ontology_in_application
+  evaluation_split: development_demo
+  held_out_available: false
+  model_failures: retained_without_scripted_fallback
+  immutable_records: content_digest_and_append_only_application_storage
+  d_post_review: separate_record_linked_to_persisted_human_review_and_exact_bundle
+  human_actions_simulated: false
+conditions:
+  A: {name: one_shot, repair_feedback: none}
+  B: {name: self_revision, repair_feedback: none}
+  C: {name: reasoner_guided, repair_feedback: failed_development_entailment_cases_only}
+  D: {name: complete_workflow, automated_stage: C, human_stage: waiting_human}
+feedback_policy:
+  initial_candidate: common_for_all_conditions
+  source_packet: common_frozen_content_and_links
+  bc_revision_budgets: identical
+  cd_automated_stage: identical
+  ontocheck_diagnostics_to_automated_repair: false
+  ontocheck_development_reports_for_experts: true
+  held_out_access: evaluator_only_external_mount_required_before_real_study
+evaluator_infrastructure:
+  entrypoint: scripts/evaluate_frozen.py
+  frozen_contract: research/evaluator-protocol.json
+  documentation: research/EVALUATOR.md
+  application_api_access: none
+  real_held_out_artifacts_in_repository: false
+  deployment_isolation: separate_identity_and_mounts_required_before_study
+research_questions:
+  RQ1: paired_B_vs_C_repair_correctness
+  RQ2: D_pre_vs_post_source_error_detection_and_correction
+  RQ3: counterbalanced_explanation_availability_with_identical_source_and_assessment_access
+  RQ4: A_vs_D_total_expert_time_to_common_acceptance_standard
+real_study_design:
+  task_count_target: [6, 10]
+  model_replicates_target: 3
+  primary_paired_unit: bounded_task
+  replicates: nested_within_task
+  selected_reviewer_subset_rule: null
+  rq3_reviewer_allocation: null
+  rq3_repeated_case_exposure_allowed: false
+  common_acceptance_criterion: null
+  common_expert_time_limit_minutes: null
+  record_all_expert_time_from_first_inspection: true
+  unsuccessful_runs: retain_and_right_censor_time_to_acceptance
+  exclusion_rules: null
+  model_and_prompts: null
+  held_out_manifest_sha256: null
+  corpus_manifest_sha256: null
+  rubric_sha256: null
+  analysis_sha256: null
+analysis:
+  demo_claims: descriptive_software_behavior_only
+  retain_failed_and_missing_runs: true
+  missing_values: null_with_reason
+  reasoning_denominator: all_scheduled_cases
+  vocabulary_scores_are_answer_accuracy: false
+  resampling_unit_for_future_intervals: task
+  no_confirmatory_effect_claim_before_gates: true
+amendments: []

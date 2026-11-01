@@ -1,0 +1,1569 @@
+{
+  "bundle_digest": "sha256:06f0a2b7d7cb473f2d1ca733c213e2946dcf44f4bd480d773bc5a0f0070da577",
+  "closure_rows_sha256": "0f9adc8ffb4587fc564d590389deee5e8ec82252282ffa360cd54fd1ad4e1d22",
+  "comparisons": [
+    {
+      "case_id": "subclass-transitivity",
+      "check_id": "subclass-transitivity",
+      "equal": true,
+      "jena": "entailed",
+      "ontocheck": "entailed"
+    },
+    {
+      "case_id": "inherited-instance-type",
+      "check_id": "inherited-instance-type",
+      "equal": true,
+      "jena": "entailed",
+      "ontocheck": "entailed"
+    },
+    {
+      "case_id": "subproperty-transitivity",
+      "check_id": "subproperty-transitivity",
+      "equal": true,
+      "jena": "entailed",
+      "ontocheck": "entailed"
+    },
+    {
+      "case_id": "inherited-property-assertion",
+      "check_id": "inherited-property-assertion",
+      "equal": true,
+      "jena": "entailed",
+      "ontocheck": "entailed"
+    },
+    {
+      "case_id": "property-domain",
+      "check_id": "property-domain",
+      "equal": true,
+      "jena": "entailed",
+      "ontocheck": "entailed"
+    },
+    {
+      "case_id": "property-range",
+      "check_id": "property-range",
+      "equal": true,
+      "jena": "entailed",
+      "ontocheck": "entailed"
+    },
+    {
+      "case_id": "range-after-subproperty",
+      "check_id": "range-after-subproperty",
+      "equal": true,
+      "jena": "entailed",
+      "ontocheck": "entailed"
+    },
+    {
+      "case_id": "no-inverse-assertion",
+      "check_id": "no-inverse-assertion",
+      "equal": true,
+      "jena": "not_entailed",
+      "ontocheck": "not_entailed"
+    },
+    {
+      "case_id": "no-narrower-type",
+      "check_id": "no-narrower-type",
+      "equal": true,
+      "jena": "not_entailed",
+      "ontocheck": "not_entailed"
+    },
+    {
+      "case_id": "no-owner-domain-confusion",
+      "check_id": "no-owner-domain-confusion",
+      "equal": true,
+      "jena": "not_entailed",
+      "ontocheck": "not_entailed"
+    }
+  ],
+  "diagnostics": [],
+  "engine": {
+    "commit": "69d42e38979f381fe531ae547fcc49b8ad58ef15",
+    "isolation": {
+      "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+      "launcher": "/usr/bin/sandbox-exec",
+      "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime.",
+      "mode": "macos-seatbelt",
+      "network": "kernel-denied",
+      "platform": "darwin",
+      "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+      "rendered_profile_sha256": "d42dee49c05f40faf58113bd8ff9a8000c67624acf6b0da09c740f13a4e18e2d"
+    },
+    "name": "OntoCheck executable benchmark",
+    "reasoner": "frozen-jena-rdfs-simple-v1",
+    "upstream_environment": {
+      "commit": "69d42e38979f381fe531ae547fcc49b8ad58ef15",
+      "packages": {
+        "nltk": "3.10.4",
+        "ontocheck": "0.1.3",
+        "rdflib": "7.6.0"
+      },
+      "python": "3.12.14",
+      "stopwords_sha256": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b"
+    }
+  },
+  "equivalent": true,
+  "limitations": [
+    "Only the admitted development constrained_plan subset is verified.",
+    "Built-in graph_path is a counterexample baseline, not an RDFS-equivalent engine.",
+    "No held-out study, OWL reasoning, proof-path or published-domain-suite equivalence is claimed."
+  ],
+  "ontology_sha256": "6c2803f3474f50863956325fc345bc96abca01dd2d3f559741a8a4d0cabeb583",
+  "oracles_passed": true,
+  "raw": {
+    "graph_path_counterexample": {
+      "context": {
+        "data_commit": "not-a-study-or-git-commit; see manifest.json",
+        "data_version": "engineering-known-answer-v1",
+        "metric_version": "ontocheck-69d42e38979f381fe531ae547fcc49b8ad58ef15",
+        "ontology_commit": "sha256:6c2803f3474f50863956325fc345bc96abca01dd2d3f559741a8a4d0cabeb583",
+        "ontology_version": "synthetic-v1"
+      },
+      "results": [
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "subclass-transitivity": "entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "subclass-transitivity",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.606958005344495,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "inherited-instance-type": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "inherited-instance-type",
+          "constraint_score": 0.0,
+          "diagnostics": [
+            "One or more plan constraints were not satisfied"
+          ],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 0.0,
+            "unsupported_claim_rate": 1.0
+          },
+          "runtime_ms": 1.8947500066133216,
+          "score": 0.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [
+            "inherited-instance-type"
+          ],
+          "violations": [
+            "inherited-instance-type: expected entailed, observed not_entailed"
+          ]
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "subproperty-transitivity": "entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "subproperty-transitivity",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.0832500013057142,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "inherited-property-assertion": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "inherited-property-assertion",
+          "constraint_score": 0.0,
+          "diagnostics": [
+            "One or more plan constraints were not satisfied"
+          ],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 0.0,
+            "unsupported_claim_rate": 1.0
+          },
+          "runtime_ms": 2.2443330090027303,
+          "score": 0.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [
+            "inherited-property-assertion"
+          ],
+          "violations": [
+            "inherited-property-assertion: expected entailed, observed not_entailed"
+          ]
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "property-domain": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "property-domain",
+          "constraint_score": 0.0,
+          "diagnostics": [
+            "One or more plan constraints were not satisfied"
+          ],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 0.0,
+            "unsupported_claim_rate": 1.0
+          },
+          "runtime_ms": 2.035416997387074,
+          "score": 0.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [
+            "property-domain"
+          ],
+          "violations": [
+            "property-domain: expected entailed, observed not_entailed"
+          ]
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "property-range": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "property-range",
+          "constraint_score": 0.0,
+          "diagnostics": [
+            "One or more plan constraints were not satisfied"
+          ],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 0.0,
+            "unsupported_claim_rate": 1.0
+          },
+          "runtime_ms": 2.1162920020287856,
+          "score": 0.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [
+            "property-range"
+          ],
+          "violations": [
+            "property-range: expected entailed, observed not_entailed"
+          ]
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "range-after-subproperty": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "range-after-subproperty",
+          "constraint_score": 0.0,
+          "diagnostics": [
+            "One or more plan constraints were not satisfied"
+          ],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 0.0,
+            "unsupported_claim_rate": 1.0
+          },
+          "runtime_ms": 2.187209000112489,
+          "score": 0.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [
+            "range-after-subproperty"
+          ],
+          "violations": [
+            "range-after-subproperty: expected entailed, observed not_entailed"
+          ]
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "no-inverse-assertion": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "no-inverse-assertion",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.1393329952843487,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "no-narrower-type": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "no-narrower-type",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 1.8259999924339354,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "no-owner-domain-confusion": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "no-owner-domain-confusion",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "graph_path",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 1.6205830033868551,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        }
+      ],
+      "score": 0.5,
+      "scores_by_level": {
+        "constrained_generation": 0.5
+      },
+      "scores_by_task_type": {
+        "constrained_plan": 0.5
+      },
+      "suite_id": "jena-rdfs-compat-v1"
+    },
+    "jena": {
+      "asserted_graph_sha256": "c3aab0062927cf4aee39286c33a86b995ef7432abad7f480bc6803d56a0fa958",
+      "bundle_digest": "sha256:06f0a2b7d7cb473f2d1ca733c213e2946dcf44f4bd480d773bc5a0f0070da577",
+      "cases": [
+        {
+          "actual": true,
+          "expected": true,
+          "id": "subclass-transitivity::subclass-transitivity",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "id": "inherited-instance-type::inherited-instance-type",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "id": "subproperty-transitivity::subproperty-transitivity",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "id": "inherited-property-assertion::inherited-property-assertion",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "id": "property-domain::property-domain",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "id": "property-range::property-range",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "id": "range-after-subproperty::range-after-subproperty",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "id": "no-inverse-assertion::no-inverse-assertion",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "id": "no-narrower-type::no-narrower-type",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": false,
+          "expected": false,
+          "id": "no-owner-domain-confusion::no-owner-domain-confusion",
+          "message": "Expected result matched",
+          "status": "passed"
+        },
+        {
+          "actual": [
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/maintainedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/operatedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/ownedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Class"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Asset"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Class"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/CriticalService"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Class"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Owner"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Class"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Service"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Class"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Team"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Inventory"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Operations"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Payroll"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Warehouse"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Asset"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/CriticalService"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Owner"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Service"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#Resource"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Team"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Asset"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Inventory"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Asset"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Payroll"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Asset"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#domain"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/ownedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Asset"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Asset"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Asset"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/CriticalService"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Asset"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Service"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/CriticalService"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Payroll"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/CriticalService"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/CriticalService"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Operations"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/maintainedBy"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Payroll"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Operations"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/operatedBy"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Payroll"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Operations"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/ownedBy"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Payroll"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Owner"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Operations"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Owner"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Warehouse"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Owner"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#range"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/ownedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Owner"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Owner"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Owner"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Team"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Service"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Payroll"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Service"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/CriticalService"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Service"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Service"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Team"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Team"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Warehouse"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/ownedBy"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/Inventory"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/maintainedBy"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/maintainedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/maintainedBy"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/operatedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/operatedBy"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/operatedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/ownedBy"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/maintainedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/ownedBy"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/operatedBy"
+              }
+            },
+            {
+              "o": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/ownedBy"
+              },
+              "p": {
+                "kind": "iri",
+                "value": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
+              },
+              "s": {
+                "kind": "iri",
+                "value": "https://example.org/oe-compat/ownedBy"
+              }
+            }
+          ],
+          "expected": [],
+          "id": "__jena_closure_export",
+          "message": "Expected result matched",
+          "status": "passed"
+        }
+      ],
+      "engine": {
+        "isolation": {
+          "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+          "launcher": "/usr/bin/sandbox-exec",
+          "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime.",
+          "mode": "macos-seatbelt",
+          "network": "kernel-denied",
+          "platform": "darwin",
+          "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+          "rendered_profile_sha256": "1d09fe60fcf15d54d84f1af54b1e9e987019f79547770ff745a87c8647e38966"
+        },
+        "jar_sha256": "daaa86473d28ebbd867c0d88554d30979ae7527e8bae6a15a218d78ae9ff9b8d",
+        "name": "Apache Jena",
+        "runner_version": "0.1.0",
+        "version": "6.2.0"
+      },
+      "finished_at": "2026-11-01T11:47:24.329035Z",
+      "id": "94e9a7ca-8a29-4928-b9ad-f4bfb288c9fa",
+      "inferred_graph_sha256": "1f583a9fe04d43f91f02197f5e3d6fbb10858c89ef182376c3d0886b8cbff282",
+      "input_manifest": {
+        "artifacts": {
+          "fixtures": {
+            "path": "fixtures.ttl",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "ontology": {
+            "path": "ontology.ttl",
+            "sha256": "6c2803f3474f50863956325fc345bc96abca01dd2d3f559741a8a4d0cabeb583"
+          },
+          "profile": {
+            "path": "profile.json",
+            "sha256": "d80904672cc6cf2767fc643a079d89fdc5f97851aba36f450e1a17b2dc48e3ec"
+          },
+          "shapes": {
+            "path": "shapes.ttl",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tests": {
+            "path": "tests.json",
+            "sha256": "75567d920a699e4b76f7613f557597aaf92818a81ffc66455f07604305f088e9"
+          }
+        },
+        "bundle_digest": "sha256:06f0a2b7d7cb473f2d1ca733c213e2946dcf44f4bd480d773bc5a0f0070da577",
+        "expected_runner_version": "0.1.0",
+        "inference_mode": "rdfs",
+        "limits": {
+          "heap_mib": 256,
+          "max_input_bytes": 1048576,
+          "max_select_rows": 10000,
+          "timeout_seconds": 30
+        },
+        "schema_version": 1,
+        "validation_graph": "asserted_plus_inferred"
+      },
+      "limitations": [
+        "Required checks use Apache Jena RDFS inference, not a complete OWL DL reasoner.",
+        "OWL imports, restrictions, lists, equivalence, inverse, transitivity and disjointness are unsupported in ontology/data graphs.",
+        "Domain and range infer types; required values are checked with SHACL.",
+        "A false ASK result means not entailed under this profile, not proof of negation.",
+        "SPARQL is limited to local ASK/SELECT graph patterns and safe comparison filters; extension functions, paths, aggregates, SERVICE and dataset loading are blocked.",
+        "SHACL uses the asserted graph plus RDFS closure and a restricted SHACL Core vocabulary."
+      ],
+      "metrics": {
+        "asserted_triples": 18,
+        "closure_triples": 45,
+        "inferred_triples": 27
+      },
+      "profile": "rdfs",
+      "raw_artifacts": {
+        "query-results.json": "[\n  {\n    \"id\": \"subclass-transitivity::subclass-transitivity\",\n    \"expected\": true,\n    \"actual\": true,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"inherited-instance-type::inherited-instance-type\",\n    \"expected\": true,\n    \"actual\": true,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"subproperty-transitivity::subproperty-transitivity\",\n    \"expected\": true,\n    \"actual\": true,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"inherited-property-assertion::inherited-property-assertion\",\n    \"expected\": true,\n    \"actual\": true,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"property-domain::property-domain\",\n    \"expected\": true,\n    \"actual\": true,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"property-range::property-range\",\n    \"expected\": true,\n    \"actual\": true,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"range-after-subproperty::range-after-subproperty\",\n    \"expected\": true,\n    \"actual\": true,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"no-inverse-assertion::no-inverse-assertion\",\n    \"expected\": false,\n    \"actual\": false,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"no-narrower-type::no-narrower-type\",\n    \"expected\": false,\n    \"actual\": false,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"no-owner-domain-confusion::no-owner-domain-confusion\",\n    \"expected\": false,\n    \"actual\": false,\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  },\n  {\n    \"id\": \"__jena_closure_export\",\n    \"expected\": [],\n    \"actual\": [\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#Property\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/maintainedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#Property\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/operatedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#Property\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/ownedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Class\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Asset\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Class\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/CriticalService\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Class\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Owner\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Class\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Service\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Class\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Team\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Inventory\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Operations\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Payroll\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Warehouse\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Asset\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/CriticalService\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Owner\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Service\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#Resource\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Team\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Asset\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Inventory\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Asset\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Payroll\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Asset\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#domain\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/ownedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Asset\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Asset\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Asset\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/CriticalService\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Asset\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Service\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/CriticalService\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Payroll\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/CriticalService\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/CriticalService\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Operations\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/maintainedBy\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Payroll\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Operations\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/operatedBy\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Payroll\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Operations\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/ownedBy\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Payroll\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Owner\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Operations\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Owner\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Warehouse\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Owner\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#range\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/ownedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Owner\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Owner\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Owner\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Team\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Service\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Payroll\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Service\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/CriticalService\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Service\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Service\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Team\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Team\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Warehouse\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/ownedBy\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/Inventory\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/maintainedBy\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subPropertyOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/maintainedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/maintainedBy\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subPropertyOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/operatedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/operatedBy\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subPropertyOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/operatedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/ownedBy\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subPropertyOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/maintainedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/ownedBy\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subPropertyOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/operatedBy\"\n        }\n      },\n      {\n        \"o\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/ownedBy\"\n        },\n        \"p\": {\n          \"kind\": \"iri\",\n          \"value\": \"http://www.w3.org/2000/01/rdf-schema#subPropertyOf\"\n        },\n        \"s\": {\n          \"kind\": \"iri\",\n          \"value\": \"https://example.org/oe-compat/ownedBy\"\n        }\n      }\n    ],\n    \"status\": \"passed\",\n    \"message\": \"Expected result matched\"\n  }\n]",
+        "shacl-report.ttl": "PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX sh:   <http://www.w3.org/ns/shacl#>\nPREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>\n\n[ rdf:type     sh:ValidationReport;\n  sh:conforms  true\n] .\n"
+      },
+      "shacl": {
+        "conforms": true,
+        "violations": []
+      },
+      "stages": [
+        {
+          "message": "All artifact hashes, RDF inputs and test schemas checked",
+          "name": "integrity_and_syntax",
+          "status": "passed"
+        },
+        {
+          "message": "Restricted named-triple RDFS profile; local SHACL Core and SPARQL algebra inspected",
+          "name": "admitted_profile",
+          "status": "passed"
+        },
+        {
+          "message": "Apache Jena RDFS closure materialized",
+          "name": "materialization",
+          "status": "passed"
+        },
+        {
+          "message": "Global fixture conforms to required SHACL constraints",
+          "name": "data_constraints",
+          "status": "passed"
+        },
+        {
+          "message": "11 required cases executed",
+          "name": "executable_expectations",
+          "status": "passed"
+        },
+        {
+          "message": "Complete OWL DL reasoning is outside the admitted RDFS profile",
+          "name": "dl_consistency",
+          "status": "not_run"
+        }
+      ],
+      "started_at": "2026-11-01T11:47:24.128536Z",
+      "status": "passed",
+      "validation_graph": "asserted_plus_inferred"
+    },
+    "ontocheck": {
+      "context": {
+        "data_commit": "not-a-study-or-git-commit; see manifest.json",
+        "data_version": "engineering-known-answer-v1",
+        "metric_version": "ontocheck-69d42e38979f381fe531ae547fcc49b8ad58ef15",
+        "ontology_commit": "sha256:6c2803f3474f50863956325fc345bc96abca01dd2d3f559741a8a4d0cabeb583",
+        "ontology_version": "synthetic-v1"
+      },
+      "results": [
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "subclass-transitivity": "entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "subclass-transitivity",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 13.70850000239443,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "inherited-instance-type": "entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "inherited-instance-type",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.778416994260624,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "subproperty-transitivity": "entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "subproperty-transitivity",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 3.5942919930676,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "inherited-property-assertion": "entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "inherited-property-assertion",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.0932089973939583,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "property-domain": "entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "property-domain",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.007624992984347,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "property-range": "entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "property-range",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.0071670005563647,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "range-after-subproperty": "entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "range-after-subproperty",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.405874998657964,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "no-inverse-assertion": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "no-inverse-assertion",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 1.787583008990623,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "no-narrower-type": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "no-narrower-type",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.263165995827876,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        },
+        {
+          "actual": {
+            "assumptions": [
+              "Only the supplied named-triple graph and the admitted Jena RDFS Simple profile are used."
+            ],
+            "checks": {
+              "no-owner-domain-confusion": "not_entailed"
+            }
+          },
+          "answer_score": 0.0,
+          "case_id": "no-owner-domain-confusion",
+          "constraint_score": 1.0,
+          "diagnostics": [],
+          "evaluator": "constrained-plan-v1",
+          "evidence_score": null,
+          "inference_profile": "jena_rdfs_simple",
+          "level": "constrained_generation",
+          "metrics": {
+            "constraint_satisfaction": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          "runtime_ms": 2.3228749923873693,
+          "score": 1.0,
+          "status": "success",
+          "task_type": "constrained_plan",
+          "unsupported_claims": [],
+          "violations": []
+        }
+      ],
+      "score": 1.0,
+      "scores_by_level": {
+        "constrained_generation": 1.0
+      },
+      "scores_by_task_type": {
+        "constrained_plan": 1.0
+      },
+      "suite_id": "jena-rdfs-compat-v1"
+    }
+  },
+  "score": 1.0,
+  "split": "development",
+  "status": "completed",
+  "suite_sha256": "9b4261acdc2329990a6d50ce31e931793412c2f072387b7bc3b87093ac0d864d"
+}

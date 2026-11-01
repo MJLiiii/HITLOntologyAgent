@@ -1,0 +1,43 @@
+name: Verify Studio
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-engine-workflow:
+    # The confined engine launcher is supported on macOS. Other platforms fail closed.
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21.0.13'
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: '0.13.6'
+      - name: Install locked dependencies
+        run: make setup
+      - name: Build Java runner and both web bundles
+        run: make build
+      - name: Lint and check API contract drift
+        run: make lint check-api-contracts
+      - name: Verify confined engines and API workflows
+        run: OE_JAVA_EXECUTABLE="$JAVA_HOME/bin/java" .venv/bin/python -m pytest -q
+      - name: Verify web interactions
+        run: npm --prefix apps/studio-plugin test

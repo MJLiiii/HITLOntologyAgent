@@ -1,0 +1,432 @@
+{
+  "classification": "SIMULATED ENGINEERING TEST \u2014 not expert-study data",
+  "observed_date": "2026-11-01",
+  "surface": "Chrome actual browser against isolated localhost:5173",
+  "project": {
+    "id": "bee4fd6c-cc73-4201-bc74-8a3b94108d13",
+    "name": "Service knowledge",
+    "approved_version_id": "7b57d01b-8c06-492b-a641-d105c9959486",
+    "corpus_snapshot_id": "13c2d817-8ebf-4414-9445-19e726d0abf4",
+    "pending_publication_id": null
+  },
+  "records": {
+    "revision": [
+      {
+        "id": "7e551e96-f3cd-457c-ad78-ac8ac7618a1f",
+        "status": "draft",
+        "proposal_id": "a7072b8b-d9a1-46a5-8440-5fba7656f1d3",
+        "revision": 1,
+        "base_version_id": null,
+        "bundle_digest": "sha256:cf639103fb3c8ae97c92a4d62d86ffb38db7089b288f4f35e3b8e8ea8c7d6b1e",
+        "rationale": "Deterministic demo proposal from the synthetic fixture. Review all changes against evidence."
+      },
+      {
+        "id": "b527c8ba-3ce6-47d7-9748-da5509f0f5bb",
+        "status": "validation_failed",
+        "proposal_id": "a7072b8b-d9a1-46a5-8440-5fba7656f1d3",
+        "revision": 2,
+        "base_version_id": null,
+        "bundle_digest": "sha256:31b93e42a07a55a5a36433c5d41ad5f81fdb2ce5892bed77c1ab703b693bfd1e",
+        "rationale": "SIMULATED ENGINEERING TEST: deliberately remove both service classification entailment paths to verify failed CQ blocks submission."
+      },
+      {
+        "id": "830bdca5-1e1e-4b7b-9d26-ee2e5cfc6a7c",
+        "status": "published",
+        "proposal_id": "a7072b8b-d9a1-46a5-8440-5fba7656f1d3",
+        "revision": 3,
+        "base_version_id": null,
+        "bundle_digest": "sha256:82706ef4a0f4fbb50a1af95397e35d4f3d898a763fd178f9b5f54bf6c04134f1",
+        "rationale": "Restore the source-supported critical-service hierarchy identified by failed CQ-01."
+      },
+      {
+        "id": "9e5cb4dd-36b1-4d47-89f2-cf8c71e46a01",
+        "status": "published",
+        "proposal_id": "c51eb6df-b941-4249-a36d-0d10149baf98",
+        "revision": 1,
+        "base_version_id": "ef86fda4-ba3e-48f5-834a-5fd8ffefe767",
+        "bundle_digest": "sha256:0afd123cc63261b0bf716e99ff37bd43bbcf3097206c677f5587dfface831cf3",
+        "rationale": "Deterministic demo proposal from the synthetic fixture. Review all changes against evidence."
+      }
+    ],
+    "validation": [
+      {
+        "id": "0f22fdf3-3578-4bb1-8436-ef3ec59f9a1c",
+        "status": "failed",
+        "revision_id": "b527c8ba-3ce6-47d7-9748-da5509f0f5bb",
+        "bundle_digest": "sha256:31b93e42a07a55a5a36433c5d41ad5f81fdb2ce5892bed77c1ab703b693bfd1e",
+        "engine": {
+          "name": "Apache Jena",
+          "version": "6.2.0",
+          "runner_version": "0.1.0",
+          "isolation": {
+            "mode": "macos-seatbelt",
+            "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+            "launcher": "/usr/bin/sandbox-exec",
+            "platform": "darwin",
+            "network": "kernel-denied",
+            "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+            "rendered_profile_sha256": "12fa312d8ece2096e99716eb2ec4468aecd4c78047a685c47b27e3fb91cd9bdc",
+            "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+          },
+          "jar_sha256": "8e5fd2a8103a6211454489c683766c015b20906b0af1ac2664a2530a7d575b84"
+        },
+        "profile": "rdfs",
+        "cases": [
+          {
+            "id": "CQ-01",
+            "expected": true,
+            "actual": false,
+            "status": "failed",
+            "message": "Actual result did not match the explicit oracle"
+          },
+          {
+            "id": "CQ-02",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          }
+        ]
+      },
+      {
+        "id": "1800e7af-bd59-4165-8e31-fd87fc577e03",
+        "status": "passed",
+        "revision_id": "830bdca5-1e1e-4b7b-9d26-ee2e5cfc6a7c",
+        "bundle_digest": "sha256:82706ef4a0f4fbb50a1af95397e35d4f3d898a763fd178f9b5f54bf6c04134f1",
+        "engine": {
+          "name": "Apache Jena",
+          "version": "6.2.0",
+          "runner_version": "0.1.0",
+          "isolation": {
+            "mode": "macos-seatbelt",
+            "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+            "launcher": "/usr/bin/sandbox-exec",
+            "platform": "darwin",
+            "network": "kernel-denied",
+            "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+            "rendered_profile_sha256": "65ab0f486df5531e88fef28a3f25c42df4d3e464d8438178ec61ae8fc81313e2",
+            "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+          },
+          "jar_sha256": "8e5fd2a8103a6211454489c683766c015b20906b0af1ac2664a2530a7d575b84"
+        },
+        "profile": "rdfs",
+        "cases": [
+          {
+            "id": "CQ-01",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "CQ-02",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          }
+        ]
+      },
+      {
+        "id": "7d7e78ea-b4b8-4fe3-9630-a30058f9967c",
+        "status": "passed",
+        "revision_id": "9e5cb4dd-36b1-4d47-89f2-cf8c71e46a01",
+        "bundle_digest": "sha256:0afd123cc63261b0bf716e99ff37bd43bbcf3097206c677f5587dfface831cf3",
+        "engine": {
+          "name": "Apache Jena",
+          "version": "6.2.0",
+          "runner_version": "0.1.0",
+          "isolation": {
+            "mode": "macos-seatbelt",
+            "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+            "launcher": "/usr/bin/sandbox-exec",
+            "platform": "darwin",
+            "network": "kernel-denied",
+            "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+            "rendered_profile_sha256": "d4202030fd1f91b77e5dcfe6bbaa68ae5df2c65e311947999b66d2f9d6648709",
+            "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+          },
+          "jar_sha256": "8e5fd2a8103a6211454489c683766c015b20906b0af1ac2664a2530a7d575b84"
+        },
+        "profile": "rdfs",
+        "cases": [
+          {
+            "id": "CQ-01",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "CQ-02",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          }
+        ]
+      }
+    ],
+    "assessment": [
+      {
+        "id": "c96eb3a9-f6a6-462a-a97f-deab7e5961ea",
+        "status": "completed",
+        "revision_id": "830bdca5-1e1e-4b7b-9d26-ee2e5cfc6a7c",
+        "bundle_digest": "sha256:82706ef4a0f4fbb50a1af95397e35d4f3d898a763fd178f9b5f54bf6c04134f1",
+        "engine": {
+          "name": "OntoCheck",
+          "version": "0.1.3",
+          "commit": "69d42e38979f381fe531ae547fcc49b8ad58ef15",
+          "network": "disabled",
+          "network_control": "macOS Seatbelt network denial plus Python audit hook",
+          "isolation": {
+            "mode": "macos-seatbelt",
+            "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+            "launcher": "/usr/bin/sandbox-exec",
+            "platform": "darwin",
+            "network": "kernel-denied",
+            "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+            "rendered_profile_sha256": "b4b7e05b72c6a2202b6dd5845dac799153eb7bb915ed5facf2c160d1995af79a",
+            "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+          },
+          "python": "3.12.14",
+          "resources": {
+            "nltk_english_stopwords_sha256": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b"
+          },
+          "packages": {
+            "ontocheck": "0.1.3",
+            "rdflib": "7.6.0",
+            "networkx": "3.7",
+            "nltk": "3.10.4"
+          },
+          "configuration": {
+            "domain_prefixes": [
+              "ex"
+            ],
+            "domain_ns_fragments": [
+              "https://example.org/oe-demo/"
+            ],
+            "authorize_prefix_mapping": false,
+            "mappings": {},
+            "mappings_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "weighting": "canonical",
+            "max_hops": 8,
+            "lam": 0.6931471805599453
+          }
+        },
+        "vocabulary_coverage": 1.0,
+        "vocabulary_utilisation": 0.5,
+        "strict_fitness": 1.0,
+        "approximate_fitness": 1.0
+      },
+      {
+        "id": "f636f905-15fa-4a4a-a6ad-928631af3fc3",
+        "status": "completed",
+        "revision_id": "9e5cb4dd-36b1-4d47-89f2-cf8c71e46a01",
+        "bundle_digest": "sha256:0afd123cc63261b0bf716e99ff37bd43bbcf3097206c677f5587dfface831cf3",
+        "engine": {
+          "name": "OntoCheck",
+          "version": "0.1.3",
+          "commit": "69d42e38979f381fe531ae547fcc49b8ad58ef15",
+          "network": "disabled",
+          "network_control": "macOS Seatbelt network denial plus Python audit hook",
+          "isolation": {
+            "mode": "macos-seatbelt",
+            "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+            "launcher": "/usr/bin/sandbox-exec",
+            "platform": "darwin",
+            "network": "kernel-denied",
+            "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+            "rendered_profile_sha256": "128e498ad3d948f3c1d1121c794855a3c56b262b4a98d8c0193873971d1e354a",
+            "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+          },
+          "python": "3.12.14",
+          "resources": {
+            "nltk_english_stopwords_sha256": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b"
+          },
+          "packages": {
+            "ontocheck": "0.1.3",
+            "rdflib": "7.6.0",
+            "networkx": "3.7",
+            "nltk": "3.10.4"
+          },
+          "configuration": {
+            "domain_prefixes": [
+              "ex"
+            ],
+            "domain_ns_fragments": [
+              "https://example.org/oe-demo/"
+            ],
+            "authorize_prefix_mapping": false,
+            "mappings": {},
+            "mappings_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "weighting": "canonical",
+            "max_hops": 8,
+            "lam": 0.6931471805599453
+          }
+        },
+        "vocabulary_coverage": 1.0,
+        "vocabulary_utilisation": 0.5,
+        "strict_fitness": 1.0,
+        "approximate_fitness": 1.0
+      }
+    ],
+    "publication": [
+      {
+        "id": "3cdfd5ca-c092-40b7-bb08-5474d9a84fb0",
+        "status": "completed",
+        "proposal_id": "a7072b8b-d9a1-46a5-8440-5fba7656f1d3",
+        "revision": 3,
+        "revision_id": "830bdca5-1e1e-4b7b-9d26-ee2e5cfc6a7c",
+        "bundle_digest": "sha256:82706ef4a0f4fbb50a1af95397e35d4f3d898a763fd178f9b5f54bf6c04134f1",
+        "approval_ids": [
+          "e8e5d723-f17d-43b2-8333-77e1e5a8bcdb"
+        ],
+        "expected_head": null,
+        "new_version_id": "ef86fda4-ba3e-48f5-834a-5fd8ffefe767"
+      },
+      {
+        "id": "75579cbb-665a-4f6b-80dd-ae33c73c2994",
+        "status": "completed",
+        "proposal_id": "c51eb6df-b941-4249-a36d-0d10149baf98",
+        "revision": 1,
+        "revision_id": "9e5cb4dd-36b1-4d47-89f2-cf8c71e46a01",
+        "bundle_digest": "sha256:0afd123cc63261b0bf716e99ff37bd43bbcf3097206c677f5587dfface831cf3",
+        "approval_ids": [
+          "c19e537c-0f81-4690-92e2-54ba4ede013b"
+        ],
+        "expected_head": "ef86fda4-ba3e-48f5-834a-5fd8ffefe767",
+        "new_version_id": "7b57d01b-8c06-492b-a641-d105c9959486"
+      }
+    ],
+    "version": [
+      {
+        "id": "5b3000f5-0ed5-4825-bc56-e602fe2243ac",
+        "status": "reference",
+        "label": "Demo reference",
+        "parent_version_id": null,
+        "commit": null,
+        "triple_count": 21
+      },
+      {
+        "id": "ef86fda4-ba3e-48f5-834a-5fd8ffefe767",
+        "status": "approved",
+        "label": "Approved release 1",
+        "parent_version_id": null,
+        "commit": "575657e0fb1e6281f3da91fe885e8df6d330b07b",
+        "triple_count": 20,
+        "bundle_digest": "sha256:82706ef4a0f4fbb50a1af95397e35d4f3d898a763fd178f9b5f54bf6c04134f1",
+        "publication_id": "3cdfd5ca-c092-40b7-bb08-5474d9a84fb0"
+      },
+      {
+        "id": "7b57d01b-8c06-492b-a641-d105c9959486",
+        "status": "approved",
+        "label": "Approved release 2",
+        "parent_version_id": "ef86fda4-ba3e-48f5-834a-5fd8ffefe767",
+        "commit": "41ab7c1b16ccf2846092bfcd2c4b1f56c2c184c5",
+        "triple_count": 21,
+        "bundle_digest": "sha256:0afd123cc63261b0bf716e99ff37bd43bbcf3097206c677f5587dfface831cf3",
+        "publication_id": "75579cbb-665a-4f6b-80dd-ae33c73c2994"
+      }
+    ],
+    "review": [
+      {
+        "id": "e8e5d723-f17d-43b2-8333-77e1e5a8bcdb",
+        "status": "created",
+        "proposal_id": "a7072b8b-d9a1-46a5-8440-5fba7656f1d3",
+        "revision": 3,
+        "revision_id": "830bdca5-1e1e-4b7b-9d26-ee2e5cfc6a7c",
+        "decision": "accept",
+        "rationale": "SIMULATED ENGINEERING TEST: accept revision 3 only in this disposable workspace after inspecting real Jena CQ results, assessment and frozen synthetic evidence. This is not expert-study data or a production approval.",
+        "validation_run_id": "1800e7af-bd59-4165-8e31-fd87fc577e03",
+        "required_assessment_run_ids": [
+          "c96eb3a9-f6a6-462a-a97f-deab7e5961ea"
+        ],
+        "bundle_digest": "sha256:82706ef4a0f4fbb50a1af95397e35d4f3d898a763fd178f9b5f54bf6c04134f1",
+        "actor": {
+          "subject": "local-human",
+          "kind": "human",
+          "roles": [
+            "researcher",
+            "reviewer",
+            "approver",
+            "viewer"
+          ]
+        }
+      },
+      {
+        "id": "c19e537c-0f81-4690-92e2-54ba4ede013b",
+        "status": "created",
+        "proposal_id": "c51eb6df-b941-4249-a36d-0d10149baf98",
+        "revision": 1,
+        "revision_id": "9e5cb4dd-36b1-4d47-89f2-cf8c71e46a01",
+        "decision": "accept",
+        "rationale": "SIMULATED ENGINEERING TEST: accept the synthetic Service comment after inspecting both passed CQs and completed assessment. Disposable second release for previous-version navigation only; no expert study or production approval.",
+        "validation_run_id": "7d7e78ea-b4b8-4fe3-9630-a30058f9967c",
+        "required_assessment_run_ids": [
+          "f636f905-15fa-4a4a-a6ad-928631af3fc3"
+        ],
+        "bundle_digest": "sha256:0afd123cc63261b0bf716e99ff37bd43bbcf3097206c677f5587dfface831cf3",
+        "actor": {
+          "subject": "local-human",
+          "kind": "human",
+          "roles": [
+            "researcher",
+            "reviewer",
+            "approver",
+            "viewer"
+          ]
+        }
+      }
+    ],
+    "scope_decision": [
+      {
+        "id": "2d159e4d-d4c1-4d18-9e5d-eaf5fd4d2764",
+        "status": "created",
+        "decision": "accept",
+        "rationale": "SIMULATED ENGINEERING TEST: accept this synthetic scope only inside the disposable browser acceptance workspace; no research or production approval.",
+        "scope_digest": "sha256:be084d66b528dd1b345c3babfea73cfdfb30b2b31bb251216156342d4d93b83a",
+        "actor": {
+          "subject": "local-human",
+          "kind": "human",
+          "roles": [
+            "researcher",
+            "reviewer",
+            "approver",
+            "viewer"
+          ]
+        }
+      }
+    ]
+  },
+  "review_timer_records": 0,
+  "experiment_records": 0,
+  "browser_checks": {
+    "viewport_mobile": [
+      390,
+      844
+    ],
+    "mobile_client_width": 390,
+    "mobile_scroll_width": 390,
+    "closed_navigation_tab_target": "Open navigation",
+    "untrusted_source_literal_visible": true,
+    "injected_fixture_script_nodes": 0,
+    "javascript_dialog_open": false,
+    "final_console_errors_or_warnings": [],
+    "invalid_local_token": "rejected with local session recovery guidance"
+  },
+  "screenshots_sha256": {
+    "acceptance-experiment-selector.jpg": "340a968144a257e335e5f64db37ff2feef00c92a71f1c14a25d92f6cef58608c",
+    "acceptance-failed-cq.jpg": "43093ab5bd346cf70509377ee348bb4326dbc069864060423f484102cdef5c06",
+    "acceptance-malicious-source-escaped.jpg": "af21d26d44135ad33a53a872f0fc6078dceb58e5ebe13318c8b5add283db5a41",
+    "acceptance-mobile-experiments.jpg": "478511ff09f55aec194184ce910c43210e9616555c352a9dfdb0e7c7dacf486c",
+    "acceptance-mobile-history.jpg": "f5d4490576ef5d938a3bbda1bb450316a6ed73f7ca996d854f98e7cc8d5e2f1b",
+    "acceptance-previous-approved-version.jpg": "89e17140f318d6eb74fde2ccc57dcf1e93a59bb191e02879df0a7009a4771e31",
+    "acceptance-published-version.jpg": "9b96f43c1ffb3d7ea174d3d77c973f5689ea721ca795471d4dd87311022164e9",
+    "acceptance-session-error.jpg": "3c074e8b511bcaa26ae5b19d6b681f8f1e07a29502744626ce19889ce81c6387"
+  },
+  "validation": {
+    "frontend_tests": "36 passed in 12 files",
+    "build": "TypeScript + standalone Vite + plugin Vite passed"
+  }
+}

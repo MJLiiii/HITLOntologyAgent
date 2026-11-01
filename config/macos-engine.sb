@@ -1,0 +1,22 @@
+(version 1)
+; This profile confines file content access and networking. It intentionally does
+; not claim to restrict every metadata, IPC, process or kernel operation.
+(allow default)
+(deny network*)
+(deny file-read*)
+(allow file-read-metadata)
+(deny file-write*)
+(allow file-read*
+  (literal "/")
+  (subpath "/System/Library")
+  (subpath "/System/Volumes/Preboot/Cryptexes/OS")
+  (subpath "/usr/lib")
+  (subpath "/usr/share/locale")
+  (subpath "/private/var/db/timezone")
+  (literal "/private/etc/localtime")
+  (literal "/dev/null")
+  (literal "/dev/random")
+  (literal "/dev/urandom"))
+; The parent substitutes only JSON-quoted, resolved, deployment-owned paths.
+__RUNTIME_READ_RULES__
+(allow file-write* (subpath (param "WORKDIR")) (literal "/dev/null"))

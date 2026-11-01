@@ -1,0 +1,22 @@
+{
+  "ui": {
+    "repository": "trustgraph-ai/trustgraph-ui",
+    "commit": "02efcac8adf04a1de1a4f601c1ecbb70ed910d6d",
+    "archive_sha256": "51fd5b7187d2d6cbed0a3344155f2a441c8867e6ef28f90a0c4d8defdda85edd",
+    "lock_sha256": "7cb124507f31bc42b787ed6d1e503964265dd38e71a967c5bdcce34bf15ec2be"
+  },
+  "template": {
+    "repository": "trustgraph-ai/ui-plugin-template",
+    "commit": "9b8763e0e9c833477004c59aafb5d5530d13d4a9",
+    "archive_sha256": "9c7c64568558e6ca8e576890d72f0275f3e0cd8ae6ad66401e88a72e3de91187",
+    "lock_sha256": "7f61496bb23a58d1be90d2be27c8ff081c86e16d53661cbc950e4bfabc2bb7e0"
+  },
+  "backend": {
+    "repository": "trustgraph-ai/trustgraph",
+    "commit": "25d5d56ef6ee32a15dcd6710b9e1ab8c42419027",
+    "archive_sha256": "e9d8a80e0e74b76ee9adced904123ae954dc1b9b2083fd9a6b33e4571717d086",
+    "distribution_version": "2.11.1",
+    "image_arm64": "trustgraph/trustgraph-flow@sha256:29ab8fbb59fcb05318dc9208d946d4a1b2b74e6863099b9f752fc72ffc52bc0e",
+    "auth_source_sha256": "97e91595ef189e64bb51cf49d74941925cb8005fa8d3980010368be4a2f84a18"
+  }
+}

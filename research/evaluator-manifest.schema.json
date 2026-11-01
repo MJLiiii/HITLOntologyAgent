@@ -1,0 +1,117 @@
+{
+  "$defs": {
+    "FileReference": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 240,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "title": "FileReference",
+      "type": "object"
+    },
+    "ScheduledRun": {
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "title": "Condition",
+          "type": "string"
+        },
+        "replicate": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Replicate",
+          "type": "integer"
+        },
+        "task_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "condition",
+        "replicate"
+      ],
+      "title": "ScheduledRun",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "evaluator_subject": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Evaluator Subject",
+      "type": "string"
+    },
+    "outputs": {
+      "$ref": "#/$defs/FileReference"
+    },
+    "protocol_id": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Protocol Id",
+      "type": "string"
+    },
+    "schedule": {
+      "items": {
+        "$ref": "#/$defs/ScheduledRun"
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "title": "Schedule",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "split": {
+      "const": "held_out",
+      "title": "Split",
+      "type": "string"
+    },
+    "task_packets": {
+      "additionalProperties": {
+        "$ref": "#/$defs/FileReference"
+      },
+      "maxProperties": 50,
+      "minProperties": 1,
+      "title": "Task Packets",
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "split",
+    "evaluator_subject",
+    "outputs",
+    "task_packets",
+    "schedule"
+  ],
+  "title": "FrozenEvaluatorManifest",
+  "type": "object"
+}
