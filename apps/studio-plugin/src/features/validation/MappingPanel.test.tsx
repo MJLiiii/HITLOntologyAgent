@@ -1,11 +1,12 @@
+import { testActor, evidenceFixture, projectFixture } from '../../test-fixtures';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MappingPanel } from './MappingPanel';
 import type { Evidence, MappingConfig, MappingEntry, MappingSet, Project, Session } from '../../api/generated';
 
-const project:Project={id:'p',name:'Demo',domain:'demo',approved_version_id:null,corpus_snapshot_id:'corpus',scope_accepted:true,scope_digest:'scope'};
+const project:Project=projectFixture({id:'p',name:'Demo',domain:'demo',approved_version_id:null,corpus_snapshot_id:'corpus',scope_accepted:true,scope_digest:'scope'});
 const session:Session={actor:{subject:'human-reviewer',kind:'human',roles:['researcher','reviewer']},mode:'local',model_mode:'local'};
-const passage:Evidence={id:'evidence-one',document_id:'document',title:'Service glossary',quote:'A service has an accountable owner.',resolved:true};
+const passage:Evidence=evidenceFixture({id:'evidence-one',document_id:'document',title:'Service glossary',quote:'A service has an accountable owner.',resolved:true});
 const empty:MappingConfig={decision_id:null,digest:'empty-digest',scope_digest:'scope',mappings:[]};
 const entry:MappingEntry={requirement_iri:'https://example.org/task/Service',ontology_iri:'https://example.org/oe-demo/Service',relation_type:'canonical_correspondence',rationale:'Both identify the service described in the source glossary.',evidence_ids:['evidence-one']};
 afterEach(()=>vi.unstubAllGlobals());
@@ -16,7 +17,7 @@ function mockMappingServer(initial:MappingConfig=empty) {
   vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
     if(options.method==='POST'){
       const body=JSON.parse(String(options.body));writes.push({path,body});
-      if(path.endsWith('/mapping-sets')){const set:MappingSet={id:'set-one',digest:'set-digest',scope_digest:'scope',status:'needs_review',mappings:body.mappings};sets.push(set);return new Response(JSON.stringify(set));}
+      if(path.endsWith('/mapping-sets')){const set:MappingSet={actor:testActor,created_at:"2026-11-01T00:00:00Z",id:'set-one',digest:'set-digest',scope_digest:'scope',status:'needs_review',mappings:body.mappings};sets.push(set);return new Response(JSON.stringify(set));}
       if(path.endsWith('/mapping-decisions')){sets[0].status=body.decision==='accept'?'accepted':'rejected';if(body.decision==='accept'){config={decision_id:'decision-one',digest:'active-digest',scope_digest:'scope',mappings:sets[0].mappings.map(mapping=>({...mapping,reviewer:'human-reviewer',review_id:'decision-one'}))};currentProject={...currentProject,assessment_mapping_decision_id:'decision-one',assessment_mappings_digest:'active-digest'};}return new Response(JSON.stringify({id:'decision-one',...body,mappings:config.mappings}));}
     }
     if(path.endsWith('/mapping-config'))return new Response(JSON.stringify(config));

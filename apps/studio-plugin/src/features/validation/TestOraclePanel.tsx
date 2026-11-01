@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import type { Project, Proposal, Revision, Session, TestSpec, TestSuite } from '../../api/generated';
+import type { Project, Revision, Session, TestSpec, TestSuite } from '../../api/generated';
 import type { OracleDecision, TestGenerationRequest } from '../../api/openapi';
-import { errorMessage, list, post, request, runJob } from '../../api/client';
+import { errorMessage, list, operation, runJob } from '../../api/client';
 import { Badge, ErrorNotice, short } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 
@@ -24,7 +24,7 @@ function OracleDetails({test,fixture,base}:{test:TestSpec;fixture?:NonNullable<T
   </dl>
     {!!test.assumptions?.length&&<div><strong>Assumptions to review</strong><ul>{test.assumptions.map((assumption,index)=><li key={index}>{assumption}</li>)}</ul></div>}
     {test.kind==='shacl'&&<div className="oracle-violations"><strong>Expected SHACL violation signatures</strong>{test.expected_violations===undefined?<p>No exact violation signatures supplied; only the conformance expectation is checked.</p>:<pre aria-label={`Expected SHACL violations for ${test.test_id}`}>{JSON.stringify(test.expected_violations,null,2)}</pre>}</div>}
-    {fixture&&<details><summary>Bound fixture artifact</summary><div aria-label={`Fixture artifact for ${test.test_id}`}><a href={`/api/v1${base}/artifacts/${encodeURIComponent(fixture.id)}`} target="_blank" rel="noreferrer">Open immutable fixture artifact</a><pre>{JSON.stringify(fixture,null,2)}</pre></div></details>}
+    {fixture&&<details><summary>Bound fixture artifact</summary><div aria-label={`Fixture artifact for ${test.test_id}`}>{fixture.id?<a href={`/api/v1${base}/artifacts/${encodeURIComponent(fixture.id)}`} target="_blank" rel="noreferrer">Open immutable fixture artifact</a>:<span>Artifact link unavailable for this historical record.</span>}<pre>{JSON.stringify(fixture,null,2)}</pre></div></details>}
   </div>;
 }
 
@@ -44,28 +44,28 @@ export function TestOraclePanel({project,session,revision,onRefresh,onOpenPropos
   const canDecide=human && session.actor.roles.includes('reviewer') && current;
   useEffect(()=>{
     let active=true;setLoading(true);setError('');setRationale('');
-    list<TestSuite>(`${base}/test-suites`).then(result=>{if(active)setSuites(result);}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
+    list('GET /api/v1/projects/{p}/test-suites',{path:{p:project.id}}).then(result=>{if(active)setSuites(result);}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
     return()=>{active=false;};
   },[base,revision.revision_id,revision.bundle_digest]);
   async function generate() {
     setBusy(true);setError('');setNotice('');setSuccessor(null);setStage('Generating development test suggestions');
     try {
-      await runJob<TestSuite>(`${base}/test-generation-jobs`,{proposal_id:revision.id,revision:revision.revision} satisfies TestGenerationRequest,setStage);
-      setSuites(await list<TestSuite>(`${base}/test-suites`));
+      await runJob('POST /api/v1/projects/{p}/test-generation-jobs',{path:{p:project.id},body:{proposal_id:revision.id,revision:revision.revision} satisfies TestGenerationRequest},setStage);
+      setSuites(await list('GET /api/v1/projects/{p}/test-suites',{path:{p:project.id}}));
       setNotice('Test suggestions are ready for human review. No expectation has been accepted or added to the candidate.');
     }catch(err){setError(errorMessage(err));}finally{setBusy(false);}
   }
   async function decide(suite:TestSuite,decision:'accept'|'reject') {
     setBusy(true);setError('');setNotice('');setStage('Recording oracle decision');
     try {
-      const [currentProject,latestProposals,currentSuites]=await Promise.all([request<Project>(base),list<Proposal>(`${base}/proposals`),list<TestSuite>(`${base}/test-suites`)]);
+      const [currentProject,latestProposals,currentSuites]=await Promise.all([operation('GET /api/v1/projects/{p}',{path:{p:project.id}}),list('GET /api/v1/projects/{p}/proposals',{path:{p:project.id}}),list('GET /api/v1/projects/{p}/test-suites',{path:{p:project.id}})]);
       const latest=latestProposals.find(proposal=>proposal.id===revision.id);
       const currentSuite=currentSuites.find(value=>value.id===suite.id);
       if(currentProject.approved_version_id!==project.approved_version_id || latest?.revision!==revision.revision || latest.bundle_digest!==revision.bundle_digest || currentSuite?.digest!==suite.digest || currentSuite.status!=='needs_review') {
         await onRefresh();setSuites(currentSuites);throw new Error('The candidate, approved head, or test suite changed. Review the refreshed content before deciding.');
       }
-      const result=await post<Revision|{id:string}>(`${base}/test-oracle-decisions`,{test_suite_id:suite.id,test_suite_digest:suite.digest,decision,rationale:rationale.trim()} satisfies OracleDecision);
-      setSuites(await list<TestSuite>(`${base}/test-suites`));
+      const result=await operation('POST /api/v1/projects/{p}/test-oracle-decisions',{path:{p:project.id},body:{test_suite_id:suite.id,test_suite_digest:suite.digest,decision,rationale:rationale.trim()} satisfies OracleDecision});
+      setSuites(await list('GET /api/v1/projects/{p}/test-suites',{path:{p:project.id}}));
       await onRefresh();setRationale('');
       if(decision==='accept' && 'revision' in result) {
         setSuccessor(result.revision);

@@ -1,9 +1,10 @@
+import { projectFixture } from '../../test-fixtures';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SeedImportPanel } from './SeedImportPanel';
 import type { Project, Session } from '../../api/generated';
 
-const project:Project={id:'p',name:'Demo',domain:'demo',approved_version_id:null,corpus_snapshot_id:'frozen-corpus',scope_accepted:false,scope_digest:'exact-scope'};
+const project:Project=projectFixture({id:'p',name:'Demo',domain:'demo',approved_version_id:null,corpus_snapshot_id:'frozen-corpus',scope_accepted:false,scope_digest:'exact-scope'});
 const session:Session={actor:{subject:'human',kind:'human',roles:['researcher']},mode:'local',model_mode:'local'};
 afterEach(()=>vi.unstubAllGlobals());
 

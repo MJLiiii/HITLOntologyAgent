@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import type { Evidence, MappingConfig, MappingEntry, MappingSet, Project, Session } from '../../api/generated';
+import type { AssessmentMapping, Evidence, MappingConfig, MappingEntry, MappingSet, Project, Session } from '../../api/generated';
 import type { MappingDecision, MappingDraft, MappingSetRequest } from '../../api/openapi';
-import { errorMessage, list, post, request } from '../../api/client';
+import { errorMessage, list, operation } from '../../api/client';
 import { Badge, date, ErrorNotice, EvidenceList, Loading, short } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 
-function MappingRecords({mappings,evidence,reviewed=false}: {mappings:MappingEntry[];evidence:Evidence[];reviewed?:boolean}) {
-  return <div className="mapping-records">{mappings.map((mapping,index)=><article className="mapping-record" key={`${mapping.requirement_iri}:${index}`}><div className="mapping-terms"><div><span>Requirement term</span><code>{mapping.requirement_iri}</code></div><Icon name="chevron" size={16}/><div><span>Ontology term</span><code>{mapping.ontology_iri}</code></div></div><p>{mapping.rationale}</p><span className="mapping-semantics">Canonical tool correspondence · no OWL equivalence axiom</span>{reviewed&&<div className="mapping-review-meta">Reviewer <strong>{mapping.reviewer||'Not recorded'}</strong> · Decision <code>{mapping.review_id||'Not recorded'}</code></div>}<details className="mapping-evidence"><summary>Inspect evidence ({mapping.evidence_ids.length})</summary><EvidenceList evidence={mapping.evidence_ids.map(id=>evidence.find(item=>item.id===id)||{id,document_id:'',title:`Evidence ${id}`,quote:'This evidence is not available in the current corpus view.',resolved:false})}/></details></article>)}</div>;
+function MappingRecords({mappings,evidence,reviewed=false}: {mappings:(MappingEntry | AssessmentMapping)[];evidence:Evidence[];reviewed?:boolean}) {
+  return <div className="mapping-records">{mappings.map((mapping,index)=><article className="mapping-record" key={`${mapping.requirement_iri}:${index}`}><div className="mapping-terms"><div><span>Requirement term</span><code>{mapping.requirement_iri}</code></div><Icon name="chevron" size={16}/><div><span>Ontology term</span><code>{mapping.ontology_iri}</code></div></div><p>{mapping.rationale}</p><span className="mapping-semantics">Canonical tool correspondence · no OWL equivalence axiom</span>{reviewed&&<div className="mapping-review-meta">Reviewer <strong>{'reviewer' in mapping ? mapping.reviewer : 'Not recorded'}</strong> · Decision <code>{'review_id' in mapping ? mapping.review_id : 'Not recorded'}</code></div>}<details className="mapping-evidence"><summary>Inspect evidence ({mapping.evidence_ids.length})</summary><EvidenceList evidence={mapping.evidence_ids.map(id=>evidence.find(item=>item.id===id)||{id,document_id:'',title:`Evidence ${id}`,quote:'This evidence is not available in the current corpus view.',resolved:false})}/></details></article>)}</div>;
 }
 
 export function MappingPanel({project,session,onRefresh}: {project:Project;session:Session;onRefresh:()=>Promise<void>}) {
@@ -30,7 +30,7 @@ export function MappingPanel({project,session,onRefresh}: {project:Project;sessi
   const unresolved=!!candidate&&candidate.mappings.some(mapping=>mapping.evidence_ids.some(id=>!evidence.find(item=>item.id===id&&item.resolved)));
   useEffect(()=>{
     let active=true;setLoading(true);setError('');
-    Promise.all([request<MappingConfig>(`${base}/mapping-config`),list<MappingSet>(`${base}/mapping-sets`),list<Evidence>(`${base}/corpus-evidence`)]).then(([activeConfig,history,corpus])=>{if(active){setConfig(activeConfig);setSets(history);setEvidence(corpus);}}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
+    Promise.all([operation('GET /api/v1/projects/{p}/mapping-config',{path:{p:project.id}}),list('GET /api/v1/projects/{p}/mapping-sets',{path:{p:project.id}}),list('GET /api/v1/projects/{p}/corpus-evidence',{path:{p:project.id}})]).then(([activeConfig,history,corpus])=>{if(active){setConfig(activeConfig);setSets(history);setEvidence(corpus);}}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
     return()=>{active=false;};
   },[base,project.scope_digest,project.corpus_snapshot_id,project.assessment_mapping_decision_id,project.assessment_mappings_digest,reload]);
   function edit() {
@@ -44,10 +44,10 @@ export function MappingPanel({project,session,onRefresh}: {project:Project;sessi
     if(draft.some(mapping=>mapping.evidence_ids.length===0)){setError('Select at least one resolved evidence passage for each correspondence.');return;}
     setBusy(true);setError('');setNotice('');
     try {
-      const [current,active]=await Promise.all([request<Project>(base),request<MappingConfig>(`${base}/mapping-config`)]);
+      const [current,active]=await Promise.all([operation('GET /api/v1/projects/{p}',{path:{p:project.id}}),operation('GET /api/v1/projects/{p}/mapping-config',{path:{p:project.id}})]);
       if(current.scope_digest!==draftBasis.scope||current.pending_publication_id||active.digest!==draftBasis.digest||active.decision_id!==draftBasis.decision){await onRefresh();setReload(value=>value+1);throw new Error('The scope, active mappings, or publication state changed. Review the refreshed configuration before proposing a replacement.');}
-      const result=await post<MappingSet>(`${base}/mapping-sets`,{mappings:draft} satisfies MappingSetRequest);
-      setSets(await list<MappingSet>(`${base}/mapping-sets`));setSelected(result.id);setDraft(null);setRationale('');
+      const result=await operation('POST /api/v1/projects/{p}/mapping-sets',{path:{p:project.id},body:{mappings:draft} satisfies MappingSetRequest});
+      setSets(await list('GET /api/v1/projects/{p}/mapping-sets',{path:{p:project.id}}));setSelected(result.id);setDraft(null);setRationale('');
       setNotice('A mapping set was proposed for human review. Active mappings and ontology axioms are unchanged.');
     }catch(err){setError(errorMessage(err));}finally{setBusy(false);}
   }
@@ -55,10 +55,10 @@ export function MappingPanel({project,session,onRefresh}: {project:Project;sessi
     if(!candidate||!config||!human||busy||rationale.trim().length<5)return;
     setBusy(true);setError('');setNotice('');
     try {
-      const [current,history,active]=await Promise.all([request<Project>(base),list<MappingSet>(`${base}/mapping-sets`),request<MappingConfig>(`${base}/mapping-config`)]);
+      const [current,history,active]=await Promise.all([operation('GET /api/v1/projects/{p}',{path:{p:project.id}}),list('GET /api/v1/projects/{p}/mapping-sets',{path:{p:project.id}}),operation('GET /api/v1/projects/{p}/mapping-config',{path:{p:project.id}})]);
       const fresh=history.find(set=>set.id===candidate.id);
       if(current.pending_publication_id||current.scope_digest!==candidate.scope_digest||fresh?.digest!==candidate.digest||fresh.status!=='needs_review'||active.digest!==config.digest||active.decision_id!==config.decision_id){await onRefresh();setReload(value=>value+1);throw new Error('The mapping set, scope, or active configuration changed. Review the refreshed records before deciding.');}
-      await post(`${base}/mapping-decisions`,{mapping_set_id:candidate.id,digest:candidate.digest,decision,rationale:rationale.trim()} satisfies MappingDecision);
+      await operation('POST /api/v1/projects/{p}/mapping-decisions',{path:{p:project.id},body:{mapping_set_id:candidate.id,digest:candidate.digest,decision,rationale:rationale.trim()} satisfies MappingDecision});
       await onRefresh();setReload(value=>value+1);setRationale('');
       setNotice(decision==='accept'?`The mapping set was accepted${candidate.mappings.length?'':' and active correspondences were cleared'}. Create a successor candidate and rerun validation, assessment, and release review. No OWL equivalence axiom was added and no ontology was approved.`:'The mapping proposal was rejected. Active assessment mappings are unchanged.');
     }catch(err){setError(errorMessage(err));}finally{setBusy(false);}

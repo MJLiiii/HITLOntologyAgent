@@ -1,11 +1,12 @@
+import { projectFixture, versionFixture } from '../../test-fixtures';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ChatView } from './ChatView';
 import type { Project, Session, Version } from '../../api/generated';
 
-const project:Project={id:'p',name:'Service knowledge',domain:'demo',approved_version_id:'approved',corpus_snapshot_id:'new-corpus',scope_accepted:true,scope_digest:'scope'};
+const project:Project=projectFixture({id:'p',name:'Service knowledge',domain:'demo',approved_version_id:'approved',corpus_snapshot_id:'new-corpus',scope_accepted:true,scope_digest:'scope'});
 const session:Session={actor:{subject:'human',kind:'human',roles:['researcher']},mode:'local',model_mode:'local'};
-const versions:Version[]=[{id:'approved',label:'Approved version',status:'approved',source_snapshot_id:'historical-corpus',created_at:'',triples:[],class_count:1,property_count:1,triple_count:1}];
+const versions:Version[]=[versionFixture({id:'approved',label:'Approved version',status:'approved',source_snapshot_id:'historical-corpus',created_at:'',triples:[],class_count:1,property_count:1,triple_count:1})];
 afterEach(()=>vi.unstubAllGlobals());
 
 function wire(sourceSelection:string,corpus:string) {

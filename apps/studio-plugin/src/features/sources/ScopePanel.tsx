@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Project, ScopeVersion, Session } from '../../api/generated';
 import type { CompetencyQuestion, ScopeDecision, ScopeUpload } from '../../api/openapi';
-import { errorMessage, list, post, request } from '../../api/client';
+import { errorMessage, list, operation } from '../../api/client';
 import { Badge, date, ErrorNotice, Loading, short } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 
@@ -27,7 +27,7 @@ export function ScopePanel({project,session,onRefresh}: {project:Project;session
   const historical=!!inspected&&inspected.digest!==project.scope_digest;
   useEffect(()=>{
     let active=true;setLoading(true);setError('');
-    Promise.all([request<ScopeVersion>(`${base}/scope`),list<ScopeVersion>(`${base}/scopes`)]).then(([current,history])=>{if(active){setScope(current);setVersions(history);setInspected(null);}}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
+    Promise.all([operation('GET /api/v1/projects/{p}/scope',{path:{p:project.id}}),list('GET /api/v1/projects/{p}/scopes',{path:{p:project.id}})]).then(([current,history])=>{if(active){setScope(current);setVersions(history);setInspected(null);}}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
     return()=>{active=false;};
   },[base,project.scope_digest,reload]);
   function edit() {
@@ -43,9 +43,9 @@ export function ScopePanel({project,session,onRefresh}: {project:Project;session
     if(new Set(ids).size!==ids.length){setError('Competency-question IDs must be unique.');return;}
     setBusy(true);setError('');setNotice('');
     try {
-      const current=await request<Project>(base);
+      const current=await operation('GET /api/v1/projects/{p}',{path:{p:project.id}});
       if(current.scope_digest!==draftDigest||current.pending_publication_id){await onRefresh();throw new Error('The scope or publication state changed. Review the current scope before saving a new version.');}
-      await post<ScopeVersion>(`${base}/scope`,draft satisfies ScopeUpload);
+      await operation('POST /api/v1/projects/{p}/scope',{path:{p:project.id},body:draft satisfies ScopeUpload});
       await onRefresh();setDraft(null);setRationale('');setReviewing(false);setReload(value=>value+1);
       setNotice('A new scope version was saved and is awaiting explicit human acceptance. Earlier proposals keep their original scope; create new candidates against this version.');
     }catch(err){setError(errorMessage(err));}finally{setBusy(false);}
@@ -54,9 +54,9 @@ export function ScopePanel({project,session,onRefresh}: {project:Project;session
     if(!scope||busy||!human||rationale.trim().length<5)return;
     setBusy(true);setError('');setNotice('');
     try {
-      const current=await request<Project>(base);
+      const current=await operation('GET /api/v1/projects/{p}',{path:{p:project.id}});
       if(current.scope_digest!==scope.digest||current.pending_publication_id){await onRefresh();throw new Error('The scope or publication state changed. Review the refreshed scope before deciding.');}
-      await post(`${base}/scope-decisions`,{scope_digest:scope.digest,decision,rationale:rationale.trim()} satisfies ScopeDecision);
+      await operation('POST /api/v1/projects/{p}/scope-decisions',{path:{p:project.id},body:{scope_digest:scope.digest,decision,rationale:rationale.trim()} satisfies ScopeDecision});
       await onRefresh();setReviewing(false);setRationale('');setNotice(decision==='accept'?'This exact synthetic scope was accepted. Ontology candidates still require their own validation, assessment, and release review.':'This scope was rejected. It remains available for inspection and cannot authorize release review.');
     }catch(err){setError(errorMessage(err));}finally{setBusy(false);}
   }

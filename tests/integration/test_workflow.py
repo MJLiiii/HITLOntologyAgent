@@ -142,7 +142,9 @@ def test_unmaterializable_model_output_is_recorded_as_failed(client, monkeypatch
     studio.settings.model_url, studio.settings.model_name = "http://localhost:11434", "fixture-model"
     def generate(self, system, context, schema):
         change = {"operation": "add", "triple": {"subject": "https://example.org/oe-demo/Service", "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "object": "http://www.w3.org/2002/07/owl#Class"}, "evidence_ids": [context["evidence"][0]["id"]], "rationale": "Source names the service concept"}
-        return schema.model_validate({"summary": "A deliberately duplicate edit fixture", "changes": [change, change]}), {"provider": "fixture"}
+        return schema.model_validate({"summary": "A deliberately duplicate edit fixture", "changes": [change, change]}), {"provider": "fixture", "model": "fixture-model", "prompt_digest": "sha256:" + "0" * 64,
+            "system_prompt": system, "temperature": 0, "seed": None, "cost": None,
+            "cost_missing_reason": "Synthetic provider reports no cost"}
     monkeypatch.setattr("oe_studio.model.ModelClient.generate", generate)
     p = project(client)
     response = client.post(f"/api/v1/projects/{p['id']}/proposal-jobs", json={"instruction": "Create a source-backed proposal"}, headers={"Idempotency-Key": str(uuid4())}).json()
@@ -471,7 +473,9 @@ def test_repair_uses_frozen_question_ids_without_a_naming_convention(client, mon
     studio.settings.model_url, studio.settings.model_name = "http://localhost:11434", "fixture-model"
     def generate(self, system, context, schema):
         assert [case["id"] for case in context["failed_entailment_cases"]] == ["owner-required"]
-        return schema.model_validate({"summary": "A cited repair test fixture", "changes": [{"operation": "add", "triple": {"subject": "https://example.org/oe-demo/Service", "predicate": "http://www.w3.org/2000/01/rdf-schema#comment", "object": "A source-backed repair fixture", "object_type": "literal"}, "evidence_ids": [context["evidence"][0]["id"]], "rationale": "Controlled source-backed repair fixture"}]}), {"provider": "fixture"}
+        return schema.model_validate({"summary": "A cited repair test fixture", "changes": [{"operation": "add", "triple": {"subject": "https://example.org/oe-demo/Service", "predicate": "http://www.w3.org/2000/01/rdf-schema#comment", "object": "A source-backed repair fixture", "object_type": "literal"}, "evidence_ids": [context["evidence"][0]["id"]], "rationale": "Controlled source-backed repair fixture"}]}), {"provider": "fixture", "model": "fixture-model", "prompt_digest": "sha256:" + "0" * 64,
+            "system_prompt": system, "temperature": 0, "seed": None, "cost": None,
+            "cost_missing_reason": "Synthetic provider reports no cost"}
     monkeypatch.setattr("oe_studio.model.ModelClient.generate", generate)
     result = job(client, p["id"], "repair", payload)
     assert result["revision"] == 2

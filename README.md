@@ -61,7 +61,7 @@ make test-contract       # real Jena and isolated OntoCheck; requires setup/buil
 make test-integration
 make test-e2e            # complete HTTP workflow and frontend interaction tests
 make lint
-make check-api-contracts # compare actual FastAPI schema with checked-in OpenAPI/TS requests
+make check-api-contracts # compare actual schema with generated request/response contracts
 make research-pilot     # standalone synthetic run; records failures as well
 make export-results     # export existing runs from the running app with a local session
 make export-pilot       # regenerate standalone pilot CSV without rerunning engines
@@ -71,7 +71,7 @@ make export-pilot       # regenerate standalone pilot CSV without rerunning engi
 
 The standalone pilot writes JSON, CSV and hashes to `research/results/demo-v1/`. Application export writes to `research/results/application-export/`, resolves the sole demo project automatically and reads existing records; to select a different project, run `PYTHONPATH=services/api/src .venv/bin/python scripts/export_results.py --project-id PROJECT_ID`. Export is a local operator command: it derives the bootstrap value from `.data/session.key` (or `--data-dir`) without printing it, obtains a session cookie and downloads existing records. It does not create an approval or publication.
 
-`make api-contracts` exports the actual FastAPI schema to `docs/openapi.json` and generates request TypeScript definitions in `apps/studio-plugin/src/api/openapi.ts`. It uses a temporary isolated app store and does not include runtime credentials. Response view models in the legacy-named `generated.ts` are hand-owned because current backend responses use generic dictionaries. TypeScript request shapes do not replace server-side validation of value limits and invariants.
+`make api-contracts` exports the actual FastAPI schema to `docs/openapi.json` and generates request/response types, operation signatures and endpoint-specific job results in `apps/studio-plugin/src/api/openapi.ts`; `generated.ts` contains generated aliases. The UI uses these typed operations. Generation uses a temporary isolated store and includes no runtime credentials. Server validation still enforces value limits and workflow invariants. Historical records remain readable without inventing missing IDs or rewriting their manifests.
 
 `make dev-up` starts the optional digest-pinned PostgreSQL container after you set `OE_POSTGRES_PASSWORD` in `.env`; set `OE_DATABASE_URL` to use it and run `make migrate`. `make dev-down` keeps the database volume. SQLite is sufficient for the single-machine demo. Never use `down -v` unless deletion is intended.
 

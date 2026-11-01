@@ -461,6 +461,14 @@ class Studio:
         return output, checked, record_id
 
     def create_proposal(self, p_id, payload, actor):
+        def selected_questions(project):
+            questions = project.data.get("competency_questions", QUESTIONS)
+            by_id = {question["id"]: question for question in questions}
+            selected = payload.get("competency_question_ids", [])
+            if len(selected) != len(set(selected)) or any(question_id not in by_id for question_id in selected):
+                raise Problem(422, "invalid_question_selection", "Select unique competency question IDs from the current frozen scope")
+            return [by_id[question_id] for question_id in selected] if selected else questions
+
         generated = None
         if self.settings.model_url and self.settings.model_name:
             from .model import ProposalDraft, checked_proposal
@@ -473,7 +481,7 @@ class Studio:
                     raise Problem(409, "corpus_required", "Freeze a source corpus first")
                 evidence = self.corpus_evidence(s, p_id, corpus_id)
                 ttl = self.artifacts.get_verified(self.get(s, p_id, p.approved_version_id, "version").data["ontology"]).decode() if p.approved_version_id else ""
-                questions = p.data.get("competency_questions", QUESTIONS)
+                questions = selected_questions(p)
                 evidence, _, retrieval = select_context(payload["instruction"] + " " + json.dumps(questions), evidence, [])
                 frozen_inputs = {"base_version_id": p.approved_version_id, "scope_digest": p.data["scope_digest"],
                                  "assessment_mappings_digest": p.data.get("assessment_mappings_digest", digest([])),
@@ -501,6 +509,7 @@ class Studio:
                     raise Problem(409, "generation_context_changed", "Scope or generation context changed while the model was running; the retained output was not applied")
                 corpus_id = context["corpus_snapshot_id"]
             else:
+                selected_questions(p)
                 corpus_id = payload.get("corpus_snapshot_id") or p.corpus_snapshot_id
             if not corpus_id:
                 raise Problem(409, "corpus_required", "Ingest sources and freeze a corpus first")
@@ -867,7 +876,7 @@ class Studio:
             results = []
             for run in runs:
                 ref = self.artifacts.put(canonical_json(run), "application/json")
-                results.append(self.body(self.add(s, p_id, "experiment", {**run, "sealed_record": ref,
+                results.append(self.experiment_body(self.add(s, p_id, "experiment", {**run, "sealed_record": ref,
                              "project_context": context}, run["status"], run["id"])))
             return self._complete_job(s, payload, {"runs": results})
 
@@ -875,8 +884,17 @@ class Studio:
         from .experiments import verify_record
         self.body(item)
         record = json.loads(self.artifacts.get_verified(item.data["sealed_record"]))
-        verify_record(record)
+        # The original deterministic demo protocol has no inline record digest;
+        # its immutable artifact SHA-256 remains authoritative. Never backfill it.
+        if record.get("protocol_id") != "demo-v1" or "record_digest" in record:
+            verify_record(record)
         return record
+
+    def experiment_body(self, item):
+        # The sealed generation timestamp and measurements remain authoritative.
+        # Persistence provenance is outside the sealed record's digest.
+        record = self.experiment_record(item)
+        return {**self.body(item), **record, "stored_at": item.created_at}
 
     def stage_experiment(self, p_id, run_id, actor):
         from .rdf import to_dict
@@ -934,7 +952,7 @@ class Studio:
             existing = next((i for i in self.items(s, p_id, "experiment") if i.data.get("parent_run_id") == run_id
                              and i.data.get("linked_review_id") == review_id), None)
             if existing:
-                return self.body(existing)
+                return self.experiment_body(existing)
             revision = self.get(s, p_id, review.data["revision_id"], "revision")
             validation = self.get(s, p_id, review.data["validation_run_id"], "validation")
             assessment_ids = review.data["required_assessment_run_ids"]
@@ -960,12 +978,12 @@ class Studio:
             existing = next((i for i in self.items(s, p_id, "experiment") if i.data.get("parent_run_id") == run_id
                              and i.data.get("linked_review_id") == review_id), None)
             if existing:
-                return self.body(existing)
+                return self.experiment_body(existing)
             ref = self.artifacts.put(canonical_json(result), "application/json")
             item = self.add(s, p_id, "experiment", {**result, "sealed_record": ref, "project_context": context,
                             "linked_review_id": review_id}, result["status"], result["id"])
             self.audit(s, p_id, actor, "experiment_review_linked", item.id, {"parent_run_id": run_id, "review_id": review_id})
-            return self.body(item)
+            return self.experiment_body(item)
 
     def seed_import(self, p_id, payload, actor):
         with self.db.session(write=True) as s:

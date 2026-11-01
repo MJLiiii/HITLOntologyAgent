@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Project, Proposal, Revision, Session, Triple } from '../../api/generated';
 import type { BundleRequest, ProposalRequest, PublishRequest, ReviewRequest, RevisionRequest, Submission } from '../../api/openapi';
-import { errorMessage, post, request, runJob } from '../../api/client';
+import { errorMessage, operation, runJob } from '../../api/client';
 import { Badge, date, Empty, ErrorNotice, EvidenceList, Loading, PanelHeading, short, TripleTable } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 import { AssessmentCard, ValidationReportCard } from '../validation/ValidationView';
 import { ReviewTimer } from './ReviewTimer';
 
 type Action = 'revise' | 'validate' | 'repair' | 'assess' | 'submit' | 'accept' | 'request_changes' | 'reject' | 'publish';
-type ActionHandler = (action: Action, body?: Record<string, unknown>) => Promise<void>;
+type ActionHandler = (action: Action, body?: Partial<RevisionRequest>) => Promise<void>;
 const isTerminal = (status: string) => ['published','rejected'].includes(status);
 const tripleKey = (triple: Triple) => JSON.stringify([triple.subject,triple.predicate,triple.object,triple.object_type || 'iri',triple.datatype || null,triple.language || null]);
 function revisionDelta(previous: {additions:Triple[];deletions:Triple[]}, next: {additions:Triple[];deletions:Triple[]}) {
@@ -66,7 +66,7 @@ export function RevisionDetail({project, session, revision, onRefresh, onAction,
       {/* Keep the evidence visible beside the diff so rationale cannot be mistaken for a source. */}
       {section==='changes' && !!revision.evidence.length && <div className="diff-evidence"><h4>Supporting evidence</h4><EvidenceList evidence={revision.evidence}/></div>}
       {section==='checks' && <div className="tab-content report-stack">{revision.validation ? <ValidationReportCard report={revision.validation}/> : <p className="muted">Logical validation has not run.</p>}{revision.assessment ? <AssessmentCard report={revision.assessment}/> : <p className="muted">Vocabulary and task assessment has not run.</p>}</div>}
-      {section==='history' && <div className="tab-content">{revision.history?.length ? <ol className="audit-list">{revision.history.map((event,i) => <li key={i}><Icon name="clock" size={15}/><div><strong>{event.event?.replaceAll('_',' ') || `Revision ${event.revision ?? i+1}`}</strong><p>{event.detail || event.status?.replaceAll('_',' ')}</p><span className="small muted">{date(event.created_at)}{event.actor && ` · ${event.actor}`}</span></div></li>)}</ol> : <p className="muted">This revision has no additional history events.</p>}</div>}
+      {section==='history' && <div className="tab-content">{revision.history?.length ? <ol className="audit-list">{revision.history.map((event,i) => <li key={i}><Icon name="clock" size={15}/><div><strong>{`Revision ${event.revision}`}</strong><p>{event.status.replaceAll('_',' ')}</p><span className="small muted">{date(event.created_at)}</span></div></li>)}</ol> : <p className="muted">This revision has no additional history events.</p>}</div>}
     </div>
     <section className="panel review-panel"><div className="section-heading"><div><span className="card-eyebrow">HUMAN REVIEW</span><h3>{published ? 'This revision has been published' : accepted ? 'Accepted and ready for publication' : 'A deliberate step at every stage'}</h3></div><Icon name="shield" size={23}/></div><p className="muted small">Validation, assessment, submission, acceptance, and publication are separate actions. Acceptance binds your decision to this exact bundle.</p>
       {revision.revision_id&&<ReviewTimer projectId={project.id} revisionId={revision.revision_id} session={session} disabled={busy}/>}
@@ -92,22 +92,20 @@ export function ProposalsView({project, session, proposals, initialSelection, on
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const proposal = proposals.find(p => p.id===selected) || proposals[0];
-  const basePath = `/projects/${encodeURIComponent(project.id)}`;
-  const revisionPath = proposal ? `${basePath}/proposals/${encodeURIComponent(proposal.id)}/revisions/${proposal.revision}` : '';
-  const refreshRevision = useCallback(async () => {if(revisionPath) setRevision(await request<Revision>(revisionPath));}, [revisionPath]);
+  const refreshRevision = useCallback(async () => {if(proposal) setRevision(await operation('GET /api/v1/projects/{p}/proposals/{proposal}/revisions/{revision}',{path:{p:project.id,proposal:proposal.id,revision:proposal.revision}}));}, [project.id,proposal?.id,proposal?.revision]);
   useEffect(() => {if(initialSelection) setSelected(initialSelection);}, [initialSelection]);
   useEffect(() => {
-    if(!revisionPath) {setRevision(null);return;}
+    if(!proposal) {setRevision(null);return;}
     let active=true;setLoading(true);setError('');
-    request<Revision>(revisionPath).then(value => {if(active)setRevision(value);}).catch(err => {if(active)setError(errorMessage(err));}).finally(() => {if(active)setLoading(false);});
+    operation('GET /api/v1/projects/{p}/proposals/{proposal}/revisions/{revision}',{path:{p:project.id,proposal:proposal.id,revision:proposal.revision}}).then(value => {if(active)setRevision(value);}).catch(err => {if(active)setError(errorMessage(err));}).finally(() => {if(active)setLoading(false);});
     return () => {active=false;};
-  }, [revisionPath, proposal?.status, proposal?.validation_run_id, proposal?.assessment_run_ids?.join(',')]);
+  }, [project.id, proposal?.id, proposal?.revision, proposal?.status, proposal?.validation_run_id, proposal?.assessment_run_ids?.join(',')]);
   async function create(event: React.FormEvent) {
     event.preventDefault();setBusy(true);setError('');setNotice('');setStage('Preparing a candidate');
     try {
-      const current = await request<Project>(basePath);
+      const current = await operation('GET /api/v1/projects/{p}',{path:{p:project.id}});
       if(current.approved_version_id !== project.approved_version_id || current.corpus_snapshot_id !== project.corpus_snapshot_id) {await onRefresh();throw new Error('The approved version or corpus snapshot changed. Review the current workspace before creating a proposal.');}
-      const result = await runJob<{proposal_id: string; revision: number}>(`${basePath}/proposal-jobs`, {base_version_id:current.approved_version_id,corpus_snapshot_id:current.corpus_snapshot_id,competency_question_ids:[],instruction:instruction.trim()} satisfies ProposalRequest, setStage);
+      const result = await runJob('POST /api/v1/projects/{p}/proposal-jobs', {path:{p:project.id},body:{base_version_id:current.approved_version_id,corpus_snapshot_id:current.corpus_snapshot_id,competency_question_ids:[],instruction:instruction.trim()} satisfies ProposalRequest}, setStage);
       await onRefresh();setSelected(result.proposal_id);setCreating(false);setNotice('A candidate was created. Inspect the evidence and run both validation and assessment.');
     } catch(err) {setError(errorMessage(err));} finally {setBusy(false);}
   }
@@ -115,34 +113,35 @@ export function ProposalsView({project, session, proposals, initialSelection, on
     if(!revision || busy)return;
     setBusy(true);setError('');setNotice('');setStage(kind.replaceAll('_',' '));
     try {
-      const [current, latest] = await Promise.all([request<Project>(basePath), request<Revision>(`${basePath}/proposals/${encodeURIComponent(revision.id)}/revisions/${revision.revision}`)]);
+      const [current, latest] = await Promise.all([operation('GET /api/v1/projects/{p}',{path:{p:project.id}}), operation('GET /api/v1/projects/{p}/proposals/{proposal}/revisions/{revision}',{path:{p:project.id,proposal:revision.id,revision:revision.revision}})]);
       if(current.approved_version_id!==project.approved_version_id || latest.bundle_digest!==revision.bundle_digest || latest.status!==revision.status) {await onRefresh();await refreshRevision();throw new Error('The project head or revision changed. Review the refreshed content and repeat your action.');}
       const bundle = {proposal_id:revision.id,revision:revision.revision,bundle_digest:revision.bundle_digest} satisfies BundleRequest;
       const reports = {validation_run_id:latest.validation_run_id || latest.validation?.id,required_assessment_run_ids:latest.assessment_run_ids || (latest.assessment ? [latest.assessment.id] : [])};
-      const match = {'If-Match':String(revision.revision)};
+      const match = {'if-match':String(revision.revision)};
       if(kind==='revise') {
-        await post<Revision>(`${basePath}/proposals/${encodeURIComponent(revision.id)}/revisions`,extras,match);
+        if(!extras.parent_revision||!extras.structured_changes||typeof extras.rationale!=='string')throw new Error('A parent revision, structured changes, and rationale are required.');
+        await operation('POST /api/v1/projects/{p}/proposals/{proposal}/revisions',{path:{p:project.id,proposal:revision.id},body:{parent_revision:extras.parent_revision,structured_changes:extras.structured_changes,rationale:extras.rationale},headers:match});
         setNotice('A new revision was created. Previous checks and approvals remain with the earlier revision.');
       } else if(kind==='validate' || kind==='assess') {
-        await runJob(`${basePath}/${kind==='validate'?'validation':'assessment'}-jobs`,bundle,setStage);
+        await runJob(kind==='validate'?'POST /api/v1/projects/{p}/validation-jobs':'POST /api/v1/projects/{p}/assessment-jobs',{path:{p:project.id},body:bundle},setStage);
         setNotice(kind==='validate'?'Validation finished. Inspect the report before continuing.':'Assessment finished. Inspect coverage and fitness before continuing.');
       } else if(kind==='repair') {
         if(current.pending_publication_id)throw new Error('A publication is pending. Finish it before requesting repair.');
         if(latest.validation?.status!=='failed' || latest.stale || latest.history?.some(event=>typeof event.revision==='number'&&event.revision>revision.revision))throw new Error('Repair requires a failed expectation report on the latest revision against the current approved head. Engine errors cannot be repaired automatically.');
-        const result=await runJob<{proposal_id:string;revision:number;bundle_digest:string;repair_attempt:number}>(`${basePath}/repair-jobs`,bundle,setStage);
+        const result=await runJob('POST /api/v1/projects/{p}/repair-jobs',{path:{p:project.id},body:bundle},setStage);
         setSelected(result.proposal_id);
-        setRevision(await request<Revision>(`${basePath}/proposals/${encodeURIComponent(result.proposal_id)}/revisions/${result.revision}`));
+        setRevision(await operation('GET /api/v1/projects/{p}/proposals/{proposal}/revisions/{revision}',{path:{p:project.id,proposal:result.proposal_id,revision:result.revision}}));
         setNotice(`Repair attempt ${result.repair_attempt} of 2 created revision ${result.revision}. Inspect the successor and rerun validation and assessment. No revision was approved or published.`);
       } else if(kind==='submit') {
         if(!reports.validation_run_id)throw new Error('This revision has no validation report. Run validation before submitting for review.');
-        await post(`${basePath}/review-submissions`, {proposal_id:revision.id,revision:revision.revision,...reports,validation_run_id:reports.validation_run_id} satisfies Submission, match);
+        await operation('POST /api/v1/projects/{p}/review-submissions', {path:{p:project.id},body:{proposal_id:revision.id,revision:revision.revision,...reports,validation_run_id:reports.validation_run_id} satisfies Submission, headers:match});
         setNotice('Submitted for human review. No decision has been recorded.');
       } else if(kind==='publish') {
-        const result = await post<{id:string;status:string}>(`${basePath}/publications`, {...bundle,approval_ids:latest.approval_ids || [],expected_head:current.approved_version_id} satisfies PublishRequest,{'Idempotency-Key':crypto.randomUUID()});
+        const result = await operation('POST /api/v1/projects/{p}/publications', {path:{p:project.id},body:{...bundle,approval_ids:latest.approval_ids || [],expected_head:current.approved_version_id} satisfies PublishRequest,headers:{'idempotency-key':crypto.randomUUID()}});
         setNotice(result.status==='completed'?'The accepted revision is published as a new immutable approved version.':`Publication ${result.id} is ${result.status}. Refresh to inspect recovery; it has not been marked completed.`);
       } else {
         if(!reports.validation_run_id || !current.review_policy_id || typeof extras.rationale!=='string')throw new Error('A current validation report, review policy, and written rationale are required to record a decision.');
-        await post(`${basePath}/reviews`, {...bundle,...reports,validation_run_id:reports.validation_run_id,decision:kind,rationale:extras.rationale,review_policy_id:current.review_policy_id} satisfies ReviewRequest);
+        await operation('POST /api/v1/projects/{p}/reviews', {path:{p:project.id},body:{...bundle,...reports,validation_run_id:reports.validation_run_id,decision:kind,rationale:extras.rationale,review_policy_id:current.review_policy_id} satisfies ReviewRequest});
         setNotice(kind==='accept'?'Your acceptance was recorded for this exact bundle. Publication requires a separate click.':`Review decision recorded: ${kind.replaceAll('_',' ')}.`);
       }
       await onRefresh();if(kind!=='revise'&&kind!=='repair')await refreshRevision();

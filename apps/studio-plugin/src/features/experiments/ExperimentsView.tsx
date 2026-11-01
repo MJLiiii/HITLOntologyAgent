@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
-import type { Experiment, Project, Proposal, Session } from '../../api/generated';
+import type { Experiment, Project, Proposal, Session, SyntheticTask } from '../../api/generated';
 import type { ExperimentRequest, SyntheticTaskJob } from '../../api/openapi';
 import { errorMessage, runJob } from '../../api/client';
 import { Badge, Empty, ErrorNotice, PanelHeading, percent } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 import { ExperimentReview } from './ExperimentReview';
-import { SyntheticTaskPanel, type SyntheticTask } from './SyntheticTaskPanel';
+import { SyntheticTaskPanel } from './SyntheticTaskPanel';
 
 const conditions = [
   {id:'A',name:'One-shot generation',description:'Initial candidate, no repair feedback.'},
@@ -49,10 +49,10 @@ export function ExperimentsView({project, experiments, proposals, session, onRef
     if(registered&&!registration)return;
     setBusy(true); setError(''); setNotice(''); setStage(registered?'Starting registered synthetic task':pilot?'Starting frozen model pilot':'Starting frozen demonstration');
     try {
-      if(protocol==='synthetic-task-v1'&&registration) await runJob(`/projects/${encodeURIComponent(project.id)}/synthetic-task-jobs`,{registration_id:registration.id,registration_digest:registration.registration_digest,condition,replicate_ids:[1]} satisfies SyntheticTaskJob,setStage);
-      else if(protocol!=='synthetic-task-v1') await runJob(`/projects/${encodeURIComponent(project.id)}/experiment-jobs`, {
+      if(protocol==='synthetic-task-v1'&&registration) await runJob('POST /api/v1/projects/{p}/synthetic-task-jobs',{path:{p:project.id},body:{registration_id:registration.id,registration_digest:registration.registration_digest,condition,replicate_ids:[1]} satisfies SyntheticTaskJob},setStage);
+      else if(protocol!=='synthetic-task-v1') await runJob('POST /api/v1/projects/{p}/experiment-jobs', {path:{p:project.id},body:{
         protocol_id:protocol, condition, task_ids:['demo-ownership'], replicate_ids:[1],
-      } satisfies ExperimentRequest, setStage);
+      } satisfies ExperimentRequest}, setStage);
       await onRefresh();
       setNotice(`${registered?'Registered task':pilot?'Model pilot':'Demo'} runs recorded. Inspect failures and missing measurements. Condition D requires an explicitly staged candidate and a real human decision.`);
     } catch (err) { setError(errorMessage(err)); } finally { setBusy(false); }

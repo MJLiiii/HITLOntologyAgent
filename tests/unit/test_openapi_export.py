@@ -3,22 +3,24 @@ from pathlib import Path
 import subprocess
 import sys
 
-from scripts.export_openapi import request_types, type_expression
+from scripts.export_openapi import contracts, type_expression
 
 
 def test_request_types_keep_required_fields_nullable_values_and_refs():
     schema = {'paths': {'/example': {'post': {'requestBody': {'content': {'application/json': {
-        'schema': {'$ref': '#/components/schemas/Request'}}}}}}}, 'components': {'schemas': {
+        'schema': {'$ref': '#/components/schemas/Request'}}}}, 'responses': {'200': {'content': {'application/json': {'schema': {'$ref': '#/components/schemas/Response'}}}}}}}}, 'components': {'schemas': {
         'Request': {'type': 'object', 'required': ['revision'], 'properties': {
             'revision': {'type': 'integer'},
             'note': {'anyOf': [{'type': 'string'}, {'type': 'null'}]},
             'condition': {'enum': ['A', 'B']}}},
-        'UnusedResponse': {'type': 'object'}}}}
-    output = request_types(schema)
+        'Response': {'type': 'object', 'properties': {'diagnostics': {'type': 'array', 'items': {'type': 'string'}}}, 'required': ['diagnostics'], 'additionalProperties': False}}}}
+    output = contracts(schema)
     assert '"revision": number;' in output
     assert '"note"?: (string | null);' in output
     assert '"condition"?: "A" | "B";' in output
-    assert 'UnusedResponse' not in output
+    assert 'export type Response' in output
+    assert 'response: Response;' in output
+    assert 'diagnostics' in output
     assert '"POST /example [application/json]": Request;' in output
     assert type_expression({'type': 'string', 'format': 'binary'}) == 'Blob'
 

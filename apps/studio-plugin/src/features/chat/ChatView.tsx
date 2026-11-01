@@ -4,8 +4,7 @@ import type { QuestionRequest } from '../../api/openapi';
 import { errorMessage, runJob } from '../../api/client';
 import { Badge, EvidenceList, ErrorNotice, TripleTable, short } from '../../components/ui';
 import { Icon } from '../../components/Icons';
-type ChatAnswer = Answer & { corpus_snapshot_id?:string;source_selection?:'ontology_version'|'project_current'|'explicit' };
-interface Message { id: string; role: 'user' | 'assistant'; content: string; result?: ChatAnswer }
+interface Message { id: string; role: 'user' | 'assistant'; content: string; result?: Answer }
 const sourceLabels={ontology_version:'Ontology version sources',project_current:'Current source corpus',explicit:'Selected source corpus'};
 const suggestions = [
   {icon: 'ontology' as const, title: 'Understand the ontology', prompt: 'What concepts and relationships are in this ontology?'},
@@ -30,7 +29,7 @@ export function ChatView({project, session, versions, sources, onNavigate}: {pro
     setMessages(prev => [...prev, {id: crypto.randomUUID(), role:'user', content:prompt}]);
     setQuestion(''); setBusy(true); setError('');
     try {
-      const result = await runJob<ChatAnswer>(`/projects/${encodeURIComponent(project.id)}/question-jobs`, {question: prompt, history, ...(sourceSelection==='current'&&project.corpus_snapshot_id?{corpus_snapshot_id:project.corpus_snapshot_id}:{})} satisfies QuestionRequest, setStage);
+      const result = await runJob('POST /api/v1/projects/{p}/question-jobs', {path:{p:project.id},body:{question: prompt, history, ...(sourceSelection==='current'&&project.corpus_snapshot_id?{corpus_snapshot_id:project.corpus_snapshot_id}:{})} satisfies QuestionRequest}, setStage);
       setMessages(prev => [...prev, {id: crypto.randomUUID(), role:'assistant', content:result.answer, result}]);
     } catch (err) { setError(errorMessage(err)); setQuestion(prompt); }
     finally { setBusy(false); textarea.current?.focus(); }

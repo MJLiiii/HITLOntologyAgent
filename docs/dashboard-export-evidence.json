@@ -1,0 +1,47 @@
+{
+  "classification": "synthetic_engineering_verification",
+  "real_study_approved": false,
+  "main_demo": {
+    "records": 4,
+    "conditions": {
+      "A": "failed",
+      "B": "failed",
+      "C": "passed",
+      "D": "waiting_human"
+    },
+    "actual_browser_csv_matches_http_export": true,
+    "repeat_exports_byte_identical": true,
+    "human_review_linked": 0,
+    "approved_versions": 0,
+    "browser_csv_snapshot": "Earlier schema-v1 download retained separately; version-2 records verified by artifact hash"
+  },
+  "standalone_pilot": {
+    "make_research_pilot": "passed",
+    "records": 4,
+    "repeat_export_byte_identical": true
+  },
+  "registered_fixture": {
+    "records": 9,
+    "model_and_engines": "explicit scripted doubles; parity check, not semantic results",
+    "paginated_api_csv_json_record_ids_match": true,
+    "browser_task_phase_selections_match_export": 6,
+    "task_one_records": 5,
+    "task_two_failed_records": 4,
+    "separate_d_pre_post": true,
+    "missing_metrics_preserved": true,
+    "simulated_review": "request_changes only; no publication or approved version"
+  },
+  "screenshots": [
+    "docs/screenshots/registered-task-post-review.jpg",
+    "docs/screenshots/registered-task-missing-results.jpg"
+  ],
+  "export_v2_integrity": {
+    "main_demo_records": 4,
+    "registered_records": 9,
+    "all_canonical_artifact_hashes_verified": true,
+    "registered_inline_seals_verified": true,
+    "provenance_separate_from_record": true,
+    "legacy_demo_inline_digests_not_fabricated": true,
+    "final_generated_client_selections_verified": 6
+  }
+}

@@ -1,13 +1,14 @@
+import { auditFixture, projectFixture, publicationFixture, reviewFixture, versionFixture } from '../../test-fixtures';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { VersionProvenance } from './VersionProvenance';
 import type { AuditEvent, Project, Publication, ReviewDecision, Version } from '../../api/generated';
 
-const project:Project={id:'p',name:'Demo',domain:'demo',approved_version_id:'current-head',corpus_snapshot_id:'corpus',scope_accepted:true,scope_digest:'scope',pending_publication_id:'pending'};
-const version:Version={id:'historical-version',label:'Approved release 1',created_at:'',status:'approved',triple_count:1,class_count:1,property_count:0,triples:[],parent_version_id:'parent-version',publication_id:'publication',bundle_digest:'exact-bundle',commit:'exact-git-commit',source_snapshot_id:'corpus'};
-const receipt:Publication={id:'publication',status:'completed',proposal_id:'proposal/one',revision:3,revision_id:'revision-three',approval_ids:['review/one'],bundle_digest:'exact-bundle'};
-const review:ReviewDecision={id:'review/one',actor:{subject:'human-reviewer'},decision:'accept',bundle_digest:'exact-bundle',validation_run_id:'validation/one',required_assessment_run_ids:['assessment/one'],rationale:'<script>Evidence reviewed</script>'};
-const events:AuditEvent[]=[{id:'e1',action:'ontology_published',entity:'publication',actor:{subject:'human-publisher'},time:'2026-11-01T12:00:00Z',event_hash:'event-hash-one',previous_event_hash:'previous-hash',detail_digest:'detail-hash',sequence:4},{id:'e2',action:'source_withdrawn',entity:'unrelated-source',actor:{subject:'other-human'},time:'2026-11-01T13:00:00Z',event_hash:'event-hash-two',previous_event_hash:'event-hash-one'}];
+const project:Project=projectFixture({id:'p',name:'Demo',domain:'demo',approved_version_id:'current-head',corpus_snapshot_id:'corpus',scope_accepted:true,scope_digest:'scope',pending_publication_id:'pending'});
+const version:Version=versionFixture({id:'historical-version',label:'Approved release 1',created_at:'',status:'approved',triple_count:1,class_count:1,property_count:0,triples:[],parent_version_id:'parent-version',publication_id:'publication',bundle_digest:'exact-bundle',commit:'exact-git-commit',source_snapshot_id:'corpus'});
+const receipt:Publication=publicationFixture({id:'publication',status:'completed',proposal_id:'proposal/one',revision:3,revision_id:'revision-three',approval_ids:['review/one'],bundle_digest:'exact-bundle'});
+const review:ReviewDecision=reviewFixture({id:'review/one',actor:{subject:'human-reviewer',kind:'human',roles:['reviewer']},decision:'accept',bundle_digest:'exact-bundle',validation_run_id:'validation/one',required_assessment_run_ids:['assessment/one'],rationale:'<script>Evidence reviewed</script>'});
+const events:AuditEvent[]=[auditFixture({id:'e1',action:'ontology_published',entity:'publication',actor:{subject:'human-publisher',kind:'human',roles:['approver']},time:'2026-11-01T12:00:00Z',event_hash:'event-hash-one',previous_event_hash:'previous-hash',detail_digest:'detail-hash',sequence:4}),auditFixture({id:'e2',action:'source_withdrawn',entity:'unrelated-source',actor:{subject:'other-human',kind:'human',roles:['researcher']},time:'2026-11-01T13:00:00Z',event_hash:'event-hash-two',previous_event_hash:'event-hash-one'})];
 afterEach(()=>vi.unstubAllGlobals());
 
 describe('immutable version provenance',()=>{

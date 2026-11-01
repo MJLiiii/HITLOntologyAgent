@@ -1,15 +1,26 @@
+import { projectFixture, revisionFixture, suiteFixture } from '../../test-fixtures';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TestOraclePanel } from './TestOraclePanel';
 import type { Project, Revision, Session, TestSuite } from '../../api/generated';
 
-const project:Project={id:'p',name:'Demo',domain:'demo',approved_version_id:null,corpus_snapshot_id:'corpus',scope_accepted:true,scope_digest:'scope'};
+const project:Project=projectFixture({id:'p',name:'Demo',domain:'demo',approved_version_id:null,corpus_snapshot_id:'corpus',scope_accepted:true,scope_digest:'scope'});
 const session:Session={actor:{subject:'human',kind:'human',roles:['researcher','reviewer']},mode:'local',model_mode:'local'};
-const revision:Revision={id:'proposal',revision_id:'revision-one',title:'Seed',revision:1,status:'draft',base_version_id:null,bundle_digest:'bundle-one',created_at:'',rationale:'Grounded seed',additions:[],deletions:[],evidence:[]};
-const suite:TestSuite={id:'suite',status:'needs_review',digest:'suite-digest',revision_id:'revision-one',bundle_digest:'bundle-one',tests:[{test_id:'negative-ask',kind:'ask',query:'ASK { ?service a <https://example.org/Team> }',expected:false,rationale:'Services and teams are separate.',oracle_status:'needs_review'}]};
+const revision:Revision=revisionFixture({id:'proposal',revision_id:'revision-one',title:'Seed',revision:1,status:'draft',base_version_id:null,bundle_digest:'bundle-one',created_at:'',rationale:'Grounded seed',additions:[],deletions:[],evidence:[]});
+const suite:TestSuite=suiteFixture({id:'suite',status:'needs_review',digest:'suite-digest',revision_id:'revision-one',bundle_digest:'bundle-one',tests:[{test_id:'negative-ask',kind:'ask',query:'ASK { ?service a <https://example.org/Team> }',expected:false,rationale:'Services and teams are separate.',oracle_status:'needs_review'}]});
 afterEach(()=>vi.unstubAllGlobals());
 
 describe('human test oracle',()=>{
+  it('keeps historical fixture hashes inspectable without inventing an artifact link',async()=>{
+    const legacy={...suite,fixture_artifacts:{'negative-ask':{sha256:'legacy-fixture-hash',byte_length:12,media_type:'text/turtle',schema_version:1}}};
+    vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({items:[legacy],next_cursor:null}))));
+    render(<TestOraclePanel project={project} session={session} revision={revision} onRefresh={vi.fn()} onOpenProposal={vi.fn()}/>);
+    const artifact=await screen.findByLabelText('Fixture artifact for negative-ask');
+    expect(artifact).toHaveTextContent('legacy-fixture-hash');
+    expect(screen.queryByRole('link',{name:'Open immutable fixture artifact'})).not.toBeInTheDocument();
+    expect(artifact).toHaveTextContent('Artifact link unavailable for this historical record.');
+  });
+
   it('exposes candidate coverage gaps, linked inputs and exact SHACL violations before an oracle decision',async()=>{
     const detailed={...suite,generator:{mode:'deterministic_candidate_derived',version:'candidate-specs-v1',oracle_policy:'No engine output defines expectations.'},coverage_gaps:[{code:'scenario_unavailable',detail:'Boundary coverage needs a human oracle.'}],fixture_artifacts:{'shape-test':{id:'fixture-artifact',sha256:'fixture-hash',media_type:'text/turtle'}},tests:[{test_id:'shape-test',kind:'shacl',scenario:'missing_data',expected_conforms:false,expected_violations:[{focusNode:'https://example.org/focus',path:'https://example.org/owner',sourceShape:'https://example.org/OwnerShape',severity:'http://www.w3.org/ns/shacl#Violation'}],rationale:'Missing owner must violate the minimum count.',oracle_status:'needs_review',question_ids:['ownership-question'],change_ids:['addition-17'],assumptions:['This is a synthetic fixture.'],oracle_source:'Human-reviewed ownership requirement',target_ontology_sha256:'candidate-hash',fixture_sha256:'fixture-hash',fixtures_ttl:'<https://example.org/focus> a <https://example.org/Service> .'}]};
     const writes:string[]=[];

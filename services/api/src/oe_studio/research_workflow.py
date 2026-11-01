@@ -84,6 +84,6 @@ def execute(studio, project_id, payload, actor):
         results = []
         for run in runs:
             ref = studio.artifacts.put(canonical_json(run), "application/json")
-            results.append(studio.body(studio.add(session, project_id, "experiment", {
+            results.append(studio.experiment_body(studio.add(session, project_id, "experiment", {
                 **run, "sealed_record": ref, "project_context": context}, run["status"], run["id"])))
         return studio._complete_job(session, payload, {"runs": results})
