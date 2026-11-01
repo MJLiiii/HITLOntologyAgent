@@ -1,6 +1,7 @@
 import re
+from uuid import UUID
 from typing import Annotated, Literal
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, model_validator, field_validator
 
 
 class StrictModel(BaseModel):
@@ -95,7 +96,12 @@ class IngestRequest(StrictModel):
     configured_flow_key: Literal["default"] = "default"
 
 
+class TrustGraphIngestRequest(IngestRequest):
+    extraction_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
+
+
 class ProposalRequest(StrictModel):
+    model_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
     base_version_id: str | None = None
     corpus_snapshot_id: str | None = None
     competency_question_ids: list[str] = Field(default_factory=list, max_length=20)
@@ -112,6 +118,10 @@ class BundleRequest(StrictModel):
     proposal_id: str
     revision: int = Field(ge=1)
     bundle_digest: str
+
+
+class RepairRequest(BundleRequest):
+    model_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
 
 
 class Submission(StrictModel):
@@ -140,12 +150,18 @@ class Message(StrictModel):
 
 
 class QuestionRequest(StrictModel):
+    model_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
     question: str = Field(min_length=1, max_length=4000)
     corpus_snapshot_id: str | None = None
     proposal_id: str | None = None
     revision: int | None = Field(default=None, ge=1)
     history: list[Message] = Field(default_factory=list, max_length=12)
-    conversation_id: str | None = None
+    conversation_id: str | None = Field(default=None, max_length=36)
+
+    @field_validator("conversation_id")
+    @classmethod
+    def valid_conversation(cls, value):
+        return str(UUID(value)) if value is not None else None
 
     @model_validator(mode="after")
     def paired(self):
@@ -227,6 +243,7 @@ class RationaleRequest(StrictModel):
 
 
 class ExperimentRequest(StrictModel):
+    model_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
     protocol_id: Literal["demo-v1", "model-pilot-v1"] = "demo-v1"
     condition: Literal["A", "B", "C", "D", "all"] = "all"
     task_ids: list[Literal["demo-ownership"]] = Field(default_factory=lambda: ["demo-ownership"], min_length=1, max_length=1)

@@ -580,8 +580,11 @@ def _execute_model_task(packet, *, settings, condition, replicate_ids, model_cli
         raise ValueError('Replicates must be unique integers from 1 to 3')
     if type(maximum_repairs) is not int or maximum_repairs not in (0, 1, 2):
         raise ValueError('At most two repair attempts are permitted')
-    if not settings.model_url or not settings.model_name or not 0 < settings.model_timeout <= 120:
+    from .llm_profiles import legacy_profile, model_configured
+    profile = getattr(settings, 'resolved_llm_profile', None) or legacy_profile(settings)
+    if not model_configured(settings) or not profile:
         raise ValueError('Configure a model and a positive timeout of at most 120 seconds')
+    output_limit = profile['max_output_tokens']
     bundle_digest = packet.source_bundle_digest
     evaluation = json.loads(packet.evaluation_json)
     client = model_client or ModelClient(settings)
@@ -657,14 +660,17 @@ def _execute_model_task(packet, *, settings, condition, replicate_ids, model_cli
                       'evaluation_inputs': evaluation,
                       'evaluation_manifest': {'split': evaluation['split'], 'held_out_available': False,
                                               'inputs_sha256': sha(packet.evaluation_json)},
-                      'model': {'provider': 'ollama', 'name': settings.model_name, 'temperature': 0,
+                      'model': {'provider': profile['provider'], 'name': profile['model'], 'temperature': profile['temperature'],
+                                'profile_id': profile['id'], 'profile_revision': profile['revision'],
+                                'structured_output': profile['structured_output'],
+                                'effective_parameters': {'max_output_tokens': output_limit, 'temperature': profile['temperature'], 'timeout': profile['timeout']},
                                 'seed': None, 'seed_missing_reason': 'provider_seed_not_requested',
                                 'weights_digest': None, 'weights_digest_missing_reason': 'live_model_digest_not_verified_by_runner'},
                       'environment': environment,
                       'budget': {'maximum_repairs': limit, 'maximum_model_calls': limit + 1,
-                                 'maximum_output_tokens_per_call': 4096, 'maximum_context_bytes_per_call': 65536,
-                                 'maximum_total_output_tokens': 4096 * (limit + 1),
-                                 'model_timeout_seconds': settings.model_timeout, 'maximum_triple_operations_per_call': 100},
+                                 'maximum_output_tokens_per_call': output_limit, 'maximum_context_bytes_per_call': 65536,
+                                 'maximum_total_output_tokens': output_limit * (limit + 1),
+                                 'model_timeout_seconds': profile['timeout'], 'maximum_triple_operations_per_call': 100},
                       'generation_calls': calls, 'generation_call_ids': [call['id'] for call in calls],
                       'usage_accounting': 'Logical arm use includes the shared initial call; deduplicate call IDs for physical totals. C and D share all automated calls.',
                       'repair_history': history, 'validation': validation, 'assessment': assessment,

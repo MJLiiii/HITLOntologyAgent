@@ -78,7 +78,7 @@ def execute(studio, project_id, payload, actor):
         if not all(studio.evidence(session, project_id, identity)["resolved"] for identity in context["evidence_ids"]):
             raise Problem(409, "unresolved_evidence", "Registered source evidence was changed or withdrawn")
         packet = FrozenSyntheticTask(studio.artifacts.get_verified(registration.data["packet"]).decode())
-    runs = execute_synthetic_task(packet, registration_digest=payload["registration_digest"], settings=studio.settings,
+    runs = execute_synthetic_task(packet, registration_digest=payload["registration_digest"], settings=studio.model_settings(project_id, payload, "experiment"),
                                  condition=payload["condition"], replicate_ids=payload["replicate_ids"])
     with studio.db.session(write=True) as session:
         results = []

@@ -16,7 +16,7 @@ ProfileId = str
 
 
 class Profile(BaseModel):
-    model_config = ConfigDict(extra='forbid', strict=True)
+    model_config = ConfigDict(extra='forbid', strict=True, validate_default=True)
     id: str = Field(pattern=r'^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$')
     provider: Literal['openai', 'anthropic', 'ollama', 'openai_compatible', 'litellm_proxy', 'opencode_go']
     model: str = Field(min_length=1, max_length=200, pattern=r'^[^\s]+$')

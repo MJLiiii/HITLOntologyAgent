@@ -489,6 +489,18 @@ class AuditResponse(Record):
     event_hash: str
 
 
+class ModelProfileResponse(WireModel):
+    id: str
+    revision: str
+    provider: str
+    model: str
+    purposes: list[str]
+    structured_output: str
+    max_output_tokens: int
+    status: str
+    is_default: bool
+
+
 class GenerationResponse(DiagnosticRecord):
     id: str
     status: str
@@ -499,10 +511,10 @@ class GenerationResponse(DiagnosticRecord):
     model: str
     prompt_digest: str
     system_prompt: str
-    temperature: Number
+    temperature: Number | None
     seed: int | None
     cost: Number | None
-    cost_missing_reason: str
+    cost_missing_reason: str | None
     input_tokens: int | None = None
     output_tokens: int | None = None
     elapsed_seconds: Number | None = None
@@ -550,9 +562,13 @@ class Measurement(WireModel):
 
 
 class ExperimentModel(WireModel):
+    profile_id: str | None = None
+    profile_revision: str | None = None
+    structured_output: str | None = None
+    effective_parameters: JSON | None = None
     provider: str
     name: str
-    temperature: Number
+    temperature: Number | None
     seed: int | None
     seed_missing_reason: str
     weights_digest: str | None
@@ -647,6 +663,9 @@ class ExperimentExport(WireModel):
 
 
 class TrustGraphPreparationResponse(Record):
+    server_configuration: JSON | None = None
+    llm_profile: JSON | None = None
+    llm_session_id: str | None = None
     job_id: str
     document_id: str
     prepared: PreparedIngestion
@@ -654,6 +673,8 @@ class TrustGraphPreparationResponse(Record):
 
 
 class TrustGraphIngestionResponse(Record):
+    llm_profile: JSON | None = None
+    llm_session_id: str | None = None
     preparation_id: str
     document_id: str
     job_id: str
@@ -702,6 +723,7 @@ class JobRefResponse(WireModel):
 
 
 class JobEnvelope(WireModel, Generic[T]):
+    model_configuration: JSON | None = None
     id: str
     status: Literal['queued', 'running', 'succeeded', 'failed', 'cancelled']
     result: T | None

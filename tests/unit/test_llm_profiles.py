@@ -3,6 +3,7 @@ import pytest
 from oe_studio.settings import Settings
 from oe_studio.errors import Problem
 from oe_studio.llm_profiles import resolve_profile, profile_settings, catalog, model_configured
+from oe_studio.llm_profiles import Profile, _snapshot
 
 
 def configuration(tmp_path, **changes):
@@ -59,3 +60,10 @@ def test_legacy_and_frozen_demo(tmp_path):
     assert resolve_profile(settings, 'anything', 'chat')['id'] == 'legacy-ollama'
     assert model_configured(settings)
     assert not model_configured(profile_settings(settings, None))
+
+
+def test_defaulted_profile_revision_survives_worker_json_roundtrip():
+    original = _snapshot(Profile(id='defaulted', provider='openai', model='fixture', purposes=['extraction']))
+    descriptor = json.loads(json.dumps(original))
+    descriptor.pop('revision')
+    assert _snapshot(Profile.model_validate(descriptor)) == original

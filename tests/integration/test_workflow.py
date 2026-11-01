@@ -477,7 +477,7 @@ def test_repair_uses_frozen_question_ids_without_a_naming_convention(client, mon
             "system_prompt": system, "temperature": 0, "seed": None, "cost": None,
             "cost_missing_reason": "Synthetic provider reports no cost"}
     monkeypatch.setattr("oe_studio.model.ModelClient.generate", generate)
-    result = job(client, p["id"], "repair", payload)
+    result = job(client, p["id"], "repair", {**payload, "model_profile_id": "legacy-ollama"})
     assert result["revision"] == 2
 
 

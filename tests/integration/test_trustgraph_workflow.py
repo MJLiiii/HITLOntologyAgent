@@ -120,8 +120,9 @@ def test_selected_remote_snapshot_becomes_immutable_local_evidence(provider, cli
 def test_remote_source_cannot_cross_project_and_seed_must_be_approved(provider, client):
     studio, p, doc, config_path = provider
     other = client.post("/api/v1/projects", json={"name": "Other synthetic project", "domain": "demo"}).json()
-    result = run(client, other["id"], "trustgraph-ingestions", {"document_id": doc["id"]}, "wrong-project")
-    assert result["status"] == "failed"
+    denied = client.post(f"/api/v1/projects/{other['id']}/trustgraph-ingestions",
+        json={"document_id": doc["id"]}, headers={"Idempotency-Key": "wrong-project"})
+    assert denied.status_code == 403 and denied.json()["code"] == "trustgraph_project_denied"
     data = json.loads(config_path.read_text())
     data["projects"][0]["seed_mode"] = "approved_ontology"
     config_path.write_text(json.dumps(data))

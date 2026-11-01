@@ -12,6 +12,7 @@ const suggestions = [
   {icon: 'proposals' as const, title: 'Find the missing connections', prompt: 'Which ownership relationships could improve this ontology?'},
 ];
 export function ChatView({project, session, versions, sources, onNavigate}: {project: Project; session: Session; versions: Version[]; sources: SourceDocument[]; onNavigate: (view: string) => void}) {
+  const conversationId = useRef(crypto.randomUUID());
   const [messages, setMessages] = useState<Message[]>([]);
   const [question, setQuestion] = useState('');
   const [busy, setBusy] = useState(false);
@@ -29,13 +30,13 @@ export function ChatView({project, session, versions, sources, onNavigate}: {pro
     setMessages(prev => [...prev, {id: crypto.randomUUID(), role:'user', content:prompt}]);
     setQuestion(''); setBusy(true); setError('');
     try {
-      const result = await runJob('POST /api/v1/projects/{p}/question-jobs', {path:{p:project.id},body:{question: prompt, history, ...(sourceSelection==='current'&&project.corpus_snapshot_id?{corpus_snapshot_id:project.corpus_snapshot_id}:{})} satisfies QuestionRequest}, setStage);
+      const result = await runJob('POST /api/v1/projects/{p}/question-jobs', {path:{p:project.id},body:{question: prompt, history, conversation_id:conversationId.current, ...(sourceSelection==='current'&&project.corpus_snapshot_id?{corpus_snapshot_id:project.corpus_snapshot_id}:{})} satisfies QuestionRequest}, setStage);
       setMessages(prev => [...prev, {id: crypto.randomUUID(), role:'assistant', content:result.answer, result}]);
     } catch (err) { setError(errorMessage(err)); setQuestion(prompt); }
     finally { setBusy(false); textarea.current?.focus(); }
   }
   return <div className="chat-grid"><div className="chat-column">
-    <div className="chat-toolbar"><div className="small muted"><span className="live-dot"/> Grounded in your workspace</div><button className="text-button small" onClick={() => {setMessages([]); setQuestion(''); setError('');}} disabled={busy || !messages.length}><Icon name="plus" size={15}/>New conversation</button></div>
+    <div className="chat-toolbar"><div className="small muted"><span className="live-dot"/> Grounded in your workspace</div><button className="text-button small" onClick={() => {conversationId.current = crypto.randomUUID(); setMessages([]); setQuestion(''); setError('');}} disabled={busy || !messages.length}><Icon name="plus" size={15}/>New conversation</button></div>
     <div className={`conversation ${messages.length ? 'has-messages' : ''}`} aria-live="polite">
       {!messages.length && <div className="chat-welcome"><div className="welcome-mark"><Icon name="spark" size={30}/></div><span className="eyebrow">KNOWLEDGE, CONNECTED</span><h1>Good questions.<br/><span>Better ontologies.</span></h1><p>Explore your sources, understand relationships, and develop your ontology with evidence at every step.</p><div className="suggestion-list">{suggestions.map(s => <button className="suggestion" key={s.title} onClick={() => void send(s.prompt)} disabled={busy}><div className="suggestion-icon"><Icon name={s.icon}/></div><span><strong>{s.title}</strong><small>{s.prompt}</small></span><Icon name="chevron" size={16}/></button>)}</div><div className="welcome-note"><Icon name="shield" size={14}/> Every ontology change stays under human review.</div></div>}
       {messages.map(message => <div className={`message message-${message.role}`} key={message.id}><div className={`avatar ${message.role === 'assistant' ? 'avatar-studio' : ''}`}>{message.role === 'assistant' ? <Icon name="spark" size={17}/> : 'Y'}</div><div className="message-body"><div className="message-label">{message.role === 'assistant' ? 'Ontology Studio' : 'You'}{message.role === 'assistant' && <span>{session.model_mode === 'local' ? 'Local retrieval' : 'Grounded assistant'}</span>}</div><div className="answer-text">{message.content.split('\n').filter(Boolean).map((line,i) => <p key={i}>{line}</p>)}</div>{message.result && <>

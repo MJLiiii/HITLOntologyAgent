@@ -13,7 +13,7 @@ function wire(sourceSelection:string,corpus:string) {
   const writes:Record<string,unknown>[]=[];
   vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
     if(options.method==='POST'){writes.push(JSON.parse(String(options.body)));return new Response(JSON.stringify({job_id:'question'}));}
-    return new Response(JSON.stringify({status:'succeeded',result:{answer:'The cited passage identifies Platform.',evidence:[],triples:[],version_id:'approved',ontology_status:'approved',corpus_snapshot_id:corpus,source_selection:sourceSelection,limitations:sourceSelection==='explicit'?['Selected source corpus differs from the ontology version sources.']:[]}}));
+    return new Response(JSON.stringify({status:'succeeded',stage:'question',result:{answer:'The cited passage identifies Platform.',evidence:[],triples:[],version_id:'approved',ontology_status:'approved',corpus_snapshot_id:corpus,source_selection:sourceSelection,limitations:sourceSelection==='explicit'?['Selected source corpus differs from the ontology version sources.']:[]}}));
   }));
   return writes;
 }
@@ -26,7 +26,7 @@ describe('explicit chat source selection',()=>{
     fireEvent.change(screen.getByLabelText('Ask about your ontology or sources'),{target:{value:'Who owns this service?'}});
     fireEvent.click(screen.getByRole('button',{name:'Send question'}));
     await screen.findByText('The cited passage identifies Platform.');
-    expect(writes).toEqual([{question:'Who owns this service?',history:[]}]);
+    expect(writes).toEqual([{question:'Who owns this service?',history:[],conversation_id:expect.any(String)}]);
     expect(screen.getByLabelText('Answer source context')).toHaveTextContent('Ontology version sources');
     expect(screen.getByLabelText('Answer source context')).toHaveTextContent('historical');
   });
@@ -41,11 +41,28 @@ describe('explicit chat source selection',()=>{
     fireEvent.change(screen.getByLabelText('Ask about your ontology or sources'),{target:{value:'What does the newer source say?'}});
     fireEvent.click(screen.getByRole('button',{name:'Send question'}));
     await screen.findByText('The cited passage identifies Platform.');
-    expect(writes).toEqual([{question:'What does the newer source say?',history:[],corpus_snapshot_id:'new-corpus'}]);
+    expect(writes).toEqual([{question:'What does the newer source say?',history:[],corpus_snapshot_id:'new-corpus',conversation_id:expect.any(String)}]);
     expect(screen.getByText('Selected source corpus differs from the ontology version sources.')).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Answer sources'),{target:{value:'ontology_version'}});
     expect(screen.getByLabelText('Answer source context')).toHaveTextContent('Selected source corpus');
     expect(screen.getByLabelText('Answer source context')).toHaveTextContent('new-corpus');
+  });
+
+  it('reuses a conversation UUID until the user starts a new conversation',async()=>{
+    const writes=wire('ontology_version','historical-corpus');
+    render(<ChatView project={project} session={session} versions={versions} sources={[]} onNavigate={vi.fn()}/>);
+    const send=async(text:string)=>{
+      fireEvent.change(screen.getByLabelText('Ask about your ontology or sources'),{target:{value:text}});
+      fireEvent.click(screen.getByRole('button',{name:'Send question'}));
+      await vi.waitFor(()=>expect(screen.getByLabelText('Ask about your ontology or sources')).not.toBeDisabled());
+    };
+    await send('First question');
+    await send('Follow up question');
+    expect(writes[0].conversation_id).toMatch(/^[0-9a-f-]{36}$/);
+    expect(writes[1].conversation_id).toBe(writes[0].conversation_id);
+    fireEvent.click(screen.getByRole('button',{name:'New conversation'}));
+    await send('Another question');
+    expect(writes[2].conversation_id).not.toBe(writes[0].conversation_id);
   });
 
   it('does not offer a current-corpus override when the project has no frozen corpus',()=>{

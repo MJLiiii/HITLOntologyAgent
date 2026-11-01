@@ -20,9 +20,10 @@ from .assessment_contracts import MappingDraft
 from .db import Job, Project
 from .errors import Problem
 from . import responses as wire
-from .schemas import (BundleRequest, ExperimentRequest, IngestRequest, ProjectCreate, ProposalRequest,
+from .schemas import (BundleRequest, RepairRequest, TrustGraphIngestRequest, ExperimentRequest, IngestRequest, ProjectCreate, ProposalRequest,
                       PublishRequest, QuestionRequest, ReviewRequest, RevisionRequest, ScopeDecision, StrictModel, Submission, TestGenerationRequest, OracleDecision, ReviewSessionEvent, RationaleRequest, ScopeUpload, SeedImportRequest)
 from .settings import Settings
+from .llm_profiles import catalog, model_configured
 from .request_limits import RequestBodyLimit
 from .workflow import Studio
 from pydantic import Field
@@ -47,6 +48,7 @@ class SyntheticTaskRegistration(BundleRequest):
 
 
 class SyntheticTaskJob(StrictModel):
+    model_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
     registration_id: str
     registration_digest: str = Field(pattern=r"^sha256:[a-f0-9]{64}$")
     condition: Literal["A", "B", "C", "D", "all"] = "all"
@@ -132,13 +134,13 @@ def create_app(settings=None):
             raise Problem(403, "local_only", "Local session is only available on loopback")
         if authorization:
             actor = require_actor(request)
-            return {"actor": actor, "mode": "local", "model_mode": "model" if settings.model_url and settings.model_name else "local"}
+            return {"actor": actor, "mode": "local", "model_mode": "model" if model_configured(settings) else "local"}
         if not (hmac.compare_digest(request.cookies.get("oe_session", ""), app.state.local_cookie)
                 or hmac.compare_digest(x_oe_session_token or "", app.state.bootstrap_token)):
             raise Problem(401, "operator_session_required", "Open the private operator link printed by the local server, or enter its session token")
         response.set_cookie("oe_session", app.state.local_cookie, httponly=True, samesite="strict", path="/", max_age=86400)
         return {"actor": {"subject": "local-human", "kind": "human", "roles": ["researcher", "reviewer", "approver", "viewer"]},
-                "mode": "local", "model_mode": "model" if settings.model_url and settings.model_name else "local", "integrations": {"trustgraph": "configured_on_demand" if settings.trustgraph_config_file else "not_configured", "identity": "loopback_single_user"}}
+                "mode": "local", "model_mode": "model" if model_configured(settings) else "local", "integrations": {"trustgraph": "configured_on_demand" if settings.trustgraph_config_file else "not_configured", "identity": "loopback_single_user"}}
 
     @app.get("/health/live", response_model=wire.LiveResponse, response_model_exclude_unset=True)
     @app.get("/api/v1/health/live", response_model=wire.LiveResponse, response_model_exclude_unset=True)
@@ -157,7 +159,7 @@ def create_app(settings=None):
             checks["database"] = "available"
         except SQLAlchemyError:
             checks["database"] = "unavailable"
-        available = all(value in {"available", "not_configured"} for value in checks.values())
+        available = all(value in {"available", "not_configured", "configured_unverified"} for value in checks.values())
         return JSONResponse(status_code=200 if available else 503,
                             content=wire.ReadyResponse.model_validate({"status": "ready" if available else "not_ready", "mode": "local", **checks,
                                      "trustgraph": "configured_on_demand" if settings.trustgraph_config_file else "not_configured", "shared_auth": "not_configured"}).model_dump())
@@ -236,6 +238,12 @@ def create_app(settings=None):
             evidence = studio.corpus_evidence(s, p, project.corpus_snapshot_id) if project.corpus_snapshot_id else []
             return page(evidence, cursor, limit)
 
+    @app.get("/api/v1/projects/{p}/model-profiles", response_model=wire.Page[wire.ModelProfileResponse], response_model_exclude_unset=True)
+    def model_profiles(p: str, cursor: str | None = None, limit: int = 50, actor=Depends(require_actor)):
+        with studio.db.session() as s:
+            studio.project(s, p)
+        return page(catalog(settings, p), cursor, limit)
+
     @app.get("/api/v1/projects/{p}/generation-runs", response_model=wire.Page[wire.GenerationResponse], response_model_exclude_unset=True)
     def generations(p: str, cursor: str | None = None, limit: int = 50, actor=Depends(require_actor)):
         with studio.db.session() as s:
@@ -271,7 +279,7 @@ def create_app(settings=None):
         return studio.freeze_corpus(p, body.ingestion_run_ids, actor)
 
     @app.post("/api/v1/projects/{p}/trustgraph-ingestions", status_code=202, response_model=wire.JobRefResponse, response_model_exclude_unset=True, openapi_extra={"x-job-kind": "trustgraph-ingestion"})
-    def trustgraph_ingest(p: str, body: IngestRequest, idempotency_key: str = Header(...), actor=Depends(require_actor)):
+    def trustgraph_ingest(p: str, body: TrustGraphIngestRequest, idempotency_key: str = Header(...), actor=Depends(require_actor)):
         return studio.create_job(p, "trustgraph-ingestion", body.model_dump(), idempotency_key, actor)
 
     @app.post("/api/v1/projects/{p}/trustgraph-ingestion-recoveries", status_code=202, response_model=wire.JobRefResponse, response_model_exclude_unset=True, openapi_extra={"x-job-kind": "trustgraph-recovery"})
@@ -356,7 +364,7 @@ def create_app(settings=None):
         return studio.create_job(p, "assessment", body.model_dump(), idempotency_key, actor)
 
     @app.post("/api/v1/projects/{p}/repair-jobs", status_code=202, response_model=wire.JobRefResponse, response_model_exclude_unset=True, openapi_extra={"x-job-kind": "repair"})
-    def repair(p: str, body: BundleRequest, idempotency_key: str = Header(...), actor=Depends(require_actor)):
+    def repair(p: str, body: RepairRequest, idempotency_key: str = Header(...), actor=Depends(require_actor)):
         return studio.create_job(p, "repair", body.model_dump(), idempotency_key, actor)
 
     @app.post("/api/v1/projects/{p}/question-jobs", status_code=202, response_model=wire.JobRefResponse, response_model_exclude_unset=True, openapi_extra={"x-job-kind": "question"})
@@ -516,7 +524,10 @@ def create_app(settings=None):
             if not value:
                 raise Problem(404, "not_found", "Job not found")
             studio.project(s, value.project_id)
-            return {"id": value.id, "status": value.status, "result": value.result, "error": value.error, "stage": value.kind,
+            profile = value.payload.get("_resolved_llm_profile")
+            metadata = ({key: profile[key] for key in ("id", "revision", "provider", "model", "timeout", "max_output_tokens", "temperature", "structured_output")}
+                        if profile else None)
+            return {"id": value.id, "model_configuration": metadata, "status": value.status, "result": value.result, "error": value.error, "stage": value.kind,
                     "progress": 1 if value.status in {"succeeded", "failed"} else 0, "created_at": value.created_at}
 
     root = Path(__file__).resolve().parents[4]

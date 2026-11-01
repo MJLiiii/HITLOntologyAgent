@@ -602,6 +602,20 @@
             "title": "Id",
             "type": "string"
           },
+          "model_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Configuration"
+          },
           "progress": {
             "anyOf": [
               {
@@ -1908,6 +1922,20 @@
             "title": "Id",
             "type": "string"
           },
+          "model_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Configuration"
+          },
           "progress": {
             "anyOf": [
               {
@@ -1964,9 +1992,45 @@
       "ExperimentModel": {
         "additionalProperties": false,
         "properties": {
+          "effective_parameters": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Parameters"
+          },
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "profile_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Id"
+          },
+          "profile_revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Revision"
           },
           "provider": {
             "title": "Provider",
@@ -1987,6 +2051,17 @@
             "title": "Seed Missing Reason",
             "type": "string"
           },
+          "structured_output": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structured Output"
+          },
           "temperature": {
             "anyOf": [
               {
@@ -1994,6 +2069,9 @@
               },
               {
                 "type": "number"
+              },
+              {
+                "type": "null"
               }
             ],
             "title": "Temperature"
@@ -2062,6 +2140,18 @@
             ],
             "title": "Condition",
             "type": "string"
+          },
+          "model_profile_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Profile Id"
           },
           "protocol_id": {
             "default": "demo-v1",
@@ -2804,8 +2894,15 @@
             "title": "Cost"
           },
           "cost_missing_reason": {
-            "title": "Cost Missing Reason",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Missing Reason"
           },
           "created_at": {
             "title": "Created At",
@@ -2951,6 +3048,9 @@
               },
               {
                 "type": "number"
+              },
+              {
+                "type": "null"
               }
             ],
             "title": "Temperature"
@@ -3309,6 +3409,20 @@
           "id": {
             "title": "Id",
             "type": "string"
+          },
+          "model_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Configuration"
           },
           "progress": {
             "anyOf": [
@@ -3879,6 +3993,63 @@
         "title": "Message",
         "type": "object"
       },
+      "ModelProfileResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "is_default": {
+            "title": "Is Default",
+            "type": "boolean"
+          },
+          "max_output_tokens": {
+            "title": "Max Output Tokens",
+            "type": "integer"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "purposes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Purposes",
+            "type": "array"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "structured_output": {
+            "title": "Structured Output",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "provider",
+          "model",
+          "purposes",
+          "structured_output",
+          "max_output_tokens",
+          "status",
+          "is_default"
+        ],
+        "title": "ModelProfileResponse",
+        "type": "object"
+      },
       "OracleDecision": {
         "additionalProperties": false,
         "properties": {
@@ -4140,6 +4311,35 @@
           "next_cursor"
         ],
         "title": "Page[MappingSetResponse]",
+        "type": "object"
+      },
+      "Page_ModelProfileResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ModelProfileResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "Page[ModelProfileResponse]",
         "type": "object"
       },
       "Page_ProjectResponse_": {
@@ -4778,6 +4978,20 @@
             "title": "Id",
             "type": "string"
           },
+          "model_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Configuration"
+          },
           "progress": {
             "anyOf": [
               {
@@ -4906,6 +5120,18 @@
             "minLength": 1,
             "title": "Instruction",
             "type": "string"
+          },
+          "model_profile_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Profile Id"
           }
         },
         "title": "ProposalRequest",
@@ -5096,6 +5322,20 @@
             "title": "Id",
             "type": "string"
           },
+          "model_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Configuration"
+          },
           "progress": {
             "anyOf": [
               {
@@ -5152,6 +5392,7 @@
           "conversation_id": {
             "anyOf": [
               {
+                "maxLength": 36,
                 "type": "string"
               },
               {
@@ -5178,6 +5419,18 @@
             "maxItems": 12,
             "title": "History",
             "type": "array"
+          },
+          "model_profile_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Profile Id"
           },
           "proposal_id": {
             "anyOf": [
@@ -5322,6 +5575,43 @@
           "shared_auth"
         ],
         "title": "ReadyResponse",
+        "type": "object"
+      },
+      "RepairRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "bundle_digest": {
+            "title": "Bundle Digest",
+            "type": "string"
+          },
+          "model_profile_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Profile Id"
+          },
+          "proposal_id": {
+            "title": "Proposal Id",
+            "type": "string"
+          },
+          "revision": {
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "proposal_id",
+          "revision",
+          "bundle_digest"
+        ],
+        "title": "RepairRequest",
         "type": "object"
       },
       "RetrievalSummary": {
@@ -6277,6 +6567,18 @@
             "title": "Condition",
             "type": "string"
           },
+          "model_profile_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Profile Id"
+          },
           "registration_digest": {
             "pattern": "^sha256:[a-f0-9]{64}$",
             "title": "Registration Digest",
@@ -6447,6 +6749,20 @@
           "id": {
             "title": "Id",
             "type": "string"
+          },
+          "model_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Configuration"
           },
           "progress": {
             "anyOf": [
@@ -6955,6 +7271,38 @@
         "title": "Triple",
         "type": "object"
       },
+      "TrustGraphIngestRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "configured_flow_key": {
+            "const": "default",
+            "default": "default",
+            "title": "Configured Flow Key",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "extraction_profile_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extraction Profile Id"
+          }
+        },
+        "required": [
+          "document_id"
+        ],
+        "title": "TrustGraphIngestRequest",
+        "type": "object"
+      },
       "TrustGraphIngestionJob": {
         "additionalProperties": false,
         "properties": {
@@ -6976,6 +7324,20 @@
           "id": {
             "title": "Id",
             "type": "string"
+          },
+          "model_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Configuration"
           },
           "progress": {
             "anyOf": [
@@ -7048,6 +7410,31 @@
           "job_id": {
             "title": "Job Id",
             "type": "string"
+          },
+          "llm_profile": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Profile"
+          },
+          "llm_session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Session Id"
           },
           "preparation_id": {
             "title": "Preparation Id",
@@ -7143,8 +7530,47 @@
             "title": "Job Id",
             "type": "string"
           },
+          "llm_profile": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Profile"
+          },
+          "llm_session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Session Id"
+          },
           "prepared": {
             "$ref": "#/components/schemas/PreparedIngestion"
+          },
+          "server_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Server Configuration"
           },
           "status": {
             "title": "Status",
@@ -7248,6 +7674,20 @@
           "id": {
             "title": "Id",
             "type": "string"
+          },
+          "model_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Configuration"
           },
           "progress": {
             "anyOf": [
@@ -7631,6 +8071,20 @@
           "id": {
             "title": "Id",
             "type": "string"
+          },
+          "model_configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Configuration"
           },
           "progress": {
             "anyOf": [
@@ -11207,6 +11661,131 @@
         "summary": "Mapping Set"
       }
     },
+    "/api/v1/projects/{p}/model-profiles": {
+      "get": {
+        "operationId": "model_profiles_api_v1_projects__p__model_profiles_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "p",
+            "required": true,
+            "schema": {
+              "title": "P",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ModelProfileResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description": "Gateway Timeout"
+          }
+        },
+        "summary": "Model Profiles"
+      }
+    },
     "/api/v1/projects/{p}/proposal-jobs": {
       "post": {
         "operationId": "propose_api_v1_projects__p__proposal_jobs_post",
@@ -12067,7 +12646,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BundleRequest"
+                "$ref": "#/components/schemas/RepairRequest"
               }
             }
           },
@@ -14414,7 +14993,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/IngestRequest-Input"
+                "$ref": "#/components/schemas/TrustGraphIngestRequest"
               }
             }
           },
