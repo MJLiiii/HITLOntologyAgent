@@ -32,7 +32,9 @@ jobs:
         with:
           version: '0.13.6'
       - name: Install locked dependencies
-        run: make setup
+        run: |
+          make setup
+          uv sync --frozen --extra trustgraph
       - name: Build Java runner and both web bundles
         run: make build
       - name: Lint and check API contract drift
