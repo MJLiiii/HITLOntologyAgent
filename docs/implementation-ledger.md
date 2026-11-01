@@ -11,6 +11,7 @@
 - Ruling: use independent agents for frontend, validation and integration investigations; file ownership is disjoint. Root owns contracts, API, chat, workflow, persistence and integration verification.
 - Ruling: local fixed demo generation and grounded retrieval work without an API key, with honest mode labels. Optional configured model calls must preserve evidence/ontology constraints and cannot publish.
 - Ruling: preserve one reviewed initial source snapshot in the newly initialized local Git repository. Parallel implementation did not produce the plan's example per-task historical commits; no retrospective commit sequence or historical red/green evidence is fabricated. No remote publication is authorized or performed.
+- Continuation: the initial snapshot is commit `a7cb630`. Continue in the explicitly requested folder on `codex/complete-engineering`; the existing runtime and large pinned caches stay in place. The user reiterated that no real study is approved. Synthetic tests and integration work remain authorized; no real participant or study outcome is inferred.
 
 ## Execution checklist
 
@@ -50,3 +51,7 @@ Initial workspace inspection: only plan/review documents and proposal outputs; n
 ### Remaining gates (do not infer completion)
 
 The actual host mount/read boundary, configurable scopes/mappings and model-backed condition runners are implemented. The complete TrustGraph processing boundary, final clean setup/backup/browser checks and release provenance remain tracked in `release-verification.md` and `requirements-audit.md`. Independent evaluator deployment and research execution with permitted data and consenting experts remain external. The original full-plan checkboxes above stay open where any required integration, verification or external study requirement remains; the audit maps all 70 task checkboxes and 56 named tests.
+
+### Interrupted job recovery continuation
+
+Six fault-injection regressions first reproduced committed effects with abandoned job results and a late worker committing after lease expiry. Proposal, seed, test-suite, validation and assessment effects now commit their result in the same database transaction and reject expired leases. A seventh regression reproduced a repair successor committed without its attempt/result; repair completion now shares that transaction too. A crash after model generation but before revision materialization retains the model output linked to the failed job and never replays it on an idempotent retry. This is deliberate fail-closed recovery, not automatic model replay. Experiment batch storage and local ingestion use the same atomic completion helper. Focused recovery/workflow verification: **62 passed** in 11.45 seconds; final whole-suite verification follows the parallel integration changes.

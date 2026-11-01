@@ -538,9 +538,9 @@ class Studio:
                                 "change_explanations": [c.model_dump() for c in generated[0].changes] if generated else []})
             revision = self._new_revision(s, p, proposal, candidate["ttl"], candidate, draft.summary if generated else "Deterministic demo proposal from the synthetic fixture. Review all changes against evidence.", [e["id"] for e in evidence], corpus_id, 1, actor)
             self.audit(s, p_id, actor, "proposal_created", proposal.id, revision.data)
-            return {"proposal_id": proposal.id, "revision": 1, "bundle_digest": revision.data["bundle_digest"]}
+            return self._complete_job(s, payload, {"proposal_id": proposal.id, "revision": 1, "bundle_digest": revision.data["bundle_digest"]})
 
-    def revise(self, p_id, proposal_id, request, if_match, actor):
+    def revise(self, p_id, proposal_id, request, if_match, actor, *, repair_completion=None):
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
             if p.pending_publication_id:
@@ -562,6 +562,12 @@ class Studio:
                                     old.data["evidence_ids"], old.data["corpus_snapshot_id"], old.data["revision"] + 1, actor,
                                     tests=json.loads(self.artifacts.get_verified(old.data["tests"])))
             self.audit(s, p_id, actor, "revision_created", new.id, new.data)
+            if repair_completion:
+                payload, attempt_id, attempt_number = repair_completion
+                self.get(s, p_id, attempt_id, "repair_attempt").status = "completed"
+                self.add(s, p_id, "repair_result", {"attempt_id": attempt_id, "revision_id": new.id})
+                self._complete_job(s, payload, {"proposal_id": proposal_id, "revision": new.data["revision"],
+                    "bundle_digest": new.data["bundle_digest"], "repair_attempt": attempt_number})
             return self.revision_body(s, p, new)
 
     def reports(self, s, p_id, revision, kind):
@@ -682,7 +688,7 @@ class Studio:
             result = self.add(s, p_id, "validation", {**report, "revision_id": r_id}, report["status"], report["id"])
             if r.status not in {"approved", "published", "in_review", "rejected", "changes_requested"}:
                 r.status = "validated" if report["status"] == "passed" else "validation_failed"
-            return self.body(result)
+            return self._complete_job(s, payload, self.body(result))
 
     def assessment_job(self, p_id, payload):
         r_id, data = self.check_bundle(p_id, payload)
@@ -694,7 +700,7 @@ class Studio:
         report = run_assessment(self.artifacts.get_verified(data["ontology"]).decode(), base_ttl=base, bundle_digest=data["bundle_digest"], questions=json.loads(self.artifacts.get_verified(data["questions"])), mappings=mappings)
         with self.db.session(write=True) as s:
             result = self.add(s, p_id, "assessment", {**report, "revision_id": r_id}, report["status"], report["id"])
-            return self.body(result)
+            return self._complete_job(s, payload, self.body(result))
 
     def question(self, p_id, payload):
         with self.db.session() as s:
@@ -725,6 +731,16 @@ class Studio:
                 answer["limitations"].append("This answer uses at most 20 source passages and 100 ontology triples selected by local word overlap; it does not cover the entire snapshot.")
         return {**answer, "version_id": version_id, "ontology_status": status, "corpus_snapshot_id": corpus_id,
                 "context_digest": digest({"ontology": hashlib.sha256(ttl.encode()).hexdigest(), "evidence": [e["content_hash"] for e in evidence], "question": payload["question"], "history": payload.get("history", [])})}
+
+    def _complete_job(self, s, payload, result):
+        """Commit a side effect and its job result together, fenced by the worker lease."""
+        if job_id := payload.get("_job_id"):
+            job = s.get(Job, job_id)
+            if (not job or job.status != "running" or not job.lease_until
+                    or job.lease_until.replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc)):
+                raise Problem(409, "job_lease_lost", "Worker lease expired; the late result was not applied")
+            job.status, job.result, job.lease_until, job.error = "succeeded", result, None, None
+        return result
 
     def create_job(self, p_id, kind, payload, key, actor):
         if not key or len(key) > 200:
@@ -769,7 +785,7 @@ class Studio:
                 result = self.repair(p, payload, actor)
             elif kind == "ingestion":
                 with self.db.session(write=True) as s:
-                    result = self._ingest(s, p, payload["document_id"])
+                    result = self._complete_job(s, payload, self._ingest(s, p, payload["document_id"]))
             elif kind == "seed-import":
                 result = self.seed_import(p, payload, actor)
             elif kind == "experiment":
@@ -778,12 +794,14 @@ class Studio:
                 raise Problem(422, "unsupported_job", "This job kind is not implemented")
             with self.db.session(write=True) as s:
                 job = s.get(Job, job_id)
-                job.status, job.result, job.lease_until = "succeeded", result, None
+                if job.status != "succeeded":
+                    self._complete_job(s, payload, result)
         except Exception as exc:
             with self.db.session(write=True) as s:
                 job = s.get(Job, job_id)
-                job.status, job.lease_until = "failed", None
-                job.error = exc.message if isinstance(exc, Problem) else (str(exc)[:400] if isinstance(exc, ValueError) else "Job failed; check local server diagnostics")
+                if job.status == "running":
+                    job.status, job.lease_until = "failed", None
+                    job.error = exc.message if isinstance(exc, Problem) else (str(exc)[:400] if isinstance(exc, ValueError) else "Job failed; check local server diagnostics")
             import logging
             logging.getLogger(__name__).exception("Job %s failed", job_id)
 
@@ -793,7 +811,7 @@ class Studio:
             for job in s.scalars(select(Job).where(Job.status == "running")):
                 lease = job.lease_until
                 if lease and lease.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
-                    job.status, job.error = "failed", "Worker lease expired; inspect retained artifacts before retry"
+                    job.status, job.error, job.lease_until = "failed", "Worker lease expired; inspect retained artifacts before retry", None
             job_id = s.scalar(select(Job.id).where(Job.status == "queued").order_by(Job.created_at).limit(1))
         if job_id:
             self.execute_job(job_id)
@@ -830,7 +848,7 @@ class Studio:
                 ref = self.artifacts.put(canonical_json(run), "application/json")
                 results.append(self.body(self.add(s, p_id, "experiment", {**run, "sealed_record": ref,
                              "project_context": context}, run["status"], run["id"])))
-            return {"runs": results}
+            return self._complete_job(s, payload, {"runs": results})
 
     def experiment_record(self, item):
         from .experiments import verify_record
@@ -932,7 +950,7 @@ class Studio:
             revision = self._new_revision(s, p, proposal, candidate["ttl"], candidate, payload["rationale"],
                                          [e["id"] for e in evidence], corpus_id, 1, actor)
             self.audit(s, p_id, actor, "seed_staged", proposal.id, revision.data)
-            return {"proposal_id": proposal.id, "revision": 1, "bundle_digest": revision.data["bundle_digest"]}
+            return self._complete_job(s, payload, {"proposal_id": proposal.id, "revision": 1, "bundle_digest": revision.data["bundle_digest"]})
 
     def generate_tests(self, p_id, payload, actor):
         from .testspecs import generate_specs
@@ -942,7 +960,7 @@ class Studio:
             manifest = {"revision_id": r.id, "bundle_digest": r.data["bundle_digest"], "tests": specs, "split": "development", "origin": "synthetic"}
             suite = self.add(s, p_id, "test_suite", {**manifest, "digest": digest(manifest), "actor": actor}, "needs_review")
             self.audit(s, p_id, actor, "test_suite_generated", suite.id, manifest)
-            return self.body(suite)
+            return self._complete_job(s, payload, self.body(suite))
 
     def repair(self, p_id, payload, actor):
         with self.db.session(write=True) as s:
@@ -987,10 +1005,8 @@ class Studio:
                 raise Problem(409, "model_required", "This repair needs a configured model or an explicit human revision")
             changes = ChangeSet(additions=[hierarchy])
             rationale = "Restore the source-supported critical-service hierarchy identified by failed CQ-01."
-        revised = self.revise(p_id, payload["proposal_id"], RevisionRequest(parent_revision=payload["revision"], structured_changes=changes, rationale=rationale), str(payload["revision"]), actor)
-        with self.db.session(write=True) as s:
-            self.get(s, p_id, attempt_id, "repair_attempt").status = "completed"
-            self.add(s, p_id, "repair_result", {"attempt_id": attempt_id, "revision_id": revised["revision_id"]})
+        revised = self.revise(p_id, payload["proposal_id"], RevisionRequest(parent_revision=payload["revision"], structured_changes=changes, rationale=rationale), str(payload["revision"]), actor,
+                              repair_completion=(payload, attempt_id, attempt_number))
         return {"proposal_id": payload["proposal_id"], "revision": revised["revision"], "bundle_digest": revised["bundle_digest"], "repair_attempt": attempt_number}
 
     def oracle_decision(self, p_id, request, actor):
