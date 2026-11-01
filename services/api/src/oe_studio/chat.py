@@ -54,7 +54,14 @@ def answer_question(question: str, ontology_ttl: str, evidence: list[dict], hist
     ranked = sorted(((len(tokens & words(e["quote"] + " " + e["title"])), e) for e in evidence if e["resolved"]), key=lambda v: (-v[0], v[1]["id"]))
     selected = [e for score, e in ranked[:5] if score > 0]
     named_tokens = {m.group(1).lower() for m in re.finditer(r"\b([A-Za-z][\w-]*)\s+(?:service|team)\b", context_question, re.I)}
-    unknown_names = named_tokens - label_tokens - STOP - {"each", "every", "any", "which", "this", "that", "all"}
+    # Short explicit ownership targets need the same unknown-entity guard even
+    # without a trailing type word: "Which team owns Atlas?" must not list others.
+    named_tokens.update(m.group(1).lower() for m in re.finditer(
+        r"\b(?:owns?|responsible\s+for)\s+(?:the\s+)?([A-Za-z][\w-]*)"
+        r"(?:\s+(?:services?|teams?))?(?=\s*(?:[?!.]|$))", context_question, re.I))
+    unknown_names = named_tokens - label_tokens - STOP - {
+        "each", "every", "any", "which", "this", "that", "all", "service", "services", "team", "teams",
+        "owners", "them", "they", "those", "these", "everyone", "everything"}
     if unknown_names:
         passages = [e for e in selected if unknown_names & words(e["quote"])]
         return {"answer": "That named service or team is not recorded in the selected ontology." + (

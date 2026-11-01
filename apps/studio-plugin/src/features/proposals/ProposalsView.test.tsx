@@ -1,10 +1,11 @@
+import { evidenceFixture, projectFixture, revisionFixture } from '../../test-fixtures';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { ProposalsView, RevisionDetail } from './ProposalsView';
 import type { Revision, Project, Session } from '../../api/generated';
-const project: Project = { id: 'p', name: 'Demo', domain: 'unselected', approved_version_id: 'head-new', corpus_snapshot_id: 'c', scope_accepted: true, scope_digest: 'scope', mode: 'demo' };
+const project: Project = projectFixture({ id: 'p', name: 'Demo', domain: 'unselected', approved_version_id: 'head-new', corpus_snapshot_id: 'c', scope_accepted: true, scope_digest: 'scope', mode: 'demo' });
 const session: Session = { actor: { subject: 'human', kind: 'human', roles: ['researcher', 'reviewer', 'approver'] }, mode: 'demo', model_mode: 'local' };
-const revision: Revision = { id: 'proposal', title: 'Add an owner', revision: 1, status: 'validated', base_version_id: 'head-old', bundle_digest: 'sha256:1234', created_at: '', rationale: 'Add ownership', additions: [{ subject: 'demo:Dataset', predicate: 'rdfs:subClassOf', object: 'demo:Asset' }], deletions: [], evidence: [{ id: 'e', document_id: 'doc', title: 'Handbook', quote: '<script>alert(1)</script>', resolved: true }], review_eligibility: { eligible: true, reasons: [] }, validation_run_id: 'v', assessment_run_ids: ['a'] };
+const revision: Revision = revisionFixture({ id: 'proposal', title: 'Add an owner', revision: 1, status: 'validated', base_version_id: 'head-old', bundle_digest: 'sha256:1234', created_at: '', rationale: 'Add ownership', additions: [{ subject: 'demo:Dataset', predicate: 'rdfs:subClassOf', object: 'demo:Asset' }], deletions: [], evidence: [evidenceFixture({ id: 'e', document_id: 'doc', title: 'Handbook', quote: '<script>alert(1)</script>', resolved: true })], review_eligibility: { eligible: true, reasons: [] }, validation_run_id: 'v', assessment_run_ids: ['a'] });
 afterEach(() => vi.unstubAllGlobals());
 describe('revision review', () => {
   it('disables acceptance of a stale base and escapes source content', () => {
@@ -84,7 +85,7 @@ describe('revision review', () => {
   it('requests a bounded exact-bundle repair and selects the unvalidated successor without automatic approval',async()=>{
     const current={...project,approved_version_id:'head-old'};
     const failed:Revision={...revision,status:'validation_failed',validation:{id:'v',status:'failed',profile:'rdfs',cases:[{id:'CQ-01',name:'Hierarchy expectation',status:'failed'}]}};
-    const successor:Revision={...revision,revision:2,status:'draft',bundle_digest:'bundle-two',validation_run_id:undefined,assessment_run_ids:[],review_eligibility:{eligible:false,reasons:['Required validation has not passed for this exact bundle']}};
+    const successor:Revision={...revision,revision:2,status:'draft',bundle_digest:'bundle-two',validation_run_id:null,assessment_run_ids:[],review_eligibility:{eligible:false,reasons:['Required validation has not passed for this exact bundle']}};
     const writes:{path:string;body:unknown;headers:Headers}[]=[];
     vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
       if(options.method==='POST')writes.push({path,body:JSON.parse(String(options.body)),headers:new Headers(options.headers)});
@@ -97,7 +98,7 @@ describe('revision review', () => {
     render(<ProposalsView project={current} session={session} proposals={[failed]} onRefresh={refresh} onSources={vi.fn()}/>);
     fireEvent.click(await screen.findByRole('button',{name:'Request repair'}));
     await screen.findByText('CANDIDATE REVISION 2');
-    expect(screen.getByRole('status')).toHaveTextContent('Repair attempt 1 of 2 created revision 2');
+    expect(screen.getByText(/Repair attempt 1 of 2 created revision 2/)).toBeInTheDocument();
     expect(screen.getByRole('button',{name:'Accept revision'})).toBeDisabled();
     expect(writes).toHaveLength(1);
     expect(writes[0].path).toBe('/api/v1/projects/p/repair-jobs');

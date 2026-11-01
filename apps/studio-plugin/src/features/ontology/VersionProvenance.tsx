@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { AuditEvent, Project, Publication, ReviewDecision, Version } from '../../api/generated';
-import { errorMessage, list, request } from '../../api/client';
+import { errorMessage, list, operation } from '../../api/client';
 import { Badge, ErrorNotice, Loading, short } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 
@@ -18,14 +18,14 @@ export function VersionProvenance({project,version,onOpenProposal,onSelectVersio
   useEffect(()=>{
     let active=true;setLoading(true);setError('');setPublication(null);setReviews([]);setEvents([]);
     async function load() {
-      const reads=await Promise.allSettled([list<AuditEvent>(`${base}/audit`),version.publication_id?request<Publication>(`${base}/publications/${encodeURIComponent(version.publication_id)}`):Promise.resolve(null)]);
+      const reads=await Promise.allSettled([list('GET /api/v1/projects/{p}/audit',{path:{p:project.id}}),version.publication_id?operation('GET /api/v1/projects/{p}/publications/{publication}',{path:{p:project.id,publication:version.publication_id}}):Promise.resolve(null)]);
       if(!active)return;
       const failures:string[]=[];
       if(reads[0].status==='fulfilled')setEvents(reads[0].value);else failures.push(errorMessage(reads[0].reason));
       if(reads[1].status==='fulfilled'){
         const receipt=reads[1].value;setPublication(receipt);
         if(receipt?.approval_ids.length){
-          const decisions=await Promise.allSettled(receipt.approval_ids.map(id=>request<ReviewDecision>(`${base}/reviews/${encodeURIComponent(id)}`)));
+          const decisions=await Promise.allSettled(receipt.approval_ids.map(id=>operation('GET /api/v1/projects/{p}/reviews/{review_id}',{path:{p:project.id,review_id:id}})));
           if(!active)return;
           setReviews(decisions.flatMap(result=>result.status==='fulfilled'?[result.value]:[]));
           decisions.forEach(result=>{if(result.status==='rejected')failures.push(errorMessage(result.reason));});

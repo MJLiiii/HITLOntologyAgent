@@ -1,0 +1,194 @@
+{
+  "verified_at": "2026-11-01T12:56:21.789249+00:00",
+  "classification": "synthetic_engineering_only",
+  "real_study_approved": false,
+  "current_application_lifecycle": {
+    "status": "passed",
+    "authority": "SIMULATED ENGINEERING TEST: isolated seeded provider import; not a human study or actual expert decision.",
+    "project_id": "44bebc45-eba5-4163-933d-33866ce408bc",
+    "flow_id": "oe-studio-ledger-v4",
+    "seed_version_id": "b2c185ce-269f-4308-8392-99a1be6a731e",
+    "seed_sha256": "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0",
+    "queued_receipt_id": "8b5ddbd0-7dcd-41ea-9ea5-0aaf5c948ac1",
+    "recovery_reattached_same_receipt": true,
+    "selected_corpus_id": "b8eb1b8b-1d29-52cf-aed1-4cefdc13de5b",
+    "exact_passage_resolved": true,
+    "question_reads_imported_passage": true,
+    "canonical_git_refs_unchanged_by_import": true,
+    "upstream_global_completion": false,
+    "external_model_answer_quality_claimed": false,
+    "configuration_version": 48,
+    "preparation_manifest_digest": "sha256:d7e6cd72189003b9c9b4e61117dd3830173bc8200e95d9e23e98e24cc7e81343",
+    "upstream_run_document_uri": "urn:oe:ingestion-source:464f3775-158a-57e7-8b2d-d886600fcb18",
+    "selection_manifest_digest": "sha256:12e7f570f26de554c984cf7a54ffd71695a4c3bce9ceb4ff855711a005a7667e",
+    "source_sha256": "59f0eaa2db6f30b65c480dc75a76de7b570f262ed24c629842f7ed279703ddf8",
+    "configuration_sha256": "e12d50fd5bc79f3dc7afe6fc8e6ced4c1a36b8371565d5885cfe3f00d7d56221",
+    "provenance_sha256": "d2b7c9916c305a50267e79795e075122569c2cca07fb8c007220eb752b5fc60e",
+    "selected_chunks": 1,
+    "extracted_fact_count": 8
+  },
+  "engines": {
+    "validation": {
+      "name": "Apache Jena",
+      "version": "6.2.0",
+      "runner_version": "0.1.0",
+      "isolation": {
+        "mode": "macos-seatbelt",
+        "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+        "launcher": "/usr/bin/sandbox-exec",
+        "platform": "darwin",
+        "network": "kernel-denied",
+        "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+        "rendered_profile_sha256": "1740c42b71e61900c57159a1481ee59854a55d36c361dc7d107de09e8aec4c33",
+        "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+      },
+      "jar_sha256": "6a6e7e3ed45f98607d20b935e1c6f15b973f6dcde5504eff1d4bc284a5abda53"
+    },
+    "assessment": {
+      "name": "OntoCheck",
+      "version": "0.1.3",
+      "commit": "69d42e38979f381fe531ae547fcc49b8ad58ef15",
+      "network": "disabled",
+      "network_control": "macOS Seatbelt network denial plus Python audit hook",
+      "isolation": {
+        "mode": "macos-seatbelt",
+        "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+        "launcher": "/usr/bin/sandbox-exec",
+        "platform": "darwin",
+        "network": "kernel-denied",
+        "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+        "rendered_profile_sha256": "5bf100fcc548a97db95803ecc6ee40e83ab35591db533fd0fe885c92c63ad0ac",
+        "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+      },
+      "python": "3.12.14",
+      "resources": {
+        "nltk_english_stopwords_sha256": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b"
+      },
+      "packages": {
+        "ontocheck": "0.1.3",
+        "rdflib": "7.6.0",
+        "networkx": "3.7",
+        "nltk": "3.10.4"
+      },
+      "configuration": {
+        "domain_prefixes": [
+          "demo"
+        ],
+        "domain_ns_fragments": [
+          "https://example.org/oe-demo/"
+        ],
+        "authorize_prefix_mapping": false,
+        "mappings": {},
+        "mappings_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "weighting": "canonical",
+        "max_hops": 8,
+        "lam": 0.6931471805599453
+      }
+    }
+  },
+  "retained_attempts": {
+    "run-20261101-v5": {
+      "preparation_before_submission": true,
+      "configuration_version": 32,
+      "receipt_recovered_without_resubmission": true,
+      "selected_snapshot_verified": true,
+      "upstream_global_completion": false,
+      "chunks": 1,
+      "facts": 4,
+      "ownership_statements": [],
+      "answer": "The team owning the Atlas service is inferred from the knowledge statements provided. The service is associated with the document `urn:oe:document:c204e939-1aaa-5fd8-8f3b-693b8b3e1b9d`, which is linked to the label \"Synthetic Atlas ownership\". Therefore, the team owning the Atlas service is the one associated with this document.",
+      "sources": [
+        {
+          "uri": "urn:oe:document:c204e939-1aaa-5fd8-8f3b-693b8b3e1b9d",
+          "title": "Synthetic Atlas ownership"
+        }
+      ],
+      "known_answer_contains_platform": false,
+      "simulation": "Approved-version input is a synthetic adapter test fixture; no Studio approval written"
+    },
+    "studio-ledger-v1": {
+      "status": "failed_before_ingestion",
+      "error": "Path.open does not accept opener; fixed to builtins.open",
+      "retained_simulated_publication": true,
+      "source_submitted": false
+    },
+    "studio-ledger-v3": {
+      "status": "failed_before_ingestion",
+      "error": "capture included only selected prompts; hardened helper requires all workspace prompt records",
+      "source_submitted": false,
+      "retained_simulated_publication": true
+    }
+  },
+  "historical_local_read": {
+    "status": "passed",
+    "authority": "SIMULATED ENGINEERING TEST: isolated seeded provider import; not a human study or actual expert decision.",
+    "project_id": "e680a1d2-bb5c-4c12-aeda-930ca3529c3e",
+    "seed_version_id": "42797772-a93d-4b72-9bff-1a996c90af72",
+    "seed_sha256": "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0",
+    "queued_receipt_id": "906c0f78-8818-42f2-b31d-c83082c67ed0",
+    "recovery_reattached_same_receipt": true,
+    "selected_corpus_id": "b1988ccc-4f7c-54ab-9ef0-97f28825a11e",
+    "exact_passage_resolved": true,
+    "question_reads_imported_passage": true,
+    "canonical_git_refs_match_simulated_publication": true,
+    "upstream_global_completion": false,
+    "external_model_answer_quality_claimed": false,
+    "resumed_local_reads_only": true,
+    "remote_provider_not_required_for_read": true
+  },
+  "boundaries": {
+    "upstream_global_completion_supported": false,
+    "upstream_processor_configuration_attested": false,
+    "local_selected_snapshot_immutable": true,
+    "model_semantic_quality_verified": false,
+    "shared_studio_identity_bridge": false
+  },
+  "workspace_denial": {
+    "classification": "synthetic_engineering_test",
+    "study_observations": false,
+    "verified_at": "2026-11-01T12:45:57.516735+00:00",
+    "checks": {
+      "own_document_write": 200,
+      "own_document_read": 200,
+      "foreign_document_read": 403,
+      "foreign_document_write": 403,
+      "own_config_read": 200,
+      "foreign_config_read": 403,
+      "foreign_source_before_sha256": "b3c65d0de2fe3abded776d0cdc64de3e12f6cf838c44dd0fa3d4c191a2850813",
+      "foreign_source_after_sha256": "b3c65d0de2fe3abded776d0cdc64de3e12f6cf838c44dd0fa3d4c191a2850813",
+      "foreign_source_unchanged": true
+    },
+    "status": "passed",
+    "principal_role": "writer",
+    "own_workspace": "oe-denial-own-85658d7c44",
+    "foreign_workspace": "oe-denial-other-85658d7c44",
+    "cleanup": "Synthetic user and created workspaces disabled; evidence retained"
+  },
+  "source_hashes_at_evidence_export": {
+    "infra/portal/check_studio_import.py": "12823d2e6311718f65adea9cdcfda182f2c238ae8b3690eb050a340bf1ebeea7",
+    "infra/portal/check_selected_import.py": "68751b92e825a5c1b865085afc11ae6884be8368272adcd24bd721f0043908a6",
+    "services/api/src/oe_studio/integrations/trustgraph/imports.py": "0723a1a3d1c019c6657c7f8ebf9e7939a24de5cf7d54080033203eec25adf79a",
+    "services/api/src/oe_studio/integrations/trustgraph/seed.py": "7e148e5772ba48e0181aef50ea85958b1a0fb8e1453ded064b629047ac5db30f",
+    "services/api/src/oe_studio/trustgraph_workflow.py": "5f9da573487901d59adcdcded027e8c379e2fc24212d9dbb27eff93f16deca36",
+    "docs/workspace-denial-evidence.json": "a2fa4a1ddf7e053a70e5056718ba4d78a2000a20fddd411ef107ac9115ce1bce"
+  },
+  "retained_output_hashes": {
+    "research/results/trustgraph-pipeline/studio-ledger-v4/authority.json": "a4cb6fed77d4a33839daca1e7128f5203e87690751ceebae1b7995734bfa9ce9",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/chunk-hints.f124e7bddfa21959.json": "f124e7bddfa219597c1b68e708df575dd1ac023fa70e9c7bbed483b7d9d0cebf",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/chunk-hints.json": "d841150cb7d1d465211425526838339e0cc806418c717cce4aff9109c19afdb2",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/evidence.json": "e3ee61db68762a123cb4602f01d3f6f9959c27859aae9bb7faa56c6953f00727",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-0cd0f484-b32e-4957-8c84-7f9e5087170b.json": "68976a9c368d466defb65ecf453d1811e289b9a1cec953565f520b14e51bd126",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-107b7f53-c871-4c45-b84a-d0007358d31c.json": "d4c8b7b1b6b57075e5dfa9eab5912b06a079693aea2494b9faca3193eb99f8de",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-165087db-3194-432b-b59c-5e60cec4f35e.json": "ea6c499083ee3d6bf931356aad5f939788086806bc08312d246d6f96ce608ac4",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-23b87ae7-d408-4823-80a7-7f84fa3123da.json": "66f657d25f18cb2bc8200b2e4b796c51beeb3370048a42a23fe2279509cd82ed",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-8cdc886b-3c79-4b2d-b6f2-65ab99598d36.json": "61b92a1d8fc31d5e27e4690798d943bb97cd37d26c7ca0bca9c0f9d1be14ead0",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-b80b6ef7-5f02-44be-a405-7f1f16704882.json": "dda72b963d7822ac7cbda4a53d0214f53c1c4bb6eb28614c224ef0bbec1294d9",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-cb443ecb-d0c2-4b55-9c74-d69a017e64c8.json": "fc6d428c89a63a16dd38e89233a826ad55728064f7951a714a64d905566fbb9c",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-f0da61a4-7a3a-4dc3-af06-1997edc7d25f.json": "c3b7f87c032573a0d94c213d1fb43c23897027f1f60d2f21132fd6f6b7dc4432",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-f32878b9-e35c-4242-aaae-268c87cdb860.json": "7453dde56269e39e69856596a77995198b6d20f8cff43fdcdd712640a1f3539b",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/job-f7c01206-e2c6-498d-97ad-94ab9eed1e55.json": "8b9107baf03941c5c6cbb76f4e9cd916f0d66ffd0e202f7cdd0cbc86caa60a01",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/question.json": "66547b5e33178d8b4c28cb960ce8cdec3c34fa1a032263bb7ed9eb0da63e0294",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/report.json": "ae9f67d8c85108aab063481d56bf5fa0a4dda92a15a4e684363eb41b6e0294b8",
+    "research/results/trustgraph-pipeline/studio-ledger-v4/simulated-publication.json": "161a4c0846009443759d22121b479964efba394411c859b6a2e599b67d997289"
+  }
+}

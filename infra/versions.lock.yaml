@@ -1,6 +1,6 @@
 {
   "recorded_at": "2026-11-01",
-  "verification_scope": "Local source-grounded Studio with real isolated Jena/OntoCheck/PDF, actual local model chat, pinned TrustGraph host and bounded synthetic pipeline, clean cached reproduction and PostgreSQL recovery; generic remote corpus activation and real study remain gated",
+  "verification_scope": "Local source-grounded Studio with real isolated Jena/OntoCheck/PDF, actual local model chat, pinned TrustGraph host and bounded synthetic pipeline, clean cached reproduction and PostgreSQL recovery; explicit selected immutable TrustGraph imports; generic upstream completion, shared deployment and real study remain gated",
   "runtime": {
     "python": "3.12.14",
     "java": "OpenJDK Homebrew 21.0.13.0.3",
@@ -39,9 +39,9 @@
         "sha256": "4ca38c60f3c4f0473368d51e01977ac8d1d257ba8c0eb493dcfac855b620d904"
       }
     ],
-    "runner_jar_sha256": "572fd5730cea46f9bab467b61684c4675dfc15f6cccf041076864ef21c013bf3",
+    "runner_jar_sha256": "6a6e7e3ed45f98607d20b935e1c6f15b973f6dcde5504eff1d4bc284a5abda53",
     "source": "services/jena-runner/pom.xml",
-    "packaging": "Fixed UTC output timestamp, forced fresh unshaded input, retained LICENSE/NOTICE/DEPENDENCIES; three repeated/cross-directory build hashes match"
+    "packaging": "Fixed UTC timestamp, forced fresh unshaded input, retained license/notice resources; current main and clean separate-directory builds match byte-for-byte"
   },
   "ontocheck": {
     "repository": "https://github.com/cwru-sdle/OntoCheck",
@@ -103,7 +103,7 @@
       "source_comparison": "api.py and types.py exact; flow.py and library.py identical apart from trailing blank line removed by inspected snapshot writer",
       "runtime_source_hashes_verified": true,
       "undeclared_import_dependency": "aiohttp==3.14.5",
-      "verification": "23 focused gateway/reconciliation/providerbounds tests passed,1genericliveprobe skipped; actual live diagnostic adapter resolved evidence in both v4flows",
+      "verification": "53 focused gateway/import/reconciliation/provider-bound/application tests passed, 1 opt-in generic live probe skipped; separate real application lifecycle passed with exact selected source evidence.",
       "backend_compatibility": "Actual pinned2.11.1 synthetic backend exercised; unsupported SDK get-document/list-children operations corrected or avoided"
     },
     "image_digests": [
@@ -111,7 +111,7 @@
       "qdrant/qdrant@sha256:f1c7272cdac52b38c1a0e89313922d940ba50afd90d593a1605dbbc214e66ffb",
       "dxflrs/garage@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690"
     ],
-    "status": "Real synthetic host and data pipeline verified at documented subset; ontology RAG known-answer failure retained; globalcompletion/approvedseed-ledger/sharedidentity activation gates remain",
+    "status": "Real synthetic host and bounded pipeline verified; durable pre-bound seed/config ingestion, recoverable receipts and selected immutable corpus read passed in isolated Studio. Ontology RAG semantic failure retained; global completion, processor config attestation and shared identity remain unsupported.",
     "deployment_config": {
       "deployment_template_repository": "https://github.com/trustgraph-ai/trustgraph-templates",
       "commit": "5c9853804b2c3aaa30db913cd8c0751b65a3d722",
@@ -138,9 +138,15 @@
       "Unchanged real host/template mounted with real IAM",
       "Studio independent session boundary",
       "Synthetic librarian/chunk/extraction/vector/GraphRAG source-provenance reads",
-      "Actual optionalSDK exact child resolution; review remains disabled"
+      "Actual optional SDK exact child resolution with fail-closed provenance checks",
+      "Durable pre-enqueue approved synthetic seed/config intent and exact receipt recovery",
+      "Run-specific source lineage and explicit immutable local corpus import/read without approved ontology mutation",
+      "Non-administrator own-workspace200 and foreign-workspace403 source read/write/config denial"
     ],
-    "evidence": "infra/portal/pipeline-evidence.json"
+    "evidence": "infra/portal/pipeline-evidence.json",
+    "selected_import_evidence": "infra/portal/import-evidence.json",
+    "selected_import_contract": "docs/trustgraph-import-contract.md",
+    "known_answer_quality": "Ordinary GraphRAG correct in v4; ontology-guided extraction omitted ownership even after v5 seed-ID correction. No model quality or research effect claim."
   },
   "postgres": {
     "image": "postgres:17.6-alpine3.22@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",

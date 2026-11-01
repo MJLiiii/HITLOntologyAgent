@@ -25,6 +25,33 @@ def test_unknown_entity_is_not_widened_to_all_owners():
     assert "Marketing" in answer["answer"] or "not" in answer["answer"]
 
 
+@pytest.mark.parametrize("question", ["Who owns Atlas?", "Which team owns Atlas?",
+                                      "Who is responsible for Atlas?", "Who owns atlas?"])
+def test_short_unknown_ownership_target_does_not_borrow_other_entities_owners(question):
+    atlas = {"id": "atlas-source", "title": "Selected Atlas source", "resolved": True,
+             "quote": "Atlas has an accountable owner in its source system."}
+    answer = answer_question(question, ONTOLOGY, [*EVIDENCE, atlas])
+    assert answer["triples"] == [] and answer["query"] is None
+    assert answer["unresolved_points"] == ["Unknown ontology entity: atlas"]
+    assert "not recorded" in answer["answer"] and atlas["quote"] in answer["answer"]
+    assert answer["evidence"] == [atlas]
+    assert "Payroll Service is owned by" not in answer["answer"]
+
+
+@pytest.mark.parametrize("question", ["Who owns Payroll?", "Which team owns Payroll?",
+                                      "Who is responsible for Payroll?"])
+def test_short_known_ownership_target_keeps_only_its_own_relation(question):
+    answer = answer_question(question, ONTOLOGY, EVIDENCE)
+    assert len(answer["triples"]) == 1
+    assert answer["triples"][0]["subject"].endswith("PayrollService")
+    assert answer["triples"][0]["object"].endswith("OperationsTeam")
+
+
+def test_generic_service_ownership_question_still_enumerates_recorded_owners():
+    answer = answer_question("Who owns the services?", ONTOLOGY, EVIDENCE)
+    assert {t["subject"].rsplit("/", 1)[-1] for t in answer["triples"]} == {"PayrollService", "AnalyticsService"}
+
+
 def test_model_wire_contract_and_usage(tmp_path):
     captured = []
     def handler(request):

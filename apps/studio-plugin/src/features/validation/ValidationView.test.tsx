@@ -9,14 +9,14 @@ describe('validation reporting', () => {
     expect(screen.queryByText('Required checks passed')).not.toBeInTheDocument();
   });
   it('makes approximate support visibly distinct from approval', () => {
-    render(<AssessmentCard report={{ id: 'a1', status: 'succeeded', vocabulary_coverage: 0.7, vocabulary_utilisation: 0.5, strict_fitness: 0.6, approximate_fitness: 0.9, mappings: [{ source: 'Owner', target: 'ResponsibleParty', tier: 'approximate', approved: false }] }} />);
+    render(<AssessmentCard report={{ id: 'a1', status: 'completed', vocabulary_coverage: 0.7, vocabulary_utilisation: 0.5, strict_fitness: 0.6, approximate_fitness: 0.9 }} />);
     expect(screen.getByText('Task-vocabulary coverage')).toBeInTheDocument();
     expect(screen.getByText('Ontology-vocabulary utilisation')).toBeInTheDocument();
-    expect(screen.getByText('Suggestion · not an equivalence')).toBeInTheDocument();
+    expect(screen.getByText('Includes suggested mappings; not approved equivalence')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /accept mapping/i })).not.toBeInTheDocument();
   });
   it('renders the actual engine object and assessment questions without inventing individual results', () => {
-    render(<><ValidationReportCard report={{id:'v',status:'passed',profile:'rdfs',engine:{name:'Apache Jena',version:'5.3.0'},cases:[]}}/><AssessmentCard report={{id:'a',status:'completed',vocabulary_coverage:1,vocabulary_utilisation:0.5,strict_fitness:1,approximate_fitness:1,questions:[{id:'CQ-01',question:'Who owns this service?'}]}}/></>);
+    render(<><ValidationReportCard report={{id:'v',status:'passed',profile:'rdfs',engine:{name:'Apache Jena',version:'5.3.0'},cases:[]}}/><AssessmentCard report={{id:'a',status:'completed',vocabulary_coverage:1,vocabulary_utilisation:0.5,strict_fitness:1,approximate_fitness:1,questions:[{id:'CQ-01',question:'Who owns this service?',sparql_query:'ASK { ?s ?p ?o }'}]}}/></>);
     expect(screen.getByText('RDFS profile · Apache Jena 5.3.0')).toBeInTheDocument();
     expect(screen.getByText('Included in assessment')).toBeInTheDocument();
   });

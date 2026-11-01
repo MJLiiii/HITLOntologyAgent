@@ -1,0 +1,11 @@
+{
+  "purpose": "synthetic_engineering_verification",
+  "split": "development",
+  "oracle_status": "needs_review",
+  "real_study_approved": false,
+  "artifacts": {
+    "inputs.json": "ada5a421d7ba7e39e2e89fd8fc71b31bba99fa5d628f81f59dbc30f2b3081a9b",
+    "suite.json": "d207cfdb13192233f2f8cc3c6344abfb9ff8de81a3a49571a598f9bae4165c16",
+    "verification.json": "215c4e8e8c84f6d81a407fc8c40c565157062239c82de3db372a615dad14bade"
+  }
+}

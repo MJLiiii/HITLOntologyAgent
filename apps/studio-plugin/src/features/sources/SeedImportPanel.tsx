@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import type { Project, Session } from '../../api/generated';
+import type { Project, SeedImportResult, Session } from '../../api/generated';
 import type { SeedImportRequest } from '../../api/openapi';
-import { errorMessage, request, runJob } from '../../api/client';
+import { errorMessage, operation, runJob } from '../../api/client';
 import { ErrorNotice, short } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 
@@ -12,7 +12,7 @@ export function SeedImportPanel({project,session,onRefresh,onOpenProposal}: {pro
   const [busy,setBusy]=useState(false);
   const [stage,setStage]=useState('');
   const [error,setError]=useState('');
-  const [candidate,setCandidate]=useState<{proposal_id:string;revision:number;bundle_digest:string}|null>(null);
+  const [candidate,setCandidate]=useState<SeedImportResult|null>(null);
   const human=session.actor.kind==='human';
   const eligible=human&&session.actor.roles.includes('researcher')&&!project.approved_version_id&&!project.pending_publication_id&&!!project.corpus_snapshot_id;
   async function readFile(file?:File) {
@@ -26,9 +26,9 @@ export function SeedImportPanel({project,session,onRefresh,onOpenProposal}: {pro
     event.preventDefault();if(!eligible||busy)return;
     setBusy(true);setError('');setCandidate(null);setStage('Checking the current corpus and approved head');
     try {
-      const current=await request<Project>(`/projects/${encodeURIComponent(project.id)}`);
+      const current=await operation('GET /api/v1/projects/{p}',{path:{p:project.id}});
       if(current.approved_version_id || current.pending_publication_id || current.corpus_snapshot_id!==project.corpus_snapshot_id || current.scope_digest!==project.scope_digest){await onRefresh();throw new Error('The approved head, scope, or corpus changed. Review the current workspace before staging this seed.');}
-      const result=await runJob<{proposal_id:string;revision:number;bundle_digest:string}>(`/projects/${encodeURIComponent(project.id)}/seed-imports`,{ontology_ttl:turtle,corpus_snapshot_id:project.corpus_snapshot_id!,profile:'rdfs',rationale:rationale.trim()} satisfies SeedImportRequest,setStage);
+      const result=await runJob('POST /api/v1/projects/{p}/seed-imports',{path:{p:project.id},body:{ontology_ttl:turtle,corpus_snapshot_id:project.corpus_snapshot_id!,profile:'rdfs',rationale:rationale.trim()} satisfies SeedImportRequest},setStage);
       await onRefresh();setCandidate(result);setOpen(false);
     }catch(err){setError(errorMessage(err));}finally{setBusy(false);}
   }

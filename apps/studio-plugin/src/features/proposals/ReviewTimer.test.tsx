@@ -13,7 +13,7 @@ describe('explicit review timing',()=>{
     vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
       if(options.method==='POST'){
         const body=JSON.parse(String(options.body));writes.push(body);
-        const event:ReviewTimingEvent={id:`event-${events.length}`,revision_id:body.revision_id,event:body.event,active_seconds:body.event==='pause'?17.5:body.event==='end'?30:events.at(-1)?.active_seconds||0,time:new Date().toISOString(),actor:{subject:'reviewer'}};
+        const event:ReviewTimingEvent={created_at:new Date().toISOString(),status:"recorded",id:`event-${events.length}`,revision_id:body.revision_id,event:body.event,active_seconds:body.event==='pause'?17.5:body.event==='end'?30:events.at(-1)?.active_seconds||0,time:new Date().toISOString(),actor:{subject:'reviewer',kind:'human',roles:['reviewer']}};
         events.push(event);return new Response(JSON.stringify(event));
       }
       expect(path).toBe('/api/v1/projects/p/review-sessions?revision_id=revision%2Fone');

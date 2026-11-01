@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Experiment, Project, Proposal, ReviewDecision, Revision, Session } from '../../api/generated';
 import type { ExperimentReviewLink } from '../../api/openapi';
-import { errorMessage, list, post, request } from '../../api/client';
+import { errorMessage, list, operation } from '../../api/client';
 import { Badge, ErrorNotice, Loading } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 
@@ -25,7 +25,7 @@ export function ExperimentReview({run, project, proposals, session, onRefresh, o
     if (!candidate?.revision_id) return;
     let active = true;
     setLoading(true); setError(''); setReviews([]); setReviewId('');
-    void list<ReviewDecision>(`${base}/reviews?revision_id=${encodeURIComponent(candidate.revision_id)}`)
+    void list('GET /api/v1/projects/{p}/reviews',{path:{p:project.id},query:{revision_id:candidate.revision_id}})
       .then(items => { if (active) setReviews(items.filter(item => item.actor.kind === 'human')); })
       .catch(err => { if (active) setError(errorMessage(err)); })
       .finally(() => { if (active) setLoading(false); });
@@ -35,7 +35,7 @@ export function ExperimentReview({run, project, proposals, session, onRefresh, o
   async function stageCandidate() {
     setBusy(true); setError(''); setNotice('');
     try {
-      const revision = await request<Revision>(`${base}/experiments/${encodeURIComponent(run.id)}/proposal`, {method:'POST'});
+      const revision = await operation('POST /api/v1/projects/{p}/experiments/{run_id}/proposal',{path:{p:project.id,run_id:run.id}});
       setStaged(revision);
       await onRefresh();
       setNotice(`Candidate revision ${revision.revision} staged. Run its checks and record any human decision in Proposals. No approval was created.`);
@@ -45,7 +45,7 @@ export function ExperimentReview({run, project, proposals, session, onRefresh, o
     if (!review || !isHuman) return;
     setBusy(true); setError(''); setNotice('');
     try {
-      const result = await post<Experiment>(`${base}/experiments/${encodeURIComponent(run.id)}/review-results`, {review_id:review.id} satisfies ExperimentReviewLink);
+      const result = await operation('POST /api/v1/projects/{p}/experiments/{run_id}/review-results',{path:{p:project.id,run_id:run.id},body:{review_id:review.id} satisfies ExperimentReviewLink});
       await onRefresh();
       onLinked(result);
     } catch (err) { setError(errorMessage(err)); } finally { setBusy(false); }

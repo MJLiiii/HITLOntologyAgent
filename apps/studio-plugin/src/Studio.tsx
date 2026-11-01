@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Experiment, Project, Proposal, Session, SourceDocument, Version } from './api/generated';
-import { ApiError, errorMessage, list, request } from './api/client';
+import { ApiError, errorMessage, list, operation } from './api/client';
 import { Icon, type IconName } from './components/Icons';
 import { Badge, ErrorNotice, Loading, short } from './components/ui';
 import { ChatView } from './features/chat/ChatView';
@@ -38,8 +38,13 @@ export function Studio() {
   const [unlockToken,setUnlockToken] = useState('');
 
   const loadProject = useCallback(async (id: string) => {
-    const base=`/projects/${encodeURIComponent(id)}`;
-    const [p,v,s,pr,e] = await Promise.all([request<Project>(base),list<Version>(`${base}/versions`),list<SourceDocument>(`${base}/documents`),list<Proposal>(`${base}/proposals`),list<Experiment>(`${base}/experiments`)]);
+    const [p,v,s,pr,e] = await Promise.all([
+      operation('GET /api/v1/projects/{p}',{path:{p:id}}),
+      list('GET /api/v1/projects/{p}/versions',{path:{p:id}}),
+      list('GET /api/v1/projects/{p}/documents',{path:{p:id}}),
+      list('GET /api/v1/projects/{p}/proposals',{path:{p:id}}),
+      list('GET /api/v1/projects/{p}/experiments',{path:{p:id}}),
+    ]);
     setProject(p);setVersions(v);setSources(s);setProposals(pr);setExperiments(e);
   },[]);
   const initialize = useCallback(async (suppliedToken?:string) => {
@@ -47,10 +52,10 @@ export function Studio() {
     try {
       const fragment=new URLSearchParams(window.location.hash.slice(1));
       const token=suppliedToken ?? fragment.get('session');
-      const currentSession=await request<Session>('/session',token?{headers:{'X-OE-Session-Token':token}}:{});
+      const currentSession=await operation('GET /api/v1/session',token?{headers:{'x-oe-session-token':token}}:{});
       setSession(currentSession);setLocked(false);setUnlockToken('');
       if(fragment.has('session')) {fragment.delete('session');const remaining=fragment.toString();window.history.replaceState(window.history.state,'',`${window.location.pathname}${window.location.search}${remaining?`#${remaining}`:''}`);}
-      const allProjects=await list<Project>('/projects');setProjects(allProjects);if(allProjects[0])await loadProject(allProjects[0].id);
+      const allProjects=await list('GET /api/v1/projects',{});setProjects(allProjects);if(allProjects[0])await loadProject(allProjects[0].id);
     }
     catch(err){if(err instanceof ApiError && err.status===401){setSession(null);setLocked(true);setError('Use the local session link or token printed by the launcher to open this workspace.');}else setError(errorMessage(err));}finally{setLoading(false);}
   },[loadProject]);

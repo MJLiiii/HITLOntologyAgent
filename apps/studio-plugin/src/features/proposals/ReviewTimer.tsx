@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ReviewTimingEvent, Session } from '../../api/generated';
 import type { ReviewSessionEvent } from '../../api/openapi';
-import { errorMessage, list, post } from '../../api/client';
+import { errorMessage, list, operation } from '../../api/client';
 import { ErrorNotice } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 
@@ -30,7 +30,7 @@ export function ReviewTimer({projectId,revisionId,session,disabled=false}: {proj
   const blocked=disabled||busy||loading||!human;
   useEffect(()=>{
     let active=true;setLoading(true);setError('');setEvents([]);
-    list<ReviewTimingEvent>(`${path}?revision_id=${encodeURIComponent(revisionId)}`).then(result=>{if(active){setEvents(result);setClock(Date.now());}}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
+    list('GET /api/v1/projects/{p}/review-sessions',{path:{p:projectId},query:{revision_id:revisionId}}).then(result=>{if(active){setEvents(result);setClock(Date.now());}}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
     return()=>{active=false;};
   },[path,revisionId,reload]);
   useEffect(()=>{
@@ -42,11 +42,11 @@ export function ReviewTimer({projectId,revisionId,session,disabled=false}: {proj
     if(blocked)return;
     setBusy(true);setError('');
     try {
-      const result=await post<ReviewTimingEvent>(path,{revision_id:revisionId,event} satisfies ReviewSessionEvent);
+      const result=await operation('POST /api/v1/projects/{p}/review-sessions',{path:{p:projectId},body:{revision_id:revisionId,event} satisfies ReviewSessionEvent});
       setEvents(previous=>[...previous,result]);setClock(Date.now());
     }catch(err){
       setError(errorMessage(err));
-      try{setEvents(await list<ReviewTimingEvent>(`${path}?revision_id=${encodeURIComponent(revisionId)}`));}catch{/* Retain the original action error. */}
+      try{setEvents(await list('GET /api/v1/projects/{p}/review-sessions',{path:{p:projectId},query:{revision_id:revisionId}}));}catch{/* Retain the original action error. */}
     }finally{setBusy(false);}
   }
   return <div className="review-timer"><div className="timer-topline"><div className="timer-title"><Icon name="clock" size={17}/><strong>Review time</strong><span className={`timer-state ${running?'running':''}`}>{loading?'Loading timing…':running?'Running':paused?'Paused':latest?'Ended':'Not started'}</span></div><output className="timer-value" aria-label="Active review time">{duration(elapsed)}</output><button className="icon-button" aria-label="Reload review timer" disabled={busy||loading} onClick={()=>setReload(value=>value+1)}><Icon name="refresh" size={14}/></button></div>

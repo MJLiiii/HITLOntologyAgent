@@ -81,6 +81,16 @@ def test_model_conditions_share_actual_generation_and_equal_repair_budgets(setti
     assert a['answer_recall'] == .5 and a['vocabulary_coverage'] == 1
 
 
+def test_all_arms_retain_one_frozen_non_ollama_profile(settings, engines):
+    from oe_studio.llm_profiles import Profile, _snapshot, profile_settings
+    snapshot = _snapshot(Profile(id='claude', provider='anthropic', model='fixture', purposes=['experiment'], temperature=None, max_output_tokens=1024, structured_output='prompt_json'))
+    settings = profile_settings(settings, snapshot)
+    records = run(settings, model_client=Model())
+    assert len({r['model']['profile_revision'] for r in records}) == 1
+    assert all(r['model']['provider'] == 'anthropic' and r['model']['temperature'] is None for r in records)
+    assert all(r['budget']['maximum_output_tokens_per_call'] == 1024 for r in records)
+
+
 def test_only_failed_cq_feedback_reaches_c_and_no_oracles_or_diagnostics_reach_b(settings, engines):
     model = Model()
     run(settings, model_client=model)

@@ -50,6 +50,20 @@ model_pilot:
   immutable_records: content_digest_and_append_only_application_storage
   d_post_review: separate_record_linked_to_persisted_human_review_and_exact_bundle
   human_actions_simulated: false
+registered_synthetic_tasks:
+  protocol_id: synthetic-task-v1
+  registry: research/synthetic-task-protocol.json
+  packet_schema: research/synthetic-task-packet.schema.json
+  documentation: research/SYNTHETIC_TASKS.md
+  classification: synthetic_engineering_only
+  real_study_approved: false
+  task_ids: server_registered_immutable_revision_tasks
+  profile: rdfs
+  namespace: https://example.org/oe-demo/
+  split: development
+  held_out_available: false
+  original_model_pilot_scope_expanded: false
+  human_actions_simulated: false
 conditions:
   A: {name: one_shot, repair_feedback: none}
   B: {name: self_revision, repair_feedback: none}

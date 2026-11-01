@@ -1,12 +1,13 @@
+import { projectFixture } from '../../test-fixtures';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ScopePanel } from './ScopePanel';
 import type { Project, ScopeVersion, Session } from '../../api/generated';
 import type { ScopeUpload } from '../../api/openapi';
 
-const project:Project={id:'p',name:'Service knowledge',domain:'demo',approved_version_id:null,corpus_snapshot_id:'corpus',scope_accepted:false,scope_digest:'scope-one'};
+const project:Project=projectFixture({id:'p',name:'Service knowledge',domain:'demo',approved_version_id:null,corpus_snapshot_id:'corpus',scope_accepted:false,scope_digest:'scope-one'});
 const session:Session={actor:{subject:'human',kind:'human',roles:['researcher','reviewer']},mode:'local',model_mode:'local'};
-const initial:ScopeVersion={id:null,title:'Service ownership demo',purpose:'A synthetic service ownership model.',namespace:'https://example.org/oe-demo/',digest:'scope-one',competency_questions:[{id:'CQ-01',question:'Is Payroll Service a service?',sparql_query:'ASK { <https://example.org/oe-demo/PayrollService> a <https://example.org/oe-demo/Service> }',expected:true,required:true}],shapes_ttl:'@prefix sh: <http://www.w3.org/ns/shacl#> .',fixtures_ttl:'@prefix demo: <https://example.org/oe-demo/> .'};
+const initial:ScopeVersion={status:'current',id:null,title:'Service ownership demo',purpose:'A synthetic service ownership model.',namespace:'https://example.org/oe-demo/',digest:'scope-one',competency_questions:[{id:'CQ-01',question:'Is Payroll Service a service?',sparql_query:'ASK { <https://example.org/oe-demo/PayrollService> a <https://example.org/oe-demo/Service> }',expected:true,required:true}],shapes_ttl:'@prefix sh: <http://www.w3.org/ns/shacl#> .',fixtures_ttl:'@prefix demo: <https://example.org/oe-demo/> .'};
 afterEach(()=>vi.unstubAllGlobals());
 
 describe('versioned scope configuration and human acceptance',()=>{
@@ -17,7 +18,7 @@ describe('versioned scope configuration and human acceptance',()=>{
     vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
       if(options.method==='POST'){
         const body=JSON.parse(String(options.body));writes.push({path,body});
-        if(path.endsWith('/scope')){currentScope={...(body as ScopeUpload),id:'scope-two',digest:'scope-two-digest',namespace:'https://example.org/oe-demo/',shapes_ttl:body.shapes_ttl,fixtures_ttl:body.fixtures_ttl};history.push(currentScope);currentProject={...currentProject,scope_digest:currentScope.digest,scope_accepted:false};}
+        if(path.endsWith('/scope')){currentScope={...(body as ScopeUpload),status:"current",id:'scope-two',digest:'scope-two-digest',namespace:'https://example.org/oe-demo/',shapes_ttl:body.shapes_ttl,fixtures_ttl:body.fixtures_ttl};history.push(currentScope);currentProject={...currentProject,scope_digest:currentScope.digest,scope_accepted:false};}
         if(path.endsWith('/scope-decisions'))currentProject={...currentProject,scope_accepted:body.decision==='accept'};
       }
       if(path.endsWith('/projects/p'))return new Response(JSON.stringify(currentProject));

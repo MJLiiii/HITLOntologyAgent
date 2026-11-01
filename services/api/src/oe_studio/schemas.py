@@ -1,6 +1,7 @@
 import re
+from uuid import UUID
 from typing import Annotated, Literal
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, model_validator, field_validator
 
 
 class StrictModel(BaseModel):
@@ -95,7 +96,12 @@ class IngestRequest(StrictModel):
     configured_flow_key: Literal["default"] = "default"
 
 
+class TrustGraphIngestRequest(IngestRequest):
+    extraction_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
+
+
 class ProposalRequest(StrictModel):
+    model_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
     base_version_id: str | None = None
     corpus_snapshot_id: str | None = None
     competency_question_ids: list[str] = Field(default_factory=list, max_length=20)
@@ -112,6 +118,10 @@ class BundleRequest(StrictModel):
     proposal_id: str
     revision: int = Field(ge=1)
     bundle_digest: str
+
+
+class RepairRequest(BundleRequest):
+    model_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
 
 
 class Submission(StrictModel):
@@ -140,11 +150,18 @@ class Message(StrictModel):
 
 
 class QuestionRequest(StrictModel):
+    model_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
     question: str = Field(min_length=1, max_length=4000)
+    corpus_snapshot_id: str | None = None
     proposal_id: str | None = None
     revision: int | None = Field(default=None, ge=1)
     history: list[Message] = Field(default_factory=list, max_length=12)
-    conversation_id: str | None = None
+    conversation_id: str | None = Field(default=None, max_length=36)
+
+    @field_validator("conversation_id")
+    @classmethod
+    def valid_conversation(cls, value):
+        return str(UUID(value)) if value is not None else None
 
     @model_validator(mode="after")
     def paired(self):
@@ -154,17 +171,54 @@ class QuestionRequest(StrictModel):
 
 
 class TestSpec(StrictModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=False)
     test_id: str = Field(min_length=1, max_length=80)
     kind: Literal["ask", "select_rows", "shacl"]
     split: Literal["development"] = "development"
     origin: Literal["synthetic", "manual"] = "synthetic"
     query: str | None = Field(default=None, max_length=4000)
-    expected: bool | list[dict] | None = None
-    expected_conforms: bool | None = None
-    fixtures_ttl: str = Field(default="", max_length=20000)
+    expected: StrictBool | list[dict] | None = None
+    expected_conforms: StrictBool | None = None
+    expected_violations: list[dict[str, str]] | None = Field(default=None, max_length=20)
+    comparison: Literal["exact", "contains"] = "exact"
+    fixtures_ttl: str | None = Field(default=None, max_length=20000)
     rationale: str = Field(min_length=5, max_length=2000)
     evidence_ids: list[str] = Field(default_factory=list, max_length=20)
     oracle_status: Literal["needs_review"] = "needs_review"
+    scenario: Literal["positive", "negative", "boundary", "contradictory", "missing_data", "regression"] | None = None
+    question_ids: list[str] = Field(default_factory=list, max_length=20)
+    change_ids: list[str] = Field(default_factory=list, max_length=100)
+    assumptions: list[str] = Field(default_factory=list, max_length=10)
+    oracle_source: str = Field(default="Human review required", max_length=1000)
+    target_ontology_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    fixture_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    inference_mode: Literal["rdfs"] = "rdfs"
+    timeout_seconds: Literal[10] = 10
+
+    @model_validator(mode="after")
+    def explicit_oracle(self):
+        if not self.test_id.strip() or not self.rationale.strip():
+            raise ValueError("Test identity and rationale must not be blank")
+        if self.kind == "shacl":
+            if self.expected_conforms is None or self.query is not None or self.expected is not None:
+                raise ValueError("SHACL needs explicit expected_conforms and no query oracle")
+        elif (not self.query or self.expected_conforms is not None or self.expected_violations is not None
+              or (self.kind == "ask" and type(self.expected) is not bool)
+              or (self.kind == "select_rows" and not isinstance(self.expected, list))):
+            raise ValueError("Query kind requires its matching explicit expected result")
+        if self.expected_violations is not None:
+            keys = {"focusNode", "path", "sourceShape", "severity"}
+            if any(set(row) != keys for row in self.expected_violations):
+                raise ValueError("Expected violations require normalized four-field signatures")
+        if self.fixture_sha256 and self.fixtures_ttl is not None:
+            import hashlib
+            if hashlib.sha256(self.fixtures_ttl.encode()).hexdigest() != self.fixture_sha256:
+                raise ValueError("Fixture digest does not match its exact bytes")
+        if any(len(value) > 2000 for value in self.assumptions):
+            raise ValueError("Assumptions must be bounded")
+        if any(len(value) > 200 for value in self.question_ids + self.change_ids + self.evidence_ids):
+            raise ValueError("Reference identifiers must be bounded")
+        return self
 
 
 class TestGenerationRequest(StrictModel):
@@ -189,6 +243,7 @@ class RationaleRequest(StrictModel):
 
 
 class ExperimentRequest(StrictModel):
+    model_profile_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$")
     protocol_id: Literal["demo-v1", "model-pilot-v1"] = "demo-v1"
     condition: Literal["A", "B", "C", "D", "all"] = "all"
     task_ids: list[Literal["demo-ownership"]] = Field(default_factory=lambda: ["demo-ownership"], min_length=1, max_length=1)

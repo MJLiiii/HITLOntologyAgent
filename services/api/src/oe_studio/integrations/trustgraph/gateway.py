@@ -88,6 +88,22 @@ class PinnedTrustGraphGateway:
     def _build_client(self, binding):
         return verified_sdk(binding)
 
+    async def prepare_ingestion(self, request, **kwargs):
+        from .imports import prepare_ingestion
+        return await prepare_ingestion(self, request, **kwargs)
+
+    async def ingest_prepared(self, prepared, **kwargs):
+        from .imports import ingest_prepared
+        return await ingest_prepared(self, prepared, **kwargs)
+
+    async def list_registered_chunks(self, prepared, receipt):
+        from .imports import list_registered_chunks
+        return await list_registered_chunks(self, prepared, receipt)
+
+    async def import_snapshot(self, prepared, receipt, **kwargs):
+        from .imports import import_snapshot
+        return await import_snapshot(self, prepared, receipt, **kwargs)
+
     def _client(self, project_id):
         if project_id not in self.bindings:
             raise GatewayError('project_binding_not_authorized')

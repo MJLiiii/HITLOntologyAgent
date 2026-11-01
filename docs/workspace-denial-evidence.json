@@ -1,0 +1,21 @@
+{
+  "classification": "synthetic_engineering_test",
+  "study_observations": false,
+  "verified_at": "2026-11-01T12:45:57.516735+00:00",
+  "checks": {
+    "own_document_write": 200,
+    "own_document_read": 200,
+    "foreign_document_read": 403,
+    "foreign_document_write": 403,
+    "own_config_read": 200,
+    "foreign_config_read": 403,
+    "foreign_source_before_sha256": "b3c65d0de2fe3abded776d0cdc64de3e12f6cf838c44dd0fa3d4c191a2850813",
+    "foreign_source_after_sha256": "b3c65d0de2fe3abded776d0cdc64de3e12f6cf838c44dd0fa3d4c191a2850813",
+    "foreign_source_unchanged": true
+  },
+  "status": "passed",
+  "principal_role": "writer",
+  "own_workspace": "oe-denial-own-85658d7c44",
+  "foreign_workspace": "oe-denial-other-85658d7c44",
+  "cleanup": "Synthetic user and created workspaces disabled; evidence retained"
+}

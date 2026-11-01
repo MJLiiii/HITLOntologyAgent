@@ -34,6 +34,16 @@ def test_real_offline_assessment_and_base_deltas():
     assert report['deltas']['vocabulary_coverage'] == pytest.approx(1 / 3)
 
 
+def test_assessment_preserves_declared_domain_prefixes_without_rewriting_questions():
+    questions = [{'id': 'demo-alias', 'question': 'Who owns an asset?', 'sparql_query': QUERY.replace('ex:', 'demo:')},
+                 {'id': 'ex-alias', 'question': 'Who owns an asset?', 'sparql_query': QUERY}]
+    report = assess(questions=questions)
+    assert report['status'] == 'completed', report
+    assert report['questions'] == questions
+    assert report['denominators']['candidate']['task_terms'] == 3
+    assert report['engine']['configuration']['domain_prefixes'] == ['demo', 'ex']
+
+
 def test_local_name_collisions_block_required_assessment():
     report = assess(ONTOLOGY + '<https://different.example/Asset> a owl:Class .')
     assert report['status'] == 'unsupported', report

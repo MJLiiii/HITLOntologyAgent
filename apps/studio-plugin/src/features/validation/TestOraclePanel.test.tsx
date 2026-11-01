@@ -1,15 +1,56 @@
+import { projectFixture, revisionFixture, suiteFixture } from '../../test-fixtures';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TestOraclePanel } from './TestOraclePanel';
 import type { Project, Revision, Session, TestSuite } from '../../api/generated';
 
-const project:Project={id:'p',name:'Demo',domain:'demo',approved_version_id:null,corpus_snapshot_id:'corpus',scope_accepted:true,scope_digest:'scope'};
+const project:Project=projectFixture({id:'p',name:'Demo',domain:'demo',approved_version_id:null,corpus_snapshot_id:'corpus',scope_accepted:true,scope_digest:'scope'});
 const session:Session={actor:{subject:'human',kind:'human',roles:['researcher','reviewer']},mode:'local',model_mode:'local'};
-const revision:Revision={id:'proposal',revision_id:'revision-one',title:'Seed',revision:1,status:'draft',base_version_id:null,bundle_digest:'bundle-one',created_at:'',rationale:'Grounded seed',additions:[],deletions:[],evidence:[]};
-const suite:TestSuite={id:'suite',status:'needs_review',digest:'suite-digest',revision_id:'revision-one',bundle_digest:'bundle-one',tests:[{test_id:'negative-ask',kind:'ask',query:'ASK { ?service a <https://example.org/Team> }',expected:false,rationale:'Services and teams are separate.',oracle_status:'needs_review'}]};
+const revision:Revision=revisionFixture({id:'proposal',revision_id:'revision-one',title:'Seed',revision:1,status:'draft',base_version_id:null,bundle_digest:'bundle-one',created_at:'',rationale:'Grounded seed',additions:[],deletions:[],evidence:[]});
+const suite:TestSuite=suiteFixture({id:'suite',status:'needs_review',digest:'suite-digest',revision_id:'revision-one',bundle_digest:'bundle-one',tests:[{test_id:'negative-ask',kind:'ask',query:'ASK { ?service a <https://example.org/Team> }',expected:false,rationale:'Services and teams are separate.',oracle_status:'needs_review'}]});
 afterEach(()=>vi.unstubAllGlobals());
 
 describe('human test oracle',()=>{
+  it('keeps historical fixture hashes inspectable without inventing an artifact link',async()=>{
+    const legacy={...suite,fixture_artifacts:{'negative-ask':{sha256:'legacy-fixture-hash',byte_length:12,media_type:'text/turtle',schema_version:1}}};
+    vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({items:[legacy],next_cursor:null}))));
+    render(<TestOraclePanel project={project} session={session} revision={revision} onRefresh={vi.fn()} onOpenProposal={vi.fn()}/>);
+    const artifact=await screen.findByLabelText('Fixture artifact for negative-ask');
+    expect(artifact).toHaveTextContent('legacy-fixture-hash');
+    expect(screen.queryByRole('link',{name:'Open immutable fixture artifact'})).not.toBeInTheDocument();
+    expect(artifact).toHaveTextContent('Artifact link unavailable for this historical record.');
+  });
+
+  it('exposes candidate coverage gaps, linked inputs and exact SHACL violations before an oracle decision',async()=>{
+    const detailed={...suite,generator:{mode:'deterministic_candidate_derived',version:'candidate-specs-v1',oracle_policy:'No engine output defines expectations.'},coverage_gaps:[{code:'scenario_unavailable',detail:'Boundary coverage needs a human oracle.'}],fixture_artifacts:{'shape-test':{id:'fixture-artifact',sha256:'fixture-hash',media_type:'text/turtle'}},tests:[{test_id:'shape-test',kind:'shacl',scenario:'missing_data',expected_conforms:false,expected_violations:[{focusNode:'https://example.org/focus',path:'https://example.org/owner',sourceShape:'https://example.org/OwnerShape',severity:'http://www.w3.org/ns/shacl#Violation'}],rationale:'Missing owner must violate the minimum count.',oracle_status:'needs_review',question_ids:['ownership-question'],change_ids:['addition-17'],assumptions:['This is a synthetic fixture.'],oracle_source:'Human-reviewed ownership requirement',target_ontology_sha256:'candidate-hash',fixture_sha256:'fixture-hash',fixtures_ttl:'<https://example.org/focus> a <https://example.org/Service> .'}]};
+    const writes:string[]=[];
+    vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{if(options.method==='POST')writes.push(path);return new Response(JSON.stringify({items:[detailed],next_cursor:null}));}));
+    render(<TestOraclePanel project={project} session={session} revision={revision} onRefresh={vi.fn()} onOpenProposal={vi.fn()}/>);
+    await screen.findByText('shape-test');
+    expect(screen.getByText('deterministic candidate derived')).toBeInTheDocument();
+    expect(screen.getByText('Boundary coverage needs a human oracle.')).toBeInTheDocument();
+    expect(screen.getByText('missing data')).toBeInTheDocument();
+    expect(screen.getByText('ownership-question')).toBeInTheDocument();
+    expect(screen.getByText('addition-17')).toBeInTheDocument();
+    expect(screen.getByText('This is a synthetic fixture.')).toBeInTheDocument();
+    expect(screen.getByText('Human-reviewed ownership requirement')).toBeInTheDocument();
+    const violations=screen.getByLabelText('Expected SHACL violations for shape-test');
+    for(const value of ['https://example.org/focus','https://example.org/owner','https://example.org/OwnerShape','http://www.w3.org/ns/shacl#Violation'])expect(violations).toHaveTextContent(value);
+    expect(screen.getByLabelText('Fixture artifact for shape-test')).toHaveTextContent('fixture-artifact');
+    expect(screen.getByText('candidate-hash')).toBeInTheDocument();
+    expect(screen.getByText('false')).toBeInTheDocument();
+    expect(writes).toEqual([]);
+  });
+  it('shows typed SELECT rows with their exact comparison semantics',async()=>{
+    const rows={...suite,tests:[{test_id:'literal-test',kind:'select_rows',query:'SELECT ?label WHERE { ?s ?p ?label }',expected:[{label:{kind:'literal',value:'Service',datatype:'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',lang:'en'}}],comparison:'contains',rationale:'Preserve the exact label and language.',oracle_status:'needs_review'}]};
+    vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({items:[rows],next_cursor:null}))));
+    render(<TestOraclePanel project={project} session={session} revision={revision} onRefresh={vi.fn()} onOpenProposal={vi.fn()}/>);
+    const expected=await screen.findByLabelText('Expected result for literal-test');
+    expect(expected).toHaveTextContent('"kind": "literal"');
+    expect(expected).toHaveTextContent('"lang": "en"');
+    expect(expected).toHaveTextContent('langString');
+    expect(screen.getByText('contains')).toBeInTheDocument();
+  });
   it('renders negative ASK as non-entailment and requires explicit rationale and acceptance',async()=>{
     let currentSuite={...suite};
     const decisions:Record<string,unknown>[]=[];
