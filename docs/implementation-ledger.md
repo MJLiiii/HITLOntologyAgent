@@ -125,3 +125,25 @@ Implemented independent versioned Proposal/Test Generation agents, model-backed 
 At the user's request, removed the Qwen installer, launch Make targets and local-daemon benchmark path. The model pin moved unchanged to the archive; existing historical observations, private settings, downloaded files and integration evidence remain preserved. Current setup guides and example profiles use model APIs, including the `test_generation` purpose for the second agent. The controlled benchmark now exercises the OpenAI-compatible API wire with no network/provider calls. Existing generic transport compatibility and the labelled deterministic demo remain available. No new hosted-provider call or budget reset was made.
 
 Verification after API-only cleanup: **608 backend tests passed, eight optional checks skipped in 93.53 seconds** (`/tmp/oe-api-only-backend.log`); focused benchmark/agent tests passed 39 cases. Ruff, TypeScript, OpenAPI reproducibility, Markdown paths and `git diff --check` passed. The archived model pin is byte-identical to the original. No model or paid-provider call was made; generic API compatibility and prior team/approval behavior passed the regression suite.
+
+
+### Architecture cleanup — 2 November 2026
+
+Separated HTTP transport from application setup into seven cohesive routers, with
+shared request envelopes, pagination and request-scoped Studio/authorization
+resolution. The existing entry points and generated API contracts remain unchanged.
+Job dispatch is separate from lifecycle handling, and dispatch/completion share
+one frozen-profile authorization check. Removed the verified-unused TrustGraph
+environment-binding helper; the server-owned configuration-file path is retained.
+No migrations, new dependencies, data rewrites or publication changes were made.
+
+The [architecture guide](architecture.md) records responsibilities and dependency
+direction; the [completed plan](archive/2026-11-02-architecture-refactor.md) records
+the incremental scope. New two-app isolation coverage passed before and after
+route extraction. Final verification: **609 backend passed, 8 skipped; 64 frontend
+passed**. Both UI builds, lint, TypeScript, unchanged OpenAPI contracts, documentation
+links and patch hygiene passed. Independent read-only review found no actionable
+issues. [Detailed evidence](evidence/architecture-refactor-2026-11-02.md) records
+the initial sandbox-related engine failures and their successful rerun with the
+required execution permission, dependency warnings, and optional PostgreSQL/live
+TrustGraph skips. No paid calls or real study activity were performed.

@@ -63,3 +63,4 @@ make check-api-contracts
 Actual browser and host checks are recorded separately from these tests. See [verification records](docs/README.md#verification-and-status), [known limitations](docs/known-limitations.md) and [operations and recovery](docs/operations.md).
 
 Contributor instructions are in [AGENTS.md](AGENTS.md). Start with the [documentation index](docs/README.md) to find current contracts and historical evidence.
+The [architecture guide](docs/architecture.md) explains module responsibilities and dependency boundaries.

@@ -834,6 +834,13 @@ class Studio:
             raise Problem(409, "job_lease_lost", "Worker lease expired; the late result was not applied")
         return job
 
+    def _authorize_job_profile(self, p_id, kind, payload):
+        profile = payload.get('_resolved_llm_profile')
+        if profile and ('purposes' in profile or not kind.startswith('trustgraph-')):
+            operation = {'question': 'chat', 'test-generation': 'test_generation',
+                         'synthetic-experiment': 'experiment', 'trustgraph-ingestion': 'extraction'}.get(kind, kind)
+            authorize_inherited(self.settings, p_id, operation, profile)
+
     def _complete_job(self, s, payload, result):
         """Commit a side effect and its job result together, fenced by the worker lease."""
         if job_id := payload.get("_job_id"):
@@ -841,10 +848,7 @@ class Studio:
             self.authorize(job.project_id, job.actor, 'researcher')
             if job.kind in {'proposal', 'repair', 'test-generation'}:
                 self.require_accepted_scope(self.project(s, job.project_id))
-            if (profile := job.payload.get('_resolved_llm_profile')) and ('purposes' in profile or not job.kind.startswith('trustgraph-')):
-                operation = {'question': 'chat', 'test-generation': 'test_generation',
-                             'synthetic-experiment': 'experiment', 'trustgraph-ingestion': 'extraction'}.get(job.kind, job.kind)
-                authorize_inherited(self.settings, job.project_id, operation, profile)
+            self._authorize_job_profile(job.project_id, job.kind, job.payload)
             job.status, job.result, job.lease_until, job.error = "succeeded", result, None, None
         return result
 
@@ -925,6 +929,36 @@ class Studio:
             self.execute_job(job_id)
         return {"job_id": job_id, "status_url": f"/api/v1/jobs/{job_id}", "correlation_id": uid()}
 
+    def _dispatch_job(self, p, kind, payload, actor):
+        if kind == "proposal":
+            result = self.create_proposal(p, payload, actor)
+        elif kind == "validation":
+            result = self.validate_job(p, payload)
+        elif kind == "assessment":
+            result = self.assessment_job(p, payload)
+        elif kind == "question":
+            result = self.question(p, payload)
+        elif kind == "test-generation":
+            result = self.generate_tests(p, payload, actor)
+        elif kind == "repair":
+            result = self.repair(p, payload, actor)
+        elif kind == "ingestion":
+            with self.db.session(write=True) as s:
+                result = self._complete_job(s, payload, self._ingest(s, p, payload["document_id"]))
+        elif kind == "seed-import":
+            result = self.seed_import(p, payload, actor)
+        elif kind == "experiment":
+            result = self.experiment(p, payload)
+        elif kind == "synthetic-experiment":
+            from .research_workflow import execute
+            result = execute(self, p, payload, actor)
+        elif kind in {"trustgraph-ingestion", "trustgraph-recovery", "trustgraph-snapshot"}:
+            from .trustgraph_workflow import ingest, import_snapshot
+            result = (import_snapshot if kind == "trustgraph-snapshot" else ingest)(self, p, payload, actor)
+        else:
+            raise Problem(422, "unsupported_job", "This job kind is not implemented")
+        return result
+
     def execute_job(self, job_id):
         with self.db.session(write=True) as s:
             job = s.get(Job, job_id)
@@ -936,36 +970,8 @@ class Studio:
             payload["_job_id"] = job_id
         try:
             actor = self.authorize(p, actor, "researcher")
-            if payload.get("_resolved_llm_profile") and ('purposes' in payload['_resolved_llm_profile'] or not kind.startswith('trustgraph-')):
-                operation = {"question": "chat", "test-generation": "test_generation", "synthetic-experiment": "experiment", "trustgraph-ingestion": "extraction"}.get(kind, kind)
-                authorize_inherited(self.settings, p, operation, payload["_resolved_llm_profile"])
-            if kind == "proposal":
-                result = self.create_proposal(p, payload, actor)
-            elif kind == "validation":
-                result = self.validate_job(p, payload)
-            elif kind == "assessment":
-                result = self.assessment_job(p, payload)
-            elif kind == "question":
-                result = self.question(p, payload)
-            elif kind == "test-generation":
-                result = self.generate_tests(p, payload, actor)
-            elif kind == "repair":
-                result = self.repair(p, payload, actor)
-            elif kind == "ingestion":
-                with self.db.session(write=True) as s:
-                    result = self._complete_job(s, payload, self._ingest(s, p, payload["document_id"]))
-            elif kind == "seed-import":
-                result = self.seed_import(p, payload, actor)
-            elif kind == "experiment":
-                result = self.experiment(p, payload)
-            elif kind == "synthetic-experiment":
-                from .research_workflow import execute
-                result = execute(self, p, payload, actor)
-            elif kind in {"trustgraph-ingestion", "trustgraph-recovery", "trustgraph-snapshot"}:
-                from .trustgraph_workflow import ingest, import_snapshot
-                result = (import_snapshot if kind == "trustgraph-snapshot" else ingest)(self, p, payload, actor)
-            else:
-                raise Problem(422, "unsupported_job", "This job kind is not implemented")
+            self._authorize_job_profile(p, kind, payload)
+            result = self._dispatch_job(p, kind, payload, actor)
             with self.db.session(write=True) as s:
                 job = s.get(Job, job_id)
                 if job.status != "succeeded":

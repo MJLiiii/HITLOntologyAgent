@@ -75,22 +75,22 @@ def test_job_result_preserves_boolean_json_diagnostics_and_stage_contract():
 def test_job_operation_metadata_matches_registered_worker_kind():
     """No handwritten TS result registry may drift from an enqueue handler."""
     import ast
-    from pathlib import Path
-    tree = ast.parse((Path(__file__).parents[2] / 'services/api/src/oe_studio/main.py').read_text())
+    import inspect
+    import textwrap
+    from fastapi.routing import APIRoute
+    from oe_studio.main import app
+
     found = 0
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.FunctionDef):
+    for route in app.routes:
+        if not isinstance(route, APIRoute):
             continue
-        enqueues = [call for call in ast.walk(node) if isinstance(call, ast.Call)
+        tree = ast.parse(textwrap.dedent(inspect.getsource(route.endpoint)))
+        enqueues = [call for call in ast.walk(tree) if isinstance(call, ast.Call)
                     and isinstance(call.func, ast.Attribute) and call.func.attr == 'create_job']
-        # create_app contains all handlers; only direct route decorators count.
-        decorators = [decorator for decorator in node.decorator_list if isinstance(decorator, ast.Call)]
-        if not enqueues or not decorators:
+        if not enqueues:
             continue
         assert len(enqueues) == 1
         kind = ast.literal_eval(enqueues[0].args[1])
-        metadata = next(keyword.value for decorator in decorators for keyword in decorator.keywords
-                        if keyword.arg == 'openapi_extra')
-        assert ast.literal_eval(metadata)['x-job-kind'] == kind
+        assert route.openapi_extra['x-job-kind'] == kind
         found += 1
     assert found == 13

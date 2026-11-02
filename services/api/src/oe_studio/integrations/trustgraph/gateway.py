@@ -4,12 +4,10 @@ from dataclasses import fields, is_dataclass
 from datetime import datetime, timezone
 import hashlib
 from importlib import metadata
-import os
 from uuid import NAMESPACE_URL, uuid5
 
 from ...artifacts import canonical_json, digest
 from .contracts import (Artifact, ContextBundle, EvidenceRecord, IngestReceipt, IngestStatus)
-from .contracts import Binding
 
 SDK_VERSION = '2.11.1'
 SDK_FILES = {
@@ -24,13 +22,6 @@ class GatewayError(ValueError):
     def __init__(self, code):
         self.code = code
         super().__init__(code)
-
-
-def binding_from_environment(*, project_id, seed_digest, config_digest):
-    """Called by server startup only; credentials never become request fields."""
-    return Binding(project_id=project_id, url=os.environ['OE_TG_URL'], workspace=os.environ['OE_TG_WORKSPACE'],
-                   flow=os.environ['OE_TG_FLOW'], collection=os.environ['OE_TG_COLLECTION'],
-                   token=os.environ.get('OE_TG_TOKEN', ''), seed_digest=seed_digest, config_digest=config_digest)
 
 
 def verified_sdk(binding):

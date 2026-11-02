@@ -10,6 +10,10 @@ These three documents were moved from the repository root on 1 November 2026. Th
 
 ## Completed implementation records
 
+The [2 November architecture cleanup plan](2026-11-02-architecture-refactor.md)
+records the incremental route separation and workflow simplification; see its
+[verification report](../evidence/architecture-refactor-2026-11-02.md) for results.
+
 The following records were also consolidated here on 1 November 2026. Their requirements, decisions and observations remain intact; relative links were adjusted for the move, and the multi-LLM ledger now points to its later live verification.
 
 | Previous path | Preserved document | How to use it |
