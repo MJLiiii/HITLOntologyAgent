@@ -8,21 +8,23 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def module():
-    spec = importlib.util.spec_from_file_location('prepare_tg_litellm', ROOT / 'infra/portal/prepare_litellm.py')
+    spec = importlib.util.spec_from_file_location('prepare_tg_llm', ROOT / 'infra/portal/prepare_llm.py')
     result = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(result)
     return result
 
 
-def test_worker_sdk_requirements_derive_versions_and_http2_extra_from_main_lock():
+def test_worker_sdk_requirements_derive_only_native_api_dependencies_from_main_lock():
     prepare = module()
     lock = tomllib.loads((ROOT / 'uv.lock').read_text())
     versions = {row['name']: row['version'] for row in lock['package']}
     requirements = prepare.sdk_requirements(lock)
-    for name in ('litellm', 'openai', 'httpx', 'h2', 'jsonschema', 'pydantic-settings'):
+    for name in ('openai', 'httpx', 'jsonschema', 'pydantic-settings'):
         assert f'{name}=={versions[name]}' in requirements.splitlines()
     assert all('==' in line for line in requirements.splitlines())
     assert 'fastapi' not in requirements
+    assert 'litellm' not in requirements
+    assert 'h2==' not in requirements
 
 
 def test_worker_staging_changes_only_completion_and_keeps_private_config_outside_image(tmp_path):
@@ -50,5 +52,5 @@ def test_worker_staging_changes_only_completion_and_keeps_private_config_outside
     assert prepare.BASE_IMAGE in dockerfile
     assert '--no-deps' in dockerfile and 'requirements.txt' in dockerfile
     compose = yaml.safe_load((tmp_path / 'compose.yaml').read_text())
-    assert compose['services']['pipeline']['image'].startswith('oe-trustgraph-litellm:')
+    assert compose['services']['pipeline']['image'].startswith('oe-trustgraph-llm:')
     assert 'command' not in compose['services']['pipeline']

@@ -15,7 +15,9 @@ dependencies = [
   "python-multipart==0.0.20",
   "pydantic-settings==2.14.1",
   "pypdf==6.21.4",
-  "litellm==1.106.6",
+  "openai==2.54.0",
+  "jsonschema==4.26.0",
+  "pyyaml==6.0.3",
 ]
 
 [project.optional-dependencies]

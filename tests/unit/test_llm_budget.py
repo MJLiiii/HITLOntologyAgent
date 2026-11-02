@@ -12,12 +12,12 @@ from oe_studio import llm_budget
 def configured(tmp_path, **overrides):
     now = datetime.now(timezone.utc)
     entry = {
-        'id': 'go-glm', 'revision': 'frozen', 'provider': 'openai', 'model': 'glm-5.3-flash',
-        'base_url': 'https://opencode.ai/inference/go/openai/v1',
+        'id': 'controlled', 'revision': 'frozen', 'provider': 'openai', 'model': 'controlled-model',
+        'base_url': 'https://provider.invalid/v1',
         'input_usd_per_million': '0.15', 'output_usd_per_million': '0.50',
-        'source': 'https://opencode.ai/v2/docs/console/go/',
+        'source': 'https://provider.invalid/prices',
         'input_bound': {'method': 'accepted_context_limit', 'tokens': 200000,
-                        'source': 'https://opencode.ai/inference/go/v1/models'},
+                        'source': 'https://provider.invalid/models'},
     }
     entry.update(overrides)
     prices = tmp_path / 'prices.json'
@@ -28,9 +28,10 @@ def configured(tmp_path, **overrides):
     return settings, profile
 
 
-def test_reserves_full_verified_context_and_output_before_dispatch(tmp_path):
+@pytest.mark.parametrize("token_field", ["max_tokens", "max_completion_tokens"])
+def test_reserves_full_verified_context_and_output_before_dispatch(tmp_path, token_field):
     settings, profile = configured(tmp_path)
-    reservation = llm_budget.reserve_from_settings(settings, profile, {'max_tokens': 4096, 'messages': []})
+    reservation = llm_budget.reserve_from_settings(settings, profile, {token_field: 4096, 'messages': []})
     assert reservation['reserved_usd'] == '0.032048000'
     assert llm_budget.budget_summary(settings.llm_smoke_budget_file) == {
         'attempts_reserved': 1, 'reserved_usd': '0.032048000', 'attempt_limit': 20, 'usd_limit': '1.00'}

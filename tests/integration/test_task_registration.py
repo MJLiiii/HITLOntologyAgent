@@ -1,4 +1,5 @@
 """Synthetic task registration uses persisted scope/oracle decisions, never caller flags."""
+from tests.llm_fixtures import configure_studio_model
 import json
 from uuid import uuid4
 
@@ -47,7 +48,7 @@ def test_registration_requires_human_accepted_scope_and_unique_task_identity(cli
 def test_registered_experiment_rejects_changed_digest_and_preserves_oracles_when_staging_d(client, monkeypatch):
     p, revision, request, registration_record = registration(client, generated=True)
     root, store = f"/api/v1/projects/{p['id']}", client.app.state.studio
-    store.settings.model_url, store.settings.model_name = "http://localhost:11434", "fixture"
+    configure_studio_model(store, monkeypatch)
     monkeypatch.setattr("oe_studio.model.ModelClient.generate", lambda self, system, context, schema: (
         schema.model_validate({"summary": "Keep the supplied source-backed model", "changes": []}), {"provider": "fixture", "elapsed_seconds": 0.01}))
     monkeypatch.setattr("oe_studio.experiments.validate", lambda ttl, **kw: {

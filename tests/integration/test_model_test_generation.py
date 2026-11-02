@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 from oe_studio.main import create_app
 from oe_studio.settings import Settings
 from oe_studio.db import Job
+from tests.llm_fixtures import configure_studio_model
 
 
 @pytest.fixture
@@ -36,8 +37,7 @@ def test_explicit_model_requires_bundle_and_configured_profile(prepared):
 
 def test_model_tests_freeze_inputs_and_keep_failure_without_fallback(prepared, monkeypatch):
     app, client, root, revision = prepared
-    app.state.settings.model_url = 'http://127.0.0.1:11434'
-    app.state.settings.model_name = 'controlled'
+    configure_studio_model(app.state.studio, monkeypatch, model='controlled')
     app.state.settings.eager_jobs = False
     body = {'proposal_id': revision['id'], 'revision': 1, 'generator_mode': 'model',
             'bundle_digest': revision['bundle_digest']}
@@ -79,8 +79,6 @@ def controlled(self, system, context, schema):
 
 
 def model_request(app, client, root, revision):
-    app.state.settings.model_url = 'http://127.0.0.1:11434'
-    app.state.settings.model_name = 'controlled'
     response = client.post(root + '/test-generation-jobs', json={
         'proposal_id': revision['id'], 'revision': 1, 'generator_mode': 'model',
         'bundle_digest': revision['bundle_digest']}, headers={'Idempotency-Key': str(uuid4())})
@@ -90,13 +88,14 @@ def model_request(app, client, root, revision):
 
 def test_model_suite_requires_human_and_creates_successor_preserving_mandatory_checks(prepared, monkeypatch):
     app, client, root, revision = prepared
+    configure_studio_model(app.state.studio, monkeypatch, model='controlled')
     monkeypatch.setattr('oe_studio.model.ModelClient.generate', controlled)
     result = model_request(app, client, root, revision)
     assert result['status'] == 'succeeded', result
     suite = result['result']
     assert suite['status'] == 'needs_review'
     assert suite['tests'][0]['oracle_status'] == 'needs_review'
-    assert suite['generator']['model_profile_id'] == 'legacy-ollama'
+    assert suite['generator']['model_profile_id'] == 'controlled-openai'
     assert suite['generator']['generation_run_id']
     original = client.get(root + '/proposals/' + revision['id'] + '/revisions/1').json()
     assert not original['approval_ids']
@@ -115,15 +114,12 @@ def test_model_suite_requires_human_and_creates_successor_preserving_mandatory_c
         assert new_tests[-1]['oracle_status'] == 'accepted'
 
 
-def test_mid_generation_profile_revocation_retains_output_without_suite(prepared, monkeypatch, tmp_path):
+def test_mid_generation_profile_revocation_retains_output_without_suite(prepared, monkeypatch):
     app, client, root, revision = prepared
     project = root.rsplit('/', 1)[-1]
-    registry = {'profiles': [{'id': 'test', 'provider': 'ollama', 'model': 'controlled',
-        'base_url': 'http://127.0.0.1:11434', 'purposes': ['test_generation']}], 'projects': {project: ['test']}}
-    path = tmp_path / 'profiles.json'
-    path.write_text(json.dumps(registry))
-    app.state.settings.llm_config_file = path
-    app.state.settings.llm_default_profile = 'test'
+    path = configure_studio_model(app.state.studio, monkeypatch, id='test', model='controlled',
+                                  purposes=['test_generation'])
+    registry = json.loads(path.read_text())
     def revoke(*args):
         registry['projects'][project] = []
         path.write_text(json.dumps(registry))

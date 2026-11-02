@@ -28,7 +28,7 @@ Job effects and completion results now commit together, including repair success
 
 Run `make dev-api`, `make dev-worker` and `make dev-ui` in separate terminals. The frontend forwards `/api` to the backend. Model generation uses server-owned API profiles; no Qwen/Ollama runtime setup or model download is part of this workflow.
 
-Copy an API provider descriptor from `config/llm-profiles.providers.example.json` to a private file, replace its model placeholder and project ID, and configure `OE_LLM_CONFIG_FILE` and `OE_LLM_DEFAULT_PROFILE`. Keep API credentials in the server environment or private `.env`. Include `proposal`, `repair` and `test_generation` in the selected profile's permitted purposes for both agents. See [model configuration](multi-llm.md) for provider endpoints, project allowlists and credential handling.
+Copy an OpenAI or Claude profile from `config/llm-profiles.example.json` to a private file, replace its model placeholder and project ID, and configure `OE_LLM_CONFIG_FILE` and `OE_LLM_DEFAULT_PROFILE`. Keep API credentials in the server environment or private `.env`. Include `proposal`, `repair` and `test_generation` in the selected profile's permitted purposes for both agents. See [model configuration](multi-llm.md) for provider endpoints, project allowlists and credential handling.
 
 With no configured model the labelled deterministic demo remains available. Configured API failures remain explicit failures, never automatic demo output. Agents cannot approve expectations or publish. Their sources, prompts, model settings and outputs are frozen and inspectable.
 

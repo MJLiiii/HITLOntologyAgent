@@ -70,7 +70,8 @@ explicit inputs and tests before changing these boundaries.
 
 Proposal and test-generation agents own their bounded input/output contracts and
 model-output checks. `llm_runtime.py` and `llm_profiles.py` own provider execution
-and server-controlled configuration. TrustGraph SDK details stay under
+and server-controlled configuration. Generation uses native OpenAI and Claude HTTP
+requests; there is no provider-routing SDK layer. TrustGraph SDK details stay under
 `integrations/trustgraph/`; `trustgraph_workflow.py` owns persisted import orchestration
 and validates the server-owned binding configuration. Jena and OntoCheck retain
 their independent confined execution paths and distinct result semantics.

@@ -1,3 +1,4 @@
+from tests.llm_fixtures import configure_studio_model
 from concurrent.futures import ThreadPoolExecutor
 from uuid import uuid4
 import pytest
@@ -16,7 +17,7 @@ def client(tmp_path, monkeypatch):
         "id": str(uuid4()), "status": "completed", "bundle_digest": kw["bundle_digest"],
         "vocabulary_coverage": 1, "vocabulary_utilisation": .5, "strict_fitness": 1,
         "approximate_fitness": 1, "limitations": []})
-    app = create_app(Settings(data_dir=tmp_path, eager_jobs=True, service_token="service-test-token"))
+    app = create_app(Settings(_env_file=None, llm_config_file=None, data_dir=tmp_path, eager_jobs=True, service_token="service-test-token"))
     with TestClient(app) as c:
         assert c.get("/api/v1/session", headers={"X-OE-Session-Token": app.state.bootstrap_token}).status_code == 200
         yield c
@@ -123,7 +124,7 @@ def test_grounded_question_is_read_only(client):
 def test_fabricated_model_citations_are_retained_but_never_answered(client, monkeypatch):
     from oe_studio.model import GroundedAnswer
     studio = client.app.state.studio
-    studio.settings.model_url, studio.settings.model_name = "http://localhost:11434", "fixture-model"
+    configure_studio_model(studio, monkeypatch)
     monkeypatch.setattr("oe_studio.model.ModelClient.generate", lambda *args: (GroundedAnswer(answer="Unsupported claim", evidence_ids=["fabricated"], triple_indices=[], unresolved_points=[]), {"provider": "fixture"}))
     p = project(client)
     response = client.post(f"/api/v1/projects/{p['id']}/question-jobs", json={"question": "Who owns Payroll Service?"}, headers={"Idempotency-Key": str(uuid4())})
@@ -139,7 +140,7 @@ def test_fabricated_model_citations_are_retained_but_never_answered(client, monk
 
 def test_unmaterializable_model_output_is_recorded_as_failed(client, monkeypatch):
     studio = client.app.state.studio
-    studio.settings.model_url, studio.settings.model_name = "http://localhost:11434", "fixture-model"
+    configure_studio_model(studio, monkeypatch)
     def generate(self, system, context, schema):
         change = {"operation": "add", "triple": {"subject": "https://example.org/oe-demo/Service", "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "object": "http://www.w3.org/2002/07/owl#Class"}, "evidence_ids": [context["evidence"][0]["id"]], "rationale": "Source names the service concept"}
         return schema.model_validate({"summary": "A deliberately duplicate edit fixture", "changes": [change, change]}), {"provider": "fixture", "model": "fixture-model", "prompt_digest": "sha256:" + "0" * 64,
@@ -470,14 +471,14 @@ def test_repair_uses_frozen_question_ids_without_a_naming_convention(client, mon
     payload = {"proposal_id": r["id"], "revision": 1, "bundle_digest": r["bundle_digest"]}
     job(client, p["id"], "validation", payload)
     studio = client.app.state.studio
-    studio.settings.model_url, studio.settings.model_name = "http://localhost:11434", "fixture-model"
+    configure_studio_model(studio, monkeypatch)
     def generate(self, system, context, schema):
         assert [case["id"] for case in context["failed_entailment_cases"]] == ["owner-required"]
         return schema.model_validate({"summary": "A cited repair test fixture", "changes": [{"operation": "add", "triple": {"subject": "https://example.org/oe-demo/Service", "predicate": "http://www.w3.org/2000/01/rdf-schema#comment", "object": "A source-backed repair fixture", "object_type": "literal"}, "evidence_ids": [context["evidence"][0]["id"]], "rationale": "Controlled source-backed repair fixture"}]}), {"provider": "fixture", "model": "fixture-model", "prompt_digest": "sha256:" + "0" * 64,
             "system_prompt": system, "temperature": 0, "seed": None, "cost": None,
             "cost_missing_reason": "Synthetic provider reports no cost"}
     monkeypatch.setattr("oe_studio.model.ModelClient.generate", generate)
-    result = job(client, p["id"], "repair", {**payload, "model_profile_id": "legacy-ollama"})
+    result = job(client, p["id"], "repair", {**payload, "model_profile_id": "controlled-openai"})
     assert result["revision"] == 2
 
 
@@ -623,7 +624,7 @@ def test_agent_cannot_remove_required_sentinel(client):
 def test_model_experiment_enters_real_review_and_preserves_pre_post(client, monkeypatch):
     from oe_studio import experiments as ex
     studio = client.app.state.studio
-    studio.settings.model_url, studio.settings.model_name = "http://localhost:11434", "fixture-model"
+    configure_studio_model(studio, monkeypatch)
     def generate(self, system, context, schema):
         return schema.model_validate({"summary": "Reviewed frozen synthetic source requirements", "changes": []}), {"elapsed_seconds": .1, "input_tokens": 10, "output_tokens": 10}
     monkeypatch.setattr("oe_studio.model.ModelClient.generate", generate)

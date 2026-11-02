@@ -43,3 +43,13 @@ The Proposal Agent and Test Generation Agent share ModelClient transport but use
 
 
 The user subsequently selected API-backed generation only. Bundled Qwen setup/launch commands and the local test-agent benchmark option were removed; observations above remain historical. Current verification uses controlled API responses, without invoking a local or paid model.
+
+### Two-provider cleanup — 2 November 2026
+
+The current generation layer supports only OpenAI and Claude through native bounded HTTPX requests. LiteLLM and the other active provider paths were removed; the earlier observations in this document remain dated evidence, not current provider support. See [current setup](multi-llm.md) and [cleanup verification](evidence/llm-api-cleanup-2026-11-02.md): 617 backend tests passed with eight optional skips, 64 frontend tests passed, and lint/TypeScript/API-contract checks passed. No paid provider call was made during this cleanup.
+
+### User-authorized OpenAI key check — 2 November 2026
+
+After the user supplied `.env` credentials and requested a live test, the official OpenAI model-list endpoint returned HTTP 200. One `gpt-4.1-mini` completion then passed through the real Studio profile resolver, `ModelClient`, native runtime, `GroundedAnswer` schema and citation validator using a temporary project-authorized profile and an invented Atlas/Platform ownership source. The request was capped at 128 output tokens and 30 seconds, without retries. HTTP 200 returned `gpt-4.1-mini-2025-04-14`; schema, citation and the narrow expected-fact check passed. Provider-reported usage was 207 input / 32 output tokens, with 2.408 seconds elapsed. Cost was not reported or inferred.
+
+Credential-free evidence is `.runtime/llm-api-key-test-2026-11-02.json`. No `.env`, working ontology, approval, publication, historical budget or project data was changed. No Anthropic credential was present, so Claude was not called. The application registry remains unconfigured; this temporary-profile test proves the OpenAI credential and request path, not persistent application setup or general model quality.

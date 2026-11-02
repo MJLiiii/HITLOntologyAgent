@@ -83,8 +83,6 @@ def _select_configuration(settings, project_id, profile=None, frozen_configurati
             raise Problem(409, "trustgraph_profile_binding", "No preconfigured TrustGraph flow matches the selected extraction profile revision")
     if profile is not None and (config.extraction_profile_id, config.extraction_profile_revision) != (profile["id"], profile["revision"]):
         raise Problem(409, "trustgraph_profile_binding", "The frozen extraction profile does not match its TrustGraph binding")
-    if profile and profile.get("provider") == "opencode_go" and not config.llm_session_id:
-        raise Problem(409, "trustgraph_session_binding", "OpenCode Go extraction requires a dedicated flow with a frozen session")
     if profile:
         try:
             _verify_profile_markers(config, profile)
@@ -194,14 +192,6 @@ def ingest(studio, project_id, payload, actor):
             current_id, current_ontology = _seed(studio, session, project_id, config)
             if (current_id, current_ontology) != (version_id, ontology):
                 raise Problem(409, "seed_changed", "Approved seed changed during preparation; no source was submitted")
-            if profile and profile.get("provider") == "opencode_go":
-                # Database.session(write=True) serializes writes with BEGIN
-                # IMMEDIATE / a PostgreSQL transaction advisory lock. Reserve
-                # the dedicated run session atomically with its preparation.
-                for prior in studio.items(session, project_id, "trustgraph_preparation"):
-                    studio.body(prior)
-                    if prior.data.get("llm_session_id") == config.llm_session_id:
-                        raise Problem(409, "trustgraph_session_reused", "This dedicated extraction session already has a preparation; recover it or provision a new flow and session")
             record = studio.add(session, project_id, "trustgraph_preparation", {
                 "job_id": payload["_job_id"], "document_id": document_id,
                 "prepared": prepared.model_dump(mode="json"), "actor": actor,

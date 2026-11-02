@@ -1,4 +1,4 @@
-"""Exercise the real TrustGraph request handler and shared SDK through fake HTTP."""
+"""Exercise the real TrustGraph request handler and native APIs through fake HTTP."""
 import asyncio
 import importlib
 import json
@@ -65,6 +65,11 @@ def processor(tmp_path, monkeypatch, response_text, profile=PROFILE, usage=True)
             'model': 'gpt-test', 'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': response_text},
                                             'finish_reason': 'stop'}],
             'usage': {'prompt_tokens': 7, 'completion_tokens': 3, 'total_tokens': 10}}
+        if profile['provider'] == 'anthropic':
+            body = {'id': 'message', 'type': 'message', 'role': 'assistant', 'model': 'claude-test',
+                    'content': [{'type': 'text', 'text': response_text}],
+                    'stop_reason': 'end_turn', 'stop_sequence': None,
+                    'usage': {'input_tokens': 7, 'output_tokens': 3}}
         if not usage:
             body.pop('usage')
         return httpx.Response(200, json=body)
@@ -74,14 +79,17 @@ def processor(tmp_path, monkeypatch, response_text, profile=PROFILE, usage=True)
         assert settings.llm_session_id == 'run-session-123'
         return await original(settings, *args, transport=httpx.MockTransport(handler), **kwargs)
     monkeypatch.setattr(module, 'complete', complete)
-    service = module.LiteLLMLlmService(profile_bindings_file=path, settings=Settings(_env_file=None))
+    service = module.ProfileLlmService(profile_bindings_file=path, settings=Settings(_env_file=None))
     return service, requests
 
 
-def test_real_worker_handler_wraps_array_validates_and_preserves_correlation(tmp_path, monkeypatch):
+@pytest.mark.parametrize('provider', ['openai', 'anthropic'])
+def test_real_worker_handler_wraps_array_validates_and_preserves_correlation(tmp_path, monkeypatch, provider):
     schema = {'type': 'array', 'items': {'type': 'string'}}
-    service, requests = processor(tmp_path, monkeypatch, '{"items":["Atlas"]}')
-    flow = Flow()
+    profile = _snapshot(Profile(**{**{k: v for k, v in PROFILE.items() if k != 'revision'},
+                                  'provider': provider, 'model': 'gpt-test' if provider == 'openai' else 'claude-test'}))
+    service, requests = processor(tmp_path, monkeypatch, '{"items":["Atlas"]}', profile)
+    flow = Flow(profile)
     asyncio.run(service.on_request(Message(schema), None, flow))
     response, properties = flow.producer['response'].messages[0]
     assert response.error is None
@@ -90,9 +98,18 @@ def test_real_worker_handler_wraps_array_validates_and_preserves_correlation(tmp
     assert response.in_token == 7 and response.out_token == 3
     assert len(requests) == 1
     payload = json.loads(requests[0].content)
-    assert payload['max_tokens'] == 100
-    assert payload['response_format']['json_schema']['schema']['properties']['items'] == schema
-    assert requests[0].headers['authorization'] == 'Bearer private-test-key'
+    if provider == 'openai':
+        assert requests[0].url.path == '/v1/chat/completions'
+        assert payload['max_completion_tokens'] == 100
+        assert payload['response_format']['json_schema']['schema']['properties']['items'] == schema
+        assert requests[0].headers['authorization'] == 'Bearer private-test-key'
+    else:
+        assert requests[0].url.path == '/v1/messages'
+        assert payload['max_tokens'] == 100
+        assert payload['output_config']['format']['schema']['properties']['items'] == schema
+        assert requests[0].headers['x-api-key'] == 'private-test-key'
+        assert 'authorization' not in requests[0].headers
+    assert 'tools' not in payload
 
 
 @pytest.mark.parametrize('response_text', ['{"items":[1]}', '{"items":["Atlas"],"extra":true}', '["Atlas"]'])
@@ -140,7 +157,20 @@ def test_worker_rejects_changed_frozen_profile_revision(tmp_path):
     path.write_text(json.dumps({'bindings': [{'workspace': Flow.workspace, 'flow': Flow.name,
                                             'profile': {**PROFILE, 'model': 'changed-model'}, 'session_id': 'run'}]}))
     with pytest.raises(ValueError, match='bindings'):
-        module.LiteLLMLlmService(profile_bindings_file=path, settings=Settings(_env_file=None))
+        module.ProfileLlmService(profile_bindings_file=path, settings=Settings(_env_file=None))
+
+
+@pytest.mark.parametrize('provider', ['opencode_go', 'ollama', 'openai_compatible'])
+def test_worker_rejects_removed_provider_even_with_matching_frozen_revision(tmp_path, provider):
+    from oe_studio.artifacts import digest
+    module = importlib.import_module('oe_studio.integrations.trustgraph.llm_service')
+    descriptor = {**{key: value for key, value in PROFILE.items() if key != 'revision'}, 'provider': provider}
+    profile = {**descriptor, 'revision': digest(descriptor)}
+    path = tmp_path / 'bindings.json'
+    path.write_text(json.dumps({'bindings': [{'workspace': Flow.workspace, 'flow': Flow.name,
+                                            'profile': profile, 'session_id': 'run-session-123'}]}))
+    with pytest.raises(ValueError, match='bindings'):
+        module.ProfileLlmService(profile_bindings_file=path, settings=Settings(_env_file=None))
 
 
 def test_worker_rejects_remote_flow_profile_marker_mismatch_before_completion(tmp_path, monkeypatch):
@@ -177,7 +207,7 @@ def test_worker_accepts_hash_of_original_complete_snapshot_without_float_renorma
     path = tmp_path / 'bindings.json'
     path.write_text(json.dumps({'bindings': [{'workspace': Flow.workspace, 'flow': Flow.name,
                                             'profile': profile, 'session_id': None}]}))
-    service = module.LiteLLMLlmService(profile_bindings_file=path, settings=Settings(_env_file=None))
+    service = module.ProfileLlmService(profile_bindings_file=path, settings=Settings(_env_file=None))
     assert service.profile_bindings[(Flow.workspace, Flow.name)]['profile'] == profile
 
 

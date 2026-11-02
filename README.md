@@ -18,7 +18,7 @@ make demo
 
 Open the private local session URL printed by `make demo`. The command builds the Java runner and both frontend bundles, migrates the database, and starts the UI and API at [127.0.0.1:8000](http://127.0.0.1:8000). API documentation is at `/docs`. Keep the session URL private and serve this local identity mode only on loopback.
 
-Application data, immutable artifacts and ontology Git history live in `.data/`. For development, run `make dev-api`, `make dev-worker` and `make dev-ui` in separate terminals. Team mode adds operator-created accounts and project roles; see [team startup](docs/operations.md#team-development-on-mac). The deterministic demo needs no model key; see [model configuration](docs/multi-llm.md) for API-backed generation. No local model installation is required.
+Application data, immutable artifacts and ontology Git history live in `.data/`. For development, run `make dev-api`, `make dev-worker` and `make dev-ui` in separate terminals. Team mode adds operator-created accounts and project roles; see [team startup](docs/operations.md#team-development-on-mac). The deterministic demo needs no model key; see [model configuration](docs/multi-llm.md) for OpenAI or Claude API generation. No local model installation is required.
 
 ## Workflow
 

@@ -8,6 +8,7 @@ import argparse
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from tempfile import TemporaryDirectory
 import sys
 import time
 
@@ -68,10 +69,10 @@ class ControlledClient:
                           'evidence_ids': ['source:synthetic-rdfs'], 'question_ids': ['Q-subclass'] if name == 'subclass' else [],
                           'scenario': 'positive'})
         profile = {'id': 'controlled-fixture', 'revision': digest({'fixture': 'test-agent-api-v2'}),
-                   'provider': 'openai_compatible', 'model': 'controlled-fixture', 'base_url': 'https://provider.invalid/v1',
+                   'provider': 'openai', 'api_key_env': 'OE_BENCHMARK_API_KEY', 'model': 'controlled-fixture', 'base_url': 'https://provider.invalid/v1',
                    'timeout': 2, 'max_output_tokens': 4096, 'temperature': 0,
                    'structured_output': 'json_schema', 'max_response_bytes': 65536, 'purposes': ['test_generation']}
-        settings = SimpleNamespace(resolved_llm_profile=profile, llm_session_id=None, model_api_key='')
+        settings = SimpleNamespace(resolved_llm_profile=profile, llm_session_id=None)
         content = json.dumps({'tests': tests})
 
         def serve(request):
@@ -92,7 +93,11 @@ class ControlledClient:
                             cost=None, cost_missing_reason='Controlled in-memory transport; no actual provider charge',
                             transport='httpx.MockTransport', http_attempt_scope='In-memory mock request only', network_calls=0)
         try:
-            output, record = ModelClient(settings, transport=httpx.MockTransport(serve)).generate(system, context, schema)
+            with TemporaryDirectory(prefix='oe-benchmark-') as directory:
+                credential_file = Path(directory) / 'fixture.env'
+                credential_file.write_text('OE_BENCHMARK_API_KEY=synthetic-benchmark-key\n')
+                settings.model_config = {'env_file': credential_file}
+                output, record = ModelClient(settings, transport=httpx.MockTransport(serve)).generate(system, context, schema)
         except ModelGenerationError as error:
             error.record.update(observations)
             raise

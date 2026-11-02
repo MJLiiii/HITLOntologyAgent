@@ -66,7 +66,7 @@ def test_generated_typed_literal_boundaries_have_distinct_values_and_exact_failu
 
 
 def test_generated_development_suite_requires_oracle_decision_then_validates_successor(tmp_path):
-    app = create_app(Settings(data_dir=tmp_path, eager_jobs=True, model_url='', model_name=''))
+    app = create_app(Settings(_env_file=None, llm_config_file=None, data_dir=tmp_path, eager_jobs=True))
     with TestClient(app) as client:
         client.get('/api/v1/session', headers={'X-OE-Session-Token': app.state.bootstrap_token})
         project = client.get('/api/v1/projects').json()['items'][0]

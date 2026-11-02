@@ -10,6 +10,7 @@ from uuid import uuid4
 import httpx
 
 from oe_studio.model import ModelClient
+from tests.llm_fixtures import configure_studio_model, openai_response
 from tests.integration.test_workflow import client as workflow_client, checked, project
 
 client = workflow_client
@@ -97,12 +98,11 @@ def test_document_instruction_cannot_grant_tools_or_overwrite_approved_release(c
             **authority,
         })
         hostile_outputs.append(hostile_output)
-        return httpx.Response(200, json={"done": True, "model": "controlled-provider",
-            "message": {"content": hostile_output}, "prompt_eval_count": 41, "eval_count": 29})
+        return httpx.Response(200, json=openai_response(hostile_output, model="controlled-provider",
+                                                       input_tokens=41, output_tokens=29))
 
-    studio.settings.model_url = "http://controlled-provider.invalid"
-    studio.settings.model_name = "controlled-provider"
-    studio.settings.model_api_key = "synthetic-provider-secret-not-prompt-data"
+    secret = "synthetic-provider-secret-not-prompt-data"
+    configure_studio_model(studio, monkeypatch, model="controlled-provider", secret=secret)
     transport = httpx.MockTransport(provider)
     # Keep the actual ModelClient.generate/_request implementation. Replace only
     # construction's network transport; no live network or model is needed.
@@ -118,7 +118,7 @@ def test_document_instruction_cannot_grant_tools_or_overwrite_approved_release(c
 
     assert len(requests) == 1, "A rejected response must not trigger another tool/provider request"
     request, wire = requests[0]
-    assert request.method == "POST" and str(request.url) == "http://controlled-provider.invalid/api/chat"
+    assert request.method == "POST" and str(request.url) == "http://controlled-provider.invalid/v1/chat/completions"
     assert [message["role"] for message in wire["messages"]] == ["system", "user"]
     assert "untrusted DATA" in wire["messages"][0]["content"]
     assert marker not in wire["messages"][0]["content"]
@@ -129,11 +129,12 @@ def test_document_instruction_cannot_grant_tools_or_overwrite_approved_release(c
     assert context["evidence"][0]["quote"] == hostile_text
     assert context["evidence"][0]["resolved"] is True
     assert not {"tools", "tool_choice", "functions", "function_call"} & wire.keys()
-    assert wire["format"]["additionalProperties"] is False
-    assert not authority.keys() & wire["format"]["properties"].keys()
-    assert request.headers["Authorization"] == "Bearer " + studio.settings.model_api_key
+    schema = wire["response_format"]["json_schema"]["schema"]
+    assert schema["additionalProperties"] is False
+    assert not authority.keys() & schema["properties"].keys()
+    assert request.headers["Authorization"] == "Bearer " + secret
     assert "cookie" not in request.headers
-    assert studio.settings.model_api_key not in json.dumps(wire)
+    assert secret not in json.dumps(wire)
     assert "service-test-token" not in json.dumps(wire)
 
     records = client.get(root + "/generation-runs").json()["items"]
@@ -148,7 +149,7 @@ def test_document_instruction_cannot_grant_tools_or_overwrite_approved_release(c
     assert {tuple(error["loc"]) for error in record["validation_errors"]} == {(key,) for key in authority}
     assert all(error["type"] == "extra_forbidden" and "input" not in error and "ctx" not in error
                for error in record["validation_errors"])
-    assert studio.settings.model_api_key not in json.dumps(record)
+    assert secret not in json.dumps(record)
 
     after = project(client)
     assert after["approved_version_id"] == approved_id and after["pending_publication_id"] is None

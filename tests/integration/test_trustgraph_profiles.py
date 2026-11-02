@@ -96,30 +96,6 @@ def test_recovery_list_and_import_use_recorded_profile_binding(provider, client,
     assert snapshot['status'] == 'succeeded', snapshot
 
 
-def test_go_dedicated_flow_session_is_reserved_atomically_once(provider):  # noqa: F811
-    from concurrent.futures import ThreadPoolExecutor
-    from oe_studio.db import Job
-    studio, project, document, path = provider
-    profile = {'id': 'fast', 'revision': 'a' * 64, 'provider': 'opencode_go'}
-    mapped_config(path)
-    frozen = tg.freeze_profile_binding(studio.settings, project['id'], profile)
-    studio.settings.eager_jobs = False
-    handles = [studio.create_job(project['id'], 'trustgraph-ingestion', {'document_id': document['id']},
-                'go-once-' + str(i), {'id': 'test', 'role': 'owner'}) for i in range(2)]
-    with studio.db.session(write=True) as session:
-        for handle in handles:
-            job = session.get(Job, handle['job_id'])
-            job.payload = {**job.payload, '_resolved_llm_profile': profile, '_trustgraph_configuration': frozen,
-                           '_llm_session_id': frozen['llm_session_id']}
-    with ThreadPoolExecutor(max_workers=2) as pool:
-        list(pool.map(studio.execute_job, [handle['job_id'] for handle in handles]))
-    with studio.db.session() as session:
-        jobs = [session.get(Job, handle['job_id']) for handle in handles]
-        assert sorted(job.status for job in jobs) == ['failed', 'succeeded']
-        assert 'session' in next(job.error for job in jobs if job.status == 'failed').lower()
-        assert len(studio.items(session, project['id'], 'trustgraph_preparation')) == 1
-
-
 def test_profile_revision_must_match_remotely_checked_flow_markers(provider):  # noqa: F811
     studio, project, _, path = provider
     mapped_config(path)

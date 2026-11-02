@@ -56,8 +56,8 @@ def pg_case(request, monkeypatch):
         'id': str(uuid4()), 'status': 'completed', 'bundle_digest': kw['bundle_digest'],
         'vocabulary_coverage': 1., 'vocabulary_utilisation': .5, 'strict_fitness': 1.,
         'approximate_fitness': 1., 'limitations': []})
-    settings = Settings(data_dir=data_dir, database_url=case_url.render_as_string(hide_password=False),
-                        eager_jobs=True, model_url='', model_name='', service_token='')
+    settings = Settings(_env_file=None, llm_config_file=None, data_dir=data_dir, database_url=case_url.render_as_string(hide_password=False),
+                        eager_jobs=True, service_token='')
     app = create_app(settings)
     with app.state.studio.db.engine.connect() as connection:
         assert compare_metadata(MigrationContext.configure(connection), Base.metadata) == []

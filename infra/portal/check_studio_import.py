@@ -27,15 +27,13 @@ def main(output, flow_id):
     output.mkdir(parents=True)
     data = output.resolve() / 'studio'
     os.environ['OE_DATA_DIR'] = str(data)
-    os.environ['OE_MODEL_URL'] = ''
-    os.environ['OE_MODEL_NAME'] = ''
     from fastapi.testclient import TestClient
     from oe_studio.main import create_app
     from oe_studio.settings import Settings
     from oe_studio.integrations.trustgraph.imports import configuration_digest
     from oe_studio.integrations.trustgraph.seed import project_seed_ontology
-    application = create_app(Settings(data_dir=data, database_url='', eager_jobs=True,
-        model_url='', model_name='', model_api_key='', service_token='', trustgraph_config_file=None))
+    application = create_app(Settings(llm_config_file=None, data_dir=data, database_url='', eager_jobs=True,
+        service_token='', trustgraph_config_file=None))
     provider = api()
     if flow_id in provider.flow().list():
         raise ValueError('Choose a new synthetic flow; never silently repeat a prior ingestion')
@@ -151,8 +149,8 @@ def resume_read(output):
     results = [job['result'] for job in jobs if job['status'] == 'succeeded']
     receipts = [row for row in results if 'receipt' in row]
     assert len(receipts) >= 2 and len({row['id'] for row in receipts}) == 1
-    application = create_app(Settings(data_dir=data, database_url='', eager_jobs=True, model_url='', model_name='',
-        model_api_key='', service_token='', trustgraph_config_file=None))
+    application = create_app(Settings(llm_config_file=None, data_dir=data, database_url='', eager_jobs=True,
+        service_token='', trustgraph_config_file=None))
     with TestClient(application) as client:
         assert client.get('/api/v1/session', headers={'X-OE-Session-Token': application.state.bootstrap_token}).status_code == 200
         project = client.get('/api/v1/projects').json()['items'][0]

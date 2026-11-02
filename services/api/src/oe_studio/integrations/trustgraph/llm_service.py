@@ -1,4 +1,4 @@
-"""TrustGraph 2.11.1 extension sharing Studio's bounded, single-dispatch SDK.
+"""TrustGraph 2.11.1 extension sharing Studio's bounded OpenAI and Claude APIs.
 
 The private binding file is loaded once at worker start. Configured workspace and
 flow names select frozen profiles; bus model/temperature fields cannot select a
@@ -33,7 +33,7 @@ def _local_schema(value, wrapped_array=False):
             _local_schema(child, wrapped_array)
 
 
-class LiteLLMLlmService(LlmService):
+class ProfileLlmService(LlmService):
     def __init__(self, **params):
         self.settings = params.pop('settings', None) or Settings()
         path = Path(params.pop('profile_bindings_file', None) or os.environ['OE_TG_LLM_BINDINGS_FILE'])
@@ -60,14 +60,9 @@ class LiteLLMLlmService(LlmService):
                     raise ValueError('worker profile must authorize extraction')
                 if row['session_id'] is not None and (not isinstance(row['session_id'], str) or not 1 <= len(row['session_id']) <= 200):
                     raise ValueError('invalid frozen worker session')
-                if profile['provider'] == 'opencode_go' and not row['session_id']:
-                    raise ValueError('OpenCode Go requires a dedicated flow with a frozen session')
                 self.profile_bindings[key] = row
             if not self.profile_bindings:
                 raise ValueError('empty worker bindings')
-            sessions = [row['session_id'] for row in rows if row['profile']['provider'] == 'opencode_go']
-            if len(sessions) != len(set(sessions)):
-                raise ValueError('OpenCode Go sessions must have separate dedicated flows')
         except (OSError, ValueError, KeyError, TypeError):
             raise ValueError('Invalid private TrustGraph LLM bindings') from None
         super().__init__(**params)
@@ -134,4 +129,4 @@ class LiteLLMLlmService(LlmService):
             raise ValueError('Bounded extraction completion failed') from None
 
 
-Processor = LiteLLMLlmService
+Processor = ProfileLlmService

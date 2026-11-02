@@ -16,10 +16,6 @@ class Settings(BaseSettings):
     embedded_worker: bool = False
     eager_jobs: bool = False
     service_token: str = ""
-    model_url: str = ""
-    model_name: str = ""
-    model_api_key: str = ""
-    model_timeout: float = Field(default=45, gt=0, le=120)
     llm_config_file: Path | None = None
     llm_default_profile: str | None = None
     llm_smoke_budget_file: Path | None = None

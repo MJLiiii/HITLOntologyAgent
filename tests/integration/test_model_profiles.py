@@ -1,3 +1,4 @@
+from tests.llm_fixtures import API_KEY, API_KEY_ENV, controlled_profile
 import json
 from uuid import uuid4
 from oe_studio.db import Job
@@ -7,9 +8,10 @@ from tests.integration.test_workflow import client as workflow_client, project
 client = workflow_client
 
 
-def configure(client, tmp_path):
+def configure(client, tmp_path, monkeypatch):
+    monkeypatch.setenv(API_KEY_ENV, API_KEY)
     p = project(client)['id']
-    specs = [dict(id=name, provider='ollama', model=name, base_url='http://localhost:11434', purposes=['chat', 'proposal', 'repair', 'experiment']) for name in ('alpha', 'beta')]
+    specs = [controlled_profile(id=name, model=name, purposes=['chat', 'proposal', 'repair', 'experiment']).model_dump() for name in ('alpha', 'beta')]
     path = tmp_path / 'models.json'
     path.write_text(json.dumps({'profiles': specs, 'projects': {p: ['alpha']}}))
     settings = client.app.state.settings
@@ -17,8 +19,8 @@ def configure(client, tmp_path):
     return p, path
 
 
-def test_catalog_pagination_authorization_and_invalid_uuid(client, tmp_path):
-    p, _ = configure(client, tmp_path)
+def test_catalog_pagination_authorization_and_invalid_uuid(client, tmp_path, monkeypatch):
+    p, _ = configure(client, tmp_path, monkeypatch)
     root = f'/api/v1/projects/{p}'
     response = client.get(root + '/model-profiles?limit=1')
     assert response.status_code == 200, response.text
@@ -32,7 +34,7 @@ def test_catalog_pagination_authorization_and_invalid_uuid(client, tmp_path):
 
 
 def test_enqueued_profile_and_session_survive_config_change_and_idempotency(client, tmp_path, monkeypatch):
-    p, path = configure(client, tmp_path)
+    p, path = configure(client, tmp_path, monkeypatch)
     studio = client.app.state.studio
     studio.settings.eager_jobs = False
     # Fixture's background worker is disabled because it started in eager mode.
@@ -64,14 +66,14 @@ def test_enqueued_profile_and_session_survive_config_change_and_idempotency(clie
     assert project(client)['approved_version_id'] is None
 
 
-def test_demo_experiment_rejects_model_selection(client, tmp_path):
-    p, _ = configure(client, tmp_path)
+def test_demo_experiment_rejects_model_selection(client, tmp_path, monkeypatch):
+    p, _ = configure(client, tmp_path, monkeypatch)
     response = client.post(f'/api/v1/projects/{p}/experiment-jobs', json={'protocol_id': 'demo-v1', 'model_profile_id': 'alpha'}, headers={'Idempotency-Key': str(uuid4())})
     assert response.status_code == 422, response.text
 
 
-def test_repair_inherits_original_revision_and_allows_explicit_permitted_override(client, tmp_path):
-    p, path = configure(client, tmp_path)
+def test_repair_inherits_original_revision_and_allows_explicit_permitted_override(client, tmp_path, monkeypatch):
+    p, path = configure(client, tmp_path, monkeypatch)
     studio = client.app.state.studio
     studio.settings.eager_jobs = False
     original = resolve_profile(studio.settings, p, 'proposal')
@@ -97,7 +99,7 @@ def test_repair_inherits_original_revision_and_allows_explicit_permitted_overrid
 
 
 def test_health_is_configuration_only(client, tmp_path, monkeypatch):
-    configure(client, tmp_path)
+    configure(client, tmp_path, monkeypatch)
     monkeypatch.setattr('oe_studio.health.engine_readiness', lambda *a: {'jena': 'available', 'ontocheck': 'available'})
     monkeypatch.setattr('httpx.Client.get', lambda *a, **kw: (_ for _ in ()).throw(AssertionError('Health must not query a model')))
     from oe_studio.health import dependencies

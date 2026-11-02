@@ -1,3 +1,4 @@
+from tests.llm_fixtures import configured_model_settings
 import copy
 from dataclasses import replace
 import json
@@ -42,7 +43,7 @@ class Model:
             'input_tokens': 10, 'output_tokens': 20, 'elapsed_seconds': .01, 'cost': None}
 
 
-SETTINGS = SimpleNamespace(model_url='http://localhost:11434', model_name='synthetic-test-client', model_timeout=10)
+SETTINGS = configured_model_settings(SimpleNamespace(), model='synthetic-test-client')
 
 
 @pytest.fixture

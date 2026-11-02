@@ -1,3 +1,4 @@
+from tests.llm_fixtures import configured_model_settings
 import copy
 from types import SimpleNamespace
 
@@ -9,7 +10,7 @@ from oe_studio.model import ModelGenerationError
 
 @pytest.fixture
 def settings():
-    return SimpleNamespace(model_url='http://127.0.0.1:11434', model_name='test-model', model_timeout=10)
+    return configured_model_settings(SimpleNamespace(), model='test-model')
 
 
 @pytest.fixture
@@ -54,7 +55,7 @@ class Model:
                 'rationale': 'The source describes a service specialization.'}]
         return schema.model_validate({'summary': 'Inspected the frozen source requirements.',
                                       'changes': changes}), {
-            'provider': 'ollama', 'model': 'test-model', 'input_tokens': 20, 'output_tokens': 30,
+            'provider': 'openai', 'model': 'test-model', 'input_tokens': 20, 'output_tokens': 30,
             'elapsed_seconds': .1, 'cost': None, 'seed': None}
 
 
@@ -81,7 +82,7 @@ def test_model_conditions_share_actual_generation_and_equal_repair_budgets(setti
     assert a['answer_recall'] == .5 and a['vocabulary_coverage'] == 1
 
 
-def test_all_arms_retain_one_frozen_non_ollama_profile(settings, engines):
+def test_all_arms_retain_one_frozen_claude_profile(settings, engines):
     from oe_studio.llm_profiles import Profile, _snapshot, profile_settings
     snapshot = _snapshot(Profile(id='claude', provider='anthropic', model='fixture', purposes=['experiment'], temperature=None, max_output_tokens=1024, structured_output='prompt_json'))
     settings = profile_settings(settings, snapshot)

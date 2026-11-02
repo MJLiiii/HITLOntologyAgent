@@ -98,7 +98,7 @@ def test_generation_observations_label_mock_usage_and_null_cost():
     assert row['usage']['is_measured'] is False
     record = report['controlled_generation_record']
     assert record['usage_source'] == record['input_tokens_source'] == record['output_tokens_source'] == 'synthetic_fixture'
-    assert record['model_profile']['provider'] == 'openai_compatible'
+    assert record['model_profile']['provider'] == 'openai'
     assert record['model_profile']['purposes'] == ['test_generation']
     assert record['effective_parameters']['max_output_tokens'] == 4096
     assert all(test['oracle_status'] == 'needs_review' for test in report['suites']['controlled_model'])

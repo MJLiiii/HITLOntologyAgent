@@ -1,6 +1,6 @@
 """Stage a derived pinned TrustGraph worker; never start it or call a provider.
 
-Usage: .venv/bin/python infra/portal/prepare_litellm.py --bindings PRIVATE.json
+Usage: .venv/bin/python infra/portal/prepare_llm.py --bindings PRIVATE.json
        --pipeline infra/portal/runtime/pipeline.yaml --output .runtime/multi-llm/worker
 
 Bindings contain frozen server-owned profiles and dedicated flow/session names.
@@ -34,7 +34,7 @@ def sdk_requirements(lock):
     """
     packages = {row['name']: row for row in lock['package']}
     selected, expanded = set(), set()
-    pending = [('litellm', ()), ('pydantic-settings', ()), ('jsonschema', ())]
+    pending = [('openai', ()), ('httpx', ()), ('pydantic-settings', ()), ('jsonschema', ())]
     while pending:
         name, extras = pending.pop()
         key = name, tuple(sorted(extras))
@@ -65,14 +65,14 @@ def stage_worker(root, output, bindings, pipeline, smoke_directory=None):
 COPY requirements.txt /opt/oe-worker/requirements.txt
 RUN python3 -m pip install --no-cache-dir --no-deps --only-binary=:all: --target=/opt/oe-llm-deps -r /opt/oe-worker/requirements.txt
 COPY oe_studio /opt/oe-worker/oe_studio
-ENV PYTHONPATH=/opt/oe-worker:/opt/oe-llm-deps LITELLM_LOCAL_MODEL_COST_MAP=True DO_NOT_TRACK=1
-RUN python3 -c "from oe_studio.integrations.trustgraph.llm_service import Processor; import litellm"
+ENV PYTHONPATH=/opt/oe-worker:/opt/oe-llm-deps
+RUN python3 -c "from oe_studio.integrations.trustgraph.llm_service import Processor"
 '''
     (image / 'Dockerfile').write_text(dockerfile)
     hashes = {str(path.relative_to(image)): hashlib.sha256(path.read_bytes()).hexdigest()
               for path in sorted(image.rglob('*')) if path.is_file()}
     identity = hashlib.sha256(json.dumps(hashes, sort_keys=True).encode()).hexdigest()
-    tag = 'oe-trustgraph-litellm:' + identity[:20]
+    tag = 'oe-trustgraph-llm:' + identity[:20]
     generated = deepcopy(pipeline)
     dedicated = []
     processor_ids = {processor['params']['id'] for processor in generated['processors']}
@@ -109,8 +109,7 @@ RUN python3 -c "from oe_studio.integrations.trustgraph.llm_service import Proces
                             'completion_blueprint_parameters': {key: '{' + key + '}' for key in markers}})
     (output / 'flow-markers.json').write_text(json.dumps({'flows': marker_rows}, indent=2) + '\n')
     env = {'OE_TG_LLM_BINDINGS_FILE': '/smoke/llm-bindings.json',
-           'PYTHONPATH': '/opt/oe-worker:/opt/oe-llm-deps:/smoke',
-           'LITELLM_LOCAL_MODEL_COST_MAP': 'True', 'DO_NOT_TRACK': '1'}
+           'PYTHONPATH': '/opt/oe-worker:/opt/oe-llm-deps:/smoke'}
     for row in bindings['bindings']:
         name = row['profile'].get('api_key_env')
         if name:

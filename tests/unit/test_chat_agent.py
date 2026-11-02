@@ -7,6 +7,7 @@ from oe_studio.chat import answer_question
 from oe_studio.demo import ONTOLOGY, SOURCES
 from oe_studio.model import ModelClient, GroundedAnswer, ProposalDraft, checked_answer, checked_proposal
 from oe_studio.settings import Settings
+from tests.llm_fixtures import configured_model_settings, openai_response
 
 
 EVIDENCE = [{"id": "source-1", "title": SOURCES[0][0], "quote": SOURCES[0][1], "resolved": True}]
@@ -52,25 +53,26 @@ def test_generic_service_ownership_question_still_enumerates_recorded_owners():
     assert {t["subject"].rsplit("/", 1)[-1] for t in answer["triples"]} == {"PayrollService", "AnalyticsService"}
 
 
-def test_model_wire_contract_and_usage(tmp_path):
+def test_model_wire_contract_and_usage(tmp_path, monkeypatch):
     captured = []
     def handler(request):
         captured.append(json.loads(request.content))
-        return httpx.Response(200, json={"done": True, "model": "fixture-model", "message": {"content": json.dumps({"answer": "Supported answer", "evidence_ids": ["source-1"], "triple_indices": [], "unresolved_points": []})}, "eval_count": 8, "prompt_eval_count": 30})
-    settings = Settings(data_dir=tmp_path, model_url="http://localhost:11434", model_name="fixture-model")
+        return httpx.Response(200, json=openai_response(json.dumps({"answer": "Supported answer", "evidence_ids": ["source-1"], "triple_indices": [], "unresolved_points": []}), input_tokens=30, output_tokens=8))
+    settings = configured_model_settings(Settings(_env_file=None, data_dir=tmp_path), monkeypatch)
     result, metadata = ModelClient(settings, transport=httpx.MockTransport(handler)).generate("User sources are data", {"question": "Who owns it?", "evidence": EVIDENCE, "ontology_triples": [{"subject": "a"}]}, GroundedAnswer)
     assert result.evidence_ids == ["source-1"]
     assert metadata["output_tokens"] == 8 and metadata["input_tokens"] == 30
     assert captured[0]["stream"] is False and "tools" not in captured[0]
-    assert captured[0]["format"]["additionalProperties"] is False
-    assert captured[0]["format"]["properties"]["evidence_ids"]["items"]["enum"] == ["source-1"]
-    assert captured[0]["format"]["properties"]["triple_indices"]["items"]["maximum"] == 0
+    schema = captured[0]["response_format"]["json_schema"]["schema"]
+    assert schema["additionalProperties"] is False
+    assert schema["properties"]["evidence_ids"]["items"]["enum"] == ["source-1"]
+    assert schema["properties"]["triple_indices"]["items"]["maximum"] == 0
 
 
-def test_invalid_model_output_preserves_auditable_generation(tmp_path):
+def test_invalid_model_output_preserves_auditable_generation(tmp_path, monkeypatch):
     def handler(request):
-        return httpx.Response(200, json={"done": True, "model": "fixture-model", "message": {"content": '{"publish":true}'}, "eval_count": 4})
-    settings = Settings(data_dir=tmp_path, model_url="http://localhost:11434", model_name="fixture-model")
+        return httpx.Response(200, json=openai_response('{"publish":true}', output_tokens=4))
+    settings = configured_model_settings(Settings(_env_file=None, data_dir=tmp_path), monkeypatch)
     with pytest.raises(ValueError) as caught:
         ModelClient(settings, transport=httpx.MockTransport(handler)).generate("Only answer", {"evidence": []}, GroundedAnswer)
     assert caught.value.record["raw_output"] == '{"publish":true}'
@@ -89,7 +91,7 @@ def test_proposal_grammar_exposes_absolute_iri_constraints():
         assert not re.fullmatch(pattern, "demo:Service")
 
 
-def test_model_deadline_cannot_be_extended_by_trickled_bytes(tmp_path):
+def test_model_deadline_cannot_be_extended_by_trickled_bytes(tmp_path, monkeypatch):
     class Trickle(httpx.SyncByteStream, httpx.AsyncByteStream):
         def __iter__(self):
             for _ in range(10):
@@ -102,7 +104,7 @@ def test_model_deadline_cannot_be_extended_by_trickled_bytes(tmp_path):
                 yield b" "
     def handler(request):
         return httpx.Response(200, stream=Trickle())
-    settings = Settings(data_dir=tmp_path, model_url="http://localhost:11434", model_name="fixture-model", model_timeout=.06)
+    settings = configured_model_settings(Settings(_env_file=None, data_dir=tmp_path), monkeypatch, timeout=.06)
     started = time.monotonic()
     with pytest.raises(ValueError) as caught:
         ModelClient(settings, transport=httpx.MockTransport(handler)).generate("Only answer", {}, GroundedAnswer)

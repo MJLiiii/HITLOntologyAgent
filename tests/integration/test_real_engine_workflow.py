@@ -9,7 +9,7 @@ from oe_studio.rdf import NS
 
 @pytest.fixture
 def real_client(tmp_path):
-    app = create_app(Settings(data_dir=tmp_path, eager_jobs=True, model_url="", model_name=""))
+    app = create_app(Settings(_env_file=None, llm_config_file=None, data_dir=tmp_path, eager_jobs=True))
     with TestClient(app) as client:
         client.get("/api/v1/session", headers={"X-OE-Session-Token": app.state.bootstrap_token})
         yield client

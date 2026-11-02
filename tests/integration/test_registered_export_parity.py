@@ -1,4 +1,5 @@
 """Persisted task/phase/export parity; model/engine doubles, never study observations."""
+from tests.llm_fixtures import configure_studio_model
 import csv
 import io
 import json
@@ -20,7 +21,7 @@ def test_registered_tasks_keep_all_outcomes_and_d_phases_in_list_and_exports(cli
     second_response = client.post(root + '/synthetic-tasks', json={**request, 'task_id': 'synthetic-missing-outcomes'})
     assert second_response.status_code == 201, second_response.text
     second = second_response.json()
-    studio.settings.model_url, studio.settings.model_name = 'http://localhost:11434', 'dashboard-parity-double'
+    configure_studio_model(studio, monkeypatch)
     monkeypatch.setattr('oe_studio.model.ModelClient.generate', lambda self, system, context, schema: (
         schema.model_validate({'summary': 'SIMULATED ENGINEERING TEST: preserve frozen candidate', 'changes': []}),
         {'provider': 'scripted-test-double', 'elapsed_seconds': .01}))

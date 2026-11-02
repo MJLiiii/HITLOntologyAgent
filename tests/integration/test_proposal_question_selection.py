@@ -1,4 +1,5 @@
 """Generation focus cannot remove the frozen scope's mandatory checks."""
+from tests.llm_fixtures import configure_studio_model
 import json
 from uuid import uuid4
 
@@ -11,7 +12,7 @@ client = workflow_client
 
 def model_spy(client, monkeypatch):
     studio = client.app.state.studio
-    studio.settings.model_url, studio.settings.model_name = 'http://localhost:11434', 'fixture-model'
+    configure_studio_model(studio, monkeypatch)
     contexts = []
 
     def generate(_self, system, context, schema):

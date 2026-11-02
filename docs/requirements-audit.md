@@ -319,3 +319,7 @@ After the clean-copy run, the completed bounded-provider tests joined the final 
 ### Two-agent/team scope update — 2 November 2026
 
 The user authorized Mac team development in the current repository. Project-scoped username/password access and standalone worker startup now replace the earlier local-only implementation limit for this scope. Proposal/repair inputs and model test suggestions have independently testable contracts; accepted suggestions require a successor and fresh checks, while only authorized human roles decide expectations or releases. [Verification](evidence/two-agent-team-2026-11-02.md) records full tests, actual PostgreSQL/browser/engine evidence and the invalid local-model attempt. Prior counts and study/deployment gates remain historical; this change does not activate DORA, Linux engine isolation, organizational deployment or empirical study claims.
+
+### Model API scope update — 2 November 2026
+
+Current model generation supports only OpenAI and Claude. Earlier Ollama/LiteLLM/OpenCode observations above remain historical evidence. Direct bounded API requests preserve profile authorization, frozen job settings, failure/audit boundaries, original output validation, and human review authority; removed providers fail before dispatch. [The cleanup verification](evidence/llm-api-cleanup-2026-11-02.md) records full regression results and the remaining live-provider/deployment limits. No historical hashes, sealed results or private credentials were rewritten.

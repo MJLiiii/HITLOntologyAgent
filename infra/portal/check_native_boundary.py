@@ -81,8 +81,8 @@ def native_ontology(token):
 def app(data):
     from oe_studio.main import create_app
     from oe_studio.settings import Settings
-    return create_app(Settings(data_dir=data, database_url="", eager_jobs=True,
-                              model_url="", model_name="", model_api_key="", service_token=""))
+    return create_app(Settings(llm_config_file=None, data_dir=data, database_url="", eager_jobs=True,
+                              service_token=""))
 
 
 def populate(data):

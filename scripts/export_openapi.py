@@ -146,8 +146,7 @@ def application_schema():
     # Importing main constructs its app. Keep its seed/key/database strictly temporary.
     with tempfile.TemporaryDirectory(prefix='oe-openapi-') as folder:
         overrides = {'OE_DATA_DIR': folder, 'OE_DATABASE_URL': '', 'OE_EAGER_JOBS': 'true',
-                     'OE_MODE': 'local', 'OE_SERVICE_TOKEN': '', 'OE_MODEL_URL': '',
-                     'OE_MODEL_API_KEY': '', 'OE_MODEL_NAME': ''}
+                     'OE_MODE': 'local', 'OE_SERVICE_TOKEN': ''}
         previous = {key: os.environ.get(key) for key in overrides}
         os.environ.update(overrides)
         try:

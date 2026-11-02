@@ -6,8 +6,13 @@ from oe_studio.llm_profiles import resolve_profile, profile_settings, catalog, m
 from oe_studio.llm_profiles import Profile, _snapshot
 
 
+@pytest.fixture(autouse=True)
+def profile_key(monkeypatch):
+    monkeypatch.setenv('PROFILE_TEST_API_KEY', 'synthetic-profile-key')
+
+
 def configuration(tmp_path, **changes):
-    spec = dict(id='local', provider='ollama', model='fixture', base_url='http://localhost:11434',
+    spec = dict(id='local', provider='openai', api_key_env='PROFILE_TEST_API_KEY', model='fixture', base_url='https://provider.invalid/v1',
                 purposes=['chat', 'proposal', 'repair', 'experiment'], structured_output='json_schema')
     spec.update(changes)
     path = tmp_path / 'profiles.json'
@@ -53,11 +58,14 @@ def test_invalid_registry_is_sanitized(tmp_path, changes):
     assert 'password' not in error.value.message and 'secret' not in error.value.message
 
 
-def test_legacy_and_frozen_demo(tmp_path):
-    settings = Settings(_env_file=None, data_dir=tmp_path, model_url='', model_name='')
+def test_unconfigured_and_frozen_demo(tmp_path):
+    settings = Settings(_env_file=None, data_dir=tmp_path)
     assert resolve_profile(settings, 'anything', 'chat') is None
-    settings.model_url, settings.model_name = 'http://localhost:11434', 'legacy-fixture'
-    assert resolve_profile(settings, 'anything', 'chat')['id'] == 'legacy-ollama'
+    assert not model_configured(settings)
+    assert catalog(settings, 'anything') == []
+    with pytest.raises(Problem):
+        resolve_profile(settings, 'anything', 'chat', 'removed-profile')
+    settings = configuration(tmp_path)
     assert model_configured(settings)
     assert not model_configured(profile_settings(settings, None))
 

@@ -6,6 +6,7 @@ import httpx
 import pytest
 
 from oe_studio.model import ModelClient
+from tests.llm_fixtures import configure_studio_model, openai_response
 from tests.integration.test_workflow import client as workflow_client, project
 
 client = workflow_client
@@ -16,9 +17,7 @@ def test_provider_credential_echo_is_rejected_before_studio_output(client, monke
     secret = "synthetic-provider-key-echo-guard"
     p = project(client)
     studio = client.app.state.studio
-    studio.settings.model_url = "http://localhost:11434"
-    studio.settings.model_name = "fixture-model"
-    studio.settings.model_api_key = secret
+    configure_studio_model(studio, monkeypatch, secret=secret)
     requests = []
 
     def serve(request):
@@ -32,8 +31,7 @@ def test_provider_credential_echo_is_rejected_before_studio_output(client, monke
                 "subject": "https://example.org/Echo", "predicate": "http://www.w3.org/2000/01/rdf-schema#comment",
                 "object": "Synthetic", "object_type": "literal"},
                 "evidence_ids": [context["evidence"][0]["id"]], "rationale": "Synthetic source-backed fixture"}]}
-        return httpx.Response(200, json={"done": True, "model": "fixture-model", "message": {
-            "role": "assistant", "content": json.dumps(output)}, "prompt_eval_count": 12, "eval_count": 8})
+        return httpx.Response(200, json=openai_response(json.dumps(output), input_tokens=12, output_tokens=8))
 
     monkeypatch.setattr("oe_studio.model.ModelClient", lambda settings: ModelClient(settings, httpx.MockTransport(serve)))
     body = {"question": "Who owns Payroll Service?"} if kind == "question" else {

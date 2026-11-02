@@ -8,7 +8,7 @@ from oe_studio.settings import Settings
 def test_two_apps_keep_sessions_and_project_writes_in_their_own_store(tmp_path):
     apps = [create_app(Settings(_env_file=None, data_dir=tmp_path / name,
                                database_url='', eager_jobs=True, mode='local',
-                               model_url='', model_name='', llm_config_file=None))
+                               llm_config_file=None))
             for name in ('first', 'second')]
     with TestClient(apps[0]) as first, TestClient(apps[1]) as second:
         for client, app in zip((first, second), apps):

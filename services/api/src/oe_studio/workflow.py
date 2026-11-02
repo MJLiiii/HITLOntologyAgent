@@ -919,8 +919,6 @@ class Studio:
                 if self.settings.trustgraph_config_file:
                     from .trustgraph_workflow import freeze_profile_binding
                     payload["_trustgraph_configuration"] = freeze_profile_binding(self.settings, p_id, profile)
-                    if profile and profile["provider"] == "opencode_go":
-                        payload["_llm_session_id"] = payload["_trustgraph_configuration"]["llm_session_id"]
             job = Job(id=uid(), project_id=p_id, kind=kind, payload=payload, payload_digest=request_digest, idempotency_key=key, actor=actor)
             s.add(job)
             s.flush()

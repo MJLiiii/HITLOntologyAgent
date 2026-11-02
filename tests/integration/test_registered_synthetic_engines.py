@@ -1,4 +1,5 @@
 """Two authored tasks, scripted model double, real confined engines; no study."""
+from tests.llm_fixtures import configured_model_settings
 from types import SimpleNamespace
 
 import pytest
@@ -46,7 +47,7 @@ demo:{title}Shape a sh:NodeShape ; sh:targetClass demo:{title} ;
             return schema.model_validate({'summary': 'Scripted test double for the generation boundary.', 'changes': changes}), {
                 'input_tokens': None, 'output_tokens': None, 'cost': None}
 
-    settings = SimpleNamespace(model_url='http://localhost:11434', model_name='unused-scripted-test-double', model_timeout=10)
+    settings = configured_model_settings(SimpleNamespace(), model='unused-scripted-test-double')
     a, b, c, d = ex.execute_synthetic_task(packet, registration_digest=packet.digest, settings=settings,
                                            model_client=ScriptedModelDouble(), maximum_repairs=1)
     assert a['validation']['status'] == b['validation']['status'] == 'failed'

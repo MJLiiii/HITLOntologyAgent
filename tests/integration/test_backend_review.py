@@ -1,4 +1,5 @@
 """Independent review regressions for provenance and frozen workflow context."""
+from tests.llm_fixtures import configure_studio_model
 from uuid import uuid4
 
 from tests.integration.test_workflow import client as workflow_client, job, project
@@ -51,7 +52,7 @@ def test_model_proposal_rejects_scope_changed_during_generation(client, monkeypa
     from oe_studio.schemas import ScopeUpload
     p = project(client)
     studio = client.app.state.studio
-    studio.settings.model_url, studio.settings.model_name = 'http://localhost:11434', 'fixture-model'
+    configure_studio_model(studio, monkeypatch)
     def generate(_self, system, context, schema):
         questions = [{**q, 'expected': q.get('expected', True), 'required': True,
                       'question': q['question'] + ' Under the changed scope.'} for q in p['competency_questions']]
@@ -88,7 +89,7 @@ def test_review_timer_cannot_double_count_one_human_across_revisions(client):
 def test_experiment_review_time_stops_at_the_linked_human_decision(client, monkeypatch):
     from oe_studio import experiments as ex
     studio = client.app.state.studio
-    studio.settings.model_url, studio.settings.model_name = 'http://localhost:11434', 'fixture-model'
+    configure_studio_model(studio, monkeypatch)
     monkeypatch.setattr('oe_studio.model.ModelClient.generate', lambda self, system, context, schema: (
         schema.model_validate({'summary': 'No justified source changes are needed', 'changes': []}), {'elapsed_seconds': .1}))
     monkeypatch.setattr(ex, 'validate', lambda ttl, **kw: {'status': 'passed', 'cases': [

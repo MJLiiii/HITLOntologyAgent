@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def process_store(tmp_path):
     empty_env = tmp_path / 'worker.env'
     empty_env.write_text('')
-    settings = Settings(_env_file=empty_env, data_dir=tmp_path / 'store', model_url='', model_name='',
+    settings = Settings(_env_file=empty_env, data_dir=tmp_path / 'store',
                         llm_config_file=None, eager_jobs=False)
     studio = Studio(settings)
     with studio.db.session() as session:

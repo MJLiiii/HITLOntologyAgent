@@ -1,4 +1,5 @@
 """Process-loss checks use synthetic stores and never create study observations."""
+from tests.llm_fixtures import configure_studio_model
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
@@ -24,7 +25,7 @@ def store(tmp_path, monkeypatch):
         "id": str(uuid4()), "status": "passed", "bundle_digest": kw["bundle_digest"], "cases": []})
     monkeypatch.setattr("oe_studio.workflow.run_assessment", lambda ttl, **kw: {
         "id": str(uuid4()), "status": "completed", "bundle_digest": kw["bundle_digest"]})
-    studio = Studio(Settings(data_dir=tmp_path, model_url="", model_name="", eager_jobs=False))
+    studio = Studio(Settings(_env_file=None, llm_config_file=None, data_dir=tmp_path, eager_jobs=False))
     with studio.db.session() as session:
         from oe_studio.db import Project
         from sqlalchemy import select
@@ -123,7 +124,7 @@ def test_repair_revision_attempt_and_result_commit_together(store, monkeypatch):
 
 def test_generation_crash_retains_output_without_replay_or_duplicate_revision(store, monkeypatch):
     studio, project = store
-    studio.settings.model_url, studio.settings.model_name = "http://localhost:11434", "fixture"
+    configure_studio_model(studio, monkeypatch)
     def model(self, system, context, schema):
         return schema.model_validate({"summary": "Synthetic service declaration", "changes": [{"operation": "add",
             "triple": {"subject": "https://example.org/oe-demo/Service", "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "object": "http://www.w3.org/2002/07/owl#Class"},

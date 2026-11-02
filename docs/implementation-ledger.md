@@ -147,3 +147,11 @@ issues. [Detailed evidence](evidence/architecture-refactor-2026-11-02.md) record
 the initial sandbox-related engine failures and their successful rerun with the
 required execution permission, dependency warnings, and optional PostgreSQL/live
 TrustGraph skips. No paid calls or real study activity were performed.
+
+### OpenAI and Claude API cleanup — 2 November 2026
+
+Reduced active generation to OpenAI and Claude using native bounded HTTPX requests; removed LiteLLM, legacy Ollama settings, OpenCode-specific branches and redundant provider examples. The lockfile drops 21 dependencies. Server-owned authorization, immutable snapshots, explicit failures, generic optional budget reservations and publication gates remain intact; historical evidence and private state are preserved. [Verification](evidence/llm-api-cleanup-2026-11-02.md): 617 backend passed, 8 optional skips; 64 frontend passed; lint, TypeScript, API drift and patch checks passed. Independent review's Claude finish-reason finding was reproduced and fixed. No paid calls; local model configuration remains unconfigured/demo.
+
+### User-authorized OpenAI API test — 2 November 2026
+
+The new `.env` OpenAI credential authenticated successfully and one bounded synthetic `gpt-4.1-mini` request passed through Studio's actual profile/runtime/schema/citation path (HTTP 200; 207 input and 32 output tokens). No retry, publication or private configuration edit occurred. Claude was not tested because no Anthropic key was present; persistent profile configuration remains unset. See [the live verification entry](multi-llm-verification.md#user-authorized-openai-key-check--2-november-2026) and credential-free `.runtime/llm-api-key-test-2026-11-02.json`.

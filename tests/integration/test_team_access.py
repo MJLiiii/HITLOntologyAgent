@@ -1,4 +1,5 @@
 """Synthetic team authorization checks; SQLite only via the explicit test setting."""
+from tests.llm_fixtures import configure_studio_model
 import re
 from uuid import uuid4
 import pytest
@@ -207,18 +208,14 @@ def test_direct_mutators_recheck_membership(team):
         assert failure.value.status == 403
 
 
-def test_queued_profile_permission_change_blocks_dispatch(team, tmp_path, monkeypatch):
+def test_queued_profile_permission_change_blocks_dispatch(team, monkeypatch):
     import json
     from oe_studio.llm_profiles import resolve_profile
     client, db, user, actor = team
     settings = client.app.state.settings
-    profile_file = tmp_path / 'profiles.json'
-    config = {'profiles': [{'id': 'controlled', 'provider': 'ollama',
-                           'base_url': 'http://127.0.0.1:11434', 'model': 'controlled', 'purposes': ['chat']}],
-              'projects': {'private-project': ['controlled']}}
-    profile_file.write_text(json.dumps(config))
-    settings.llm_config_file = profile_file
-    settings.llm_default_profile = 'controlled'
+    profile_file = configure_studio_model(client.app.state.studio, monkeypatch, id='controlled',
+                                         model='controlled', purposes=['chat'])
+    config = json.loads(profile_file.read_text())
     accounts.grant_project(db, user.id, 'private-project', ['researcher'])
     frozen = resolve_profile(settings, 'private-project', 'chat', 'controlled')
     with db.session(write=True) as session:
@@ -258,8 +255,7 @@ def test_scope_acceptance_revoked_during_model_call_retains_output_but_no_suite(
     from tests.integration.test_model_test_generation import controlled
     client, _, _, actor, root, revision, _ = team_candidate
     studio = client.app.state.studio
-    studio.settings.model_url = 'http://127.0.0.1:11434'
-    studio.settings.model_name = 'controlled'
+    configure_studio_model(studio, monkeypatch, model='controlled')
     project = client.get(root).json()
     def reject(*args):
         studio.scope_decision(project['id'], ScopeDecision(scope_digest=project['scope_digest'],

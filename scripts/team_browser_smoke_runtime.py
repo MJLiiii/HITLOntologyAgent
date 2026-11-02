@@ -101,8 +101,8 @@ def start():
     env = dict(OE_MODE='team', OE_DATA_DIR=str(private / 'data'),
                OE_DATABASE_URL=f'postgresql+psycopg://studio:{password}@127.0.0.1:55436/studio',
                OE_TEAM_ORIGIN='http://127.0.0.1:5186', OE_TEAM_ALLOW_INSECURE_LOOPBACK='true',
-               OE_EMBEDDED_WORKER='false', OE_EAGER_JOBS='false', OE_MODEL_URL='', OE_MODEL_NAME='',
-               OE_MODEL_API_KEY='', PYTHONPATH=str(ROOT / 'services/api/src'),
+               OE_EMBEDDED_WORKER='false', OE_EAGER_JOBS='false',
+               PYTHONPATH=str(ROOT / 'services/api/src'),
                OE_JAVA_EXECUTABLE='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home/bin/java',
                OE_ONTOCHECK_PYTHON=str(ROOT / '.venv-ontocheck/bin/python'),
                STUDIO_API_URL='http://127.0.0.1:8016')

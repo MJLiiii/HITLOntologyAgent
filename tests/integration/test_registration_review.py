@@ -1,4 +1,5 @@
 """Independent registration/staging provenance regressions; synthetic fixtures only."""
+from tests.llm_fixtures import configure_studio_model
 from uuid import uuid4
 
 from tests.integration.test_workflow import client as workflow_client, job, project
@@ -8,7 +9,7 @@ client = workflow_client
 
 
 def model_double(monkeypatch, studio):
-    studio.settings.model_url, studio.settings.model_name = 'http://localhost:11434', 'registration-review-double'
+    configure_studio_model(studio, monkeypatch)
     monkeypatch.setattr('oe_studio.model.ModelClient.generate', lambda self, system, context, schema: (
         schema.model_validate({'summary': 'Preserve the supplied synthetic candidate', 'changes': []}),
         {'provider': 'controlled-test-double', 'elapsed_seconds': 0.01}))

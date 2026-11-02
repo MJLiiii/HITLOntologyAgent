@@ -580,8 +580,8 @@ def _execute_model_task(packet, *, settings, condition, replicate_ids, model_cli
         raise ValueError('Replicates must be unique integers from 1 to 3')
     if type(maximum_repairs) is not int or maximum_repairs not in (0, 1, 2):
         raise ValueError('At most two repair attempts are permitted')
-    from .llm_profiles import legacy_profile, model_configured
-    profile = getattr(settings, 'resolved_llm_profile', None) or legacy_profile(settings)
+    from .llm_profiles import model_configured
+    profile = getattr(settings, 'resolved_llm_profile', None)
     if not model_configured(settings) or not profile:
         raise ValueError('Configure a model and a positive timeout of at most 120 seconds')
     output_limit = profile['max_output_tokens']

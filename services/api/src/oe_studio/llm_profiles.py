@@ -18,7 +18,7 @@ ProfileId = str
 class Profile(BaseModel):
     model_config = ConfigDict(extra='forbid', strict=True, validate_default=True)
     id: str = Field(pattern=r'^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$')
-    provider: Literal['openai', 'anthropic', 'ollama', 'openai_compatible', 'litellm_proxy', 'opencode_go']
+    provider: Literal['openai', 'anthropic']
     model: str = Field(min_length=1, max_length=200, pattern=r'^[^\s]+$')
     base_url: str | None = None
     api_key_env: str | None = Field(default=None, pattern=r'^[A-Za-z_][A-Za-z0-9_]*$')
@@ -45,14 +45,12 @@ class Profile(BaseModel):
         if len(self.purposes) != len(set(self.purposes)):
             raise ValueError('Duplicate profile operations')
         defaults = {'openai': ('https://api.openai.com/v1', 'OPENAI_API_KEY'),
-                    'anthropic': ('https://api.anthropic.com', 'ANTHROPIC_API_KEY'),
-                    'opencode_go': ('https://opencode.ai/inference/go/openai/v1', 'OPENCODE_API_KEY')}
-        if self.provider in defaults:
-            endpoint, key = defaults[self.provider]
-            self.base_url = self.base_url or endpoint
-            self.api_key_env = self.api_key_env or key
-        elif not self.base_url:
-            raise ValueError('This provider requires an endpoint')
+                    'anthropic': ('https://api.anthropic.com', 'ANTHROPIC_API_KEY')}
+        endpoint, key = defaults[self.provider]
+        self.base_url = self.base_url or endpoint
+        self.api_key_env = self.api_key_env or key
+        if self.provider == 'anthropic' and self.structured_output == 'json_object':
+            raise ValueError('Claude requires json_schema or prompt_json output')
         return self
 
 
@@ -114,21 +112,12 @@ def _available(settings, snapshot):
     return not snapshot.get('api_key_env') or bool(secret_value(settings, snapshot['api_key_env']))
 
 
-def legacy_profile(settings):
-    if not getattr(settings, 'model_url', '') or not getattr(settings, 'model_name', ''):
-        return None
-    return _snapshot(Profile(id='legacy-ollama', provider='ollama', model=settings.model_name,
-                             base_url=settings.model_url, timeout=settings.model_timeout,
-                             purposes=['chat', 'proposal', 'repair', 'experiment', 'extraction', 'test_generation']))
-
-
 def resolve_profile(settings, project_id, operation, profile_id=None):
     registry = _registry(settings)
     if registry is None:
-        profile = legacy_profile(settings)
-        if profile_id and (not profile or profile_id != profile['id']):
+        if profile_id:
             raise Problem(422, 'unknown_model_profile', 'Unknown model profile')
-        return profile
+        return None
     selected = profile_id or settings.llm_default_profile
     profile = next((p for p in registry.profiles if p.id == selected), None)
     if profile is None:
@@ -150,18 +139,15 @@ def authorize_inherited(settings, project_id, operation, snapshot):
         current = next((p for p in registry.profiles if p.id == snapshot['id']), None)
         permitted = current is not None and operation in current.purposes and snapshot['id'] in registry.projects.get(project_id, [])
     else:
-        permitted = snapshot['id'] == 'legacy-ollama'
-    if not permitted or operation not in snapshot['purposes'] or not _available(settings, snapshot):
+        permitted = False
+    if (not permitted or snapshot.get('provider') not in {'openai', 'anthropic'}
+            or operation not in snapshot['purposes'] or not _available(settings, snapshot)):
         raise Problem(403, 'model_profile_forbidden', 'The frozen model profile is no longer permitted or configured for this operation')
     return deepcopy(snapshot)
 
 
 def profile_settings(settings, snapshot, session_id=None):
     update = {'resolved_llm_profile': deepcopy(snapshot), 'llm_session_id': session_id}
-    if snapshot:
-        update.update(model_url=snapshot['base_url'], model_name=snapshot['model'], model_timeout=snapshot['timeout'])
-    else:
-        update.update(model_url='', model_name='')
     if hasattr(settings, 'model_copy'):
         return settings.model_copy(update=update)
     from types import SimpleNamespace
@@ -171,7 +157,7 @@ def profile_settings(settings, snapshot, session_id=None):
 def model_configured(settings):
     if hasattr(settings, 'resolved_llm_profile'):
         return settings.resolved_llm_profile is not None
-    return bool(getattr(settings, 'llm_config_file', None) or (settings.model_url and settings.model_name))
+    return bool(getattr(settings, 'llm_config_file', None))
 
 
 def configuration_status(settings):
@@ -180,7 +166,7 @@ def configuration_status(settings):
         if registry:
             default = next(p for p in registry.profiles if p.id == settings.llm_default_profile)
             return 'configured_unverified' if _available(settings, _snapshot(default)) else 'missing_credentials'
-        return 'configured_unverified' if legacy_profile(settings) else 'not_configured'
+        return 'not_configured'
     except (Problem, ValueError):
         return 'configuration_error'
 
@@ -191,8 +177,7 @@ def catalog(settings, project_id):
         profiles = [_snapshot(p) for p in registry.profiles if p.id in registry.projects.get(project_id, [])]
         default = settings.llm_default_profile
     else:
-        profile = legacy_profile(settings)
-        profiles, default = ([profile] if profile else []), 'legacy-ollama'
+        profiles, default = [], None
     return [{**{k: p[k] for k in ('id', 'revision', 'provider', 'model', 'purposes', 'structured_output', 'max_output_tokens')},
              'status': 'configured_unverified' if _available(settings, p) else 'missing_credentials',
              'is_default': p['id'] == default} for p in sorted(profiles, key=lambda p: p['id'])]

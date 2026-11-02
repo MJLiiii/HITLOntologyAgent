@@ -1,4 +1,4 @@
-"""Exercise real LiteLLM provider adapters; only outbound HTTP is a double."""
+"""Exercise native provider requests; only outbound HTTP is a double."""
 import asyncio
 import json
 import os
@@ -14,18 +14,18 @@ import pytest
 
 SCHEMA = {"type": "object", "properties": {"answer": {"type": "string"}},
           "required": ["answer"], "additionalProperties": False}
-PROVIDERS = ["openai", "anthropic", "ollama", "openai_compatible", "litellm_proxy", "opencode_go"]
+PROVIDERS = ["openai", "anthropic"]
 
 
 def configured(provider="openai", **overrides):
     profile = {"id": "fixture", "revision": "sha256:fixture", "provider": provider,
                "model": "claude-sonnet-4-5" if provider == "anthropic" else "fixture-model",
-               "base_url": "https://provider.invalid" if provider == "ollama" else "https://provider.invalid/v1",
+               "base_url": "https://provider.invalid/v1",
                "api_key_env": "RUNTIME_TEST_API_KEY", "timeout": 2, "max_output_tokens": 32,
                "temperature": 0, "structured_output": "json_schema", "max_response_bytes": 4096,
                "purposes": ["chat"]}
     profile.update(overrides)
-    return SimpleNamespace(resolved_llm_profile=profile, llm_session_id=None, model_api_key="")
+    return SimpleNamespace(resolved_llm_profile=profile, llm_session_id=None)
 
 
 def response(provider, text='{"answer":"supported"}', **overrides):
@@ -33,9 +33,6 @@ def response(provider, text='{"answer":"supported"}', **overrides):
         body = {"id": "msg_fixture", "type": "message", "role": "assistant", "model": "returned-fixture",
                 "content": [{"type": "text", "text": text}], "stop_reason": "end_turn",
                 "stop_sequence": None, "usage": {"input_tokens": 7, "output_tokens": 3}}
-    elif provider == "ollama":
-        body = {"done": True, "model": "returned-fixture", "message": {"role": "assistant", "content": text},
-                "prompt_eval_count": 7, "eval_count": 3}
     else:
         body = {"id": "chat_fixture", "object": "chat.completion", "created": 1, "model": "returned-fixture",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": text}, "finish_reason": "stop"}],
@@ -45,7 +42,7 @@ def response(provider, text='{"answer":"supported"}', **overrides):
 
 
 @pytest.mark.parametrize("provider", PROVIDERS)
-def test_actual_sdk_provider_wire_and_normalized_usage(provider, monkeypatch):
+def test_native_provider_wire_and_normalized_usage(provider, monkeypatch):
     from oe_studio.llm_runtime import complete
     monkeypatch.setenv("RUNTIME_TEST_API_KEY", "private-fixture-key")
     requests = []
@@ -72,17 +69,8 @@ def test_actual_sdk_provider_wire_and_normalized_usage(provider, monkeypatch):
     wire = json.loads(request.content)
     assert "cookie" not in request.headers and "tools" not in wire
     assert "private-fixture-key" not in json.dumps(metadata) + json.dumps(wire)
-    if provider == "opencode_go":
-        assert request.headers["x-opencode-session"] == "session-fixture"
-        assert request.headers["user-agent"] == "OntologyStudio/0.1.0 LiteLLM/1.106.6"
-    # OpenAI's adapter omits its default false; Ollama sends false explicitly.
-    assert wire.get("stream", False) is False
-    if provider == "ollama":
-        assert request.url.path == "/api/chat"
-        assert wire["format"] == SCHEMA
-        assert wire["options"]["num_predict"] == 32
-        assert wire["think"] is False
-    elif provider == "anthropic":
+    assert wire["stream"] is False
+    if provider == "anthropic":
         assert request.url.path == "/v1/messages"
         assert request.headers["x-api-key"] == "private-fixture-key"
         assert wire["max_tokens"] == 32
@@ -90,10 +78,10 @@ def test_actual_sdk_provider_wire_and_normalized_usage(provider, monkeypatch):
         assert request.url.path == "/v1/chat/completions"
         assert request.headers["authorization"] == "Bearer private-fixture-key"
         assert wire["response_format"]["json_schema"]["schema"] == SCHEMA
-        assert wire["max_tokens"] == 32
+        assert wire["max_completion_tokens"] == 32
 
 
-@pytest.mark.parametrize("provider", PROVIDERS[:3])
+@pytest.mark.parametrize("provider", PROVIDERS)
 @pytest.mark.parametrize("failure", ["redirect", "429", "500", "connect", "protocol", "oversize"])
 def test_actual_http_never_retries_follows_redirects_or_exceeds_bytes(provider, failure, monkeypatch):
     from oe_studio.llm_runtime import complete, CompletionError
@@ -118,7 +106,7 @@ def test_actual_http_never_retries_follows_redirects_or_exceeds_bytes(provider, 
     assert "private-fixture-key" not in str(caught.value) + json.dumps(caught.value.record)
 
 
-@pytest.mark.parametrize("provider", PROVIDERS[:3])
+@pytest.mark.parametrize("provider", PROVIDERS)
 def test_overall_deadline_bounds_trickled_response(provider, monkeypatch):
     from oe_studio.llm_runtime import complete, CompletionError
     monkeypatch.setenv("RUNTIME_TEST_API_KEY", "key")
@@ -136,7 +124,7 @@ def test_overall_deadline_bounds_trickled_response(provider, monkeypatch):
 
 def test_concurrent_provider_calls_keep_transport_and_credentials_isolated(monkeypatch):
     from oe_studio.llm_runtime import complete
-    for provider in PROVIDERS[:3]:
+    for provider in PROVIDERS:
         monkeypatch.setenv("KEY_" + provider, "private-" + provider)
     captured = []
 
@@ -149,10 +137,10 @@ def test_concurrent_provider_calls_keep_transport_and_credentials_isolated(monke
                               transport=httpx.MockTransport(serve))
 
     async def concurrent():
-        return await asyncio.gather(*(run(provider) for provider in PROVIDERS[:3]))
+        return await asyncio.gather(*(run(provider) for provider in PROVIDERS))
 
     results = asyncio.run(concurrent())
-    assert len(captured) == 3 and len(results) == 3
+    assert len(captured) == 2 and len(results) == 2
     for provider, request in captured:
         assert "private-" + provider in request.headers.get("authorization", request.headers.get("x-api-key", ""))
         assert "plain TG text" in request.content.decode()
@@ -199,24 +187,25 @@ def test_model_client_profile_keeps_dynamic_citations_and_original_validation(mo
     assert caught.value.record["validation_errors"]
 
 
-def test_anthropic_schema_mode_never_grants_formatting_tools_on_old_models(monkeypatch):
+def test_anthropic_unsupported_schema_fails_once_without_granting_tools(monkeypatch):
     from oe_studio.llm_runtime import complete, CompletionError
     monkeypatch.setenv("RUNTIME_TEST_API_KEY", "key")
     requests = []
     with pytest.raises(CompletionError):
-        asyncio.run(complete(configured("anthropic", model="claude-sonnet-4-20250514"), "safe", {}, SCHEMA,
-                             transport=httpx.MockTransport(lambda req: requests.append(req) or response("anthropic"))))
-    assert requests == []
+        asyncio.run(complete(configured("anthropic"), "safe", {}, SCHEMA,
+                             transport=httpx.MockTransport(lambda req: requests.append(req) or httpx.Response(400))))
+    assert len(requests) == 1
+    assert "tools" not in json.loads(requests[0].content)
 
 
-@pytest.mark.parametrize("provider", PROVIDERS[:3])
+@pytest.mark.parametrize("provider", PROVIDERS)
 def test_missing_provider_usage_is_unknown_not_sdk_token_estimates(provider, monkeypatch):
     from oe_studio.llm_runtime import complete
     monkeypatch.setenv("RUNTIME_TEST_API_KEY", "key")
 
     def serve(request):
         original = response(provider).json()
-        for key in ("usage", "prompt_eval_count", "eval_count"):
+        for key in ("usage",):
             original.pop(key, None)
         if provider == "anthropic":
             # The Anthropic protocol requires the container; test absent counters.
@@ -228,7 +217,7 @@ def test_missing_provider_usage_is_unknown_not_sdk_token_estimates(provider, mon
     assert metadata["input_tokens"] is None and metadata["output_tokens"] is None
 
 
-@pytest.mark.parametrize("provider", PROVIDERS[:3])
+@pytest.mark.parametrize("provider", PROVIDERS)
 def test_partial_budget_configuration_blocks_actual_dispatch(provider, monkeypatch, tmp_path):
     from oe_studio.llm_runtime import complete, CompletionError
     monkeypatch.setenv("RUNTIME_TEST_API_KEY", "key")
@@ -243,7 +232,7 @@ def test_partial_budget_configuration_blocks_actual_dispatch(provider, monkeypat
     assert caught.value.record["http_attempted"] is False
 
 
-@pytest.mark.parametrize("provider", PROVIDERS[:3])
+@pytest.mark.parametrize("provider", PROVIDERS)
 def test_credential_echo_is_redacted_from_audit_and_errors(provider, monkeypatch):
     from oe_studio.llm_runtime import complete, CompletionError
     monkeypatch.setenv("RUNTIME_TEST_API_KEY", "private-fixture-key")
@@ -251,15 +240,14 @@ def test_credential_echo_is_redacted_from_audit_and_errors(provider, monkeypatch
         asyncio.run(complete(configured(provider), "safe", {}, SCHEMA,
                              transport=httpx.MockTransport(lambda req: response(provider, "private-fixture-key"))))
     assert "private-fixture-key" not in str(echoed.value) + json.dumps(echoed.value.record)
-    invalid = {"stop_reason": "max_tokens"} if provider == "anthropic" else (
-        {"done": False} if provider == "ollama" else {"choices": []})
+    invalid = {"stop_reason": "max_tokens"} if provider == "anthropic" else {"choices": []}
     with pytest.raises(CompletionError) as caught:
         asyncio.run(complete(configured(provider), "safe", {}, SCHEMA,
                              transport=httpx.MockTransport(lambda req: response(provider, "private-fixture-key", **invalid))))
     assert "private-fixture-key" not in str(caught.value) + json.dumps(caught.value.record)
 
 
-@pytest.mark.parametrize("provider", PROVIDERS[:3])
+@pytest.mark.parametrize("provider", PROVIDERS)
 def test_text_only_trustgraph_call_sends_plain_prompt_without_schema(provider, monkeypatch):
     from oe_studio.llm_runtime import complete
     monkeypatch.setenv("RUNTIME_TEST_API_KEY", "key")
@@ -276,7 +264,7 @@ def test_text_only_trustgraph_call_sends_plain_prompt_without_schema(provider, m
     assert "Return only JSON" not in json.dumps(captured[0])
 
 
-def test_sdk_import_uses_bundled_catalog_without_network_or_background_fetch():
+def test_runtime_import_without_network_or_background_fetch():
     program = '''
 import httpx, socket, threading
 attempts = []
@@ -292,26 +280,23 @@ def start(self):
 threading.Thread.start = start
 from oe_studio import llm_runtime
 assert attempts == [], attempts
-assert not llm_runtime.litellm.callbacks
-assert not llm_runtime.litellm.success_callback
-assert not llm_runtime.litellm.input_callback
 '''
-    environment = {**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parents[2] / "services/api/src"),
-                   "LITELLM_LOCAL_MODEL_COST_MAP": "False"}
+    environment = {**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parents[2] / "services/api/src")}
     result = subprocess.run([sys.executable, "-c", program], env=environment, capture_output=True, text=True, timeout=20)
     assert result.returncode == 0, result.stderr
 
 
-def test_ambient_sdk_base_url_cannot_send_credentials_to_another_endpoint(monkeypatch):
-    from oe_studio.llm_runtime import complete, CompletionError, litellm
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_ambient_base_url_cannot_redirect_profile_credentials(provider, monkeypatch):
+    from oe_studio.llm_runtime import complete
     monkeypatch.setenv("RUNTIME_TEST_API_KEY", "private-fixture-key")
-    monkeypatch.setattr(litellm, "api_base", "https://wrong-provider.invalid")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://wrong-provider.invalid")
+    monkeypatch.setenv("ANTHROPIC_BASE_URL", "https://wrong-provider.invalid")
     requests = []
-    with pytest.raises(CompletionError) as caught:
-        asyncio.run(complete(configured("ollama"), "safe", {}, SCHEMA,
-                             transport=httpx.MockTransport(lambda req: requests.append(req) or response("ollama"))))
-    assert requests == []
-    assert caught.value.record["http_attempted"] is False
+    asyncio.run(complete(configured(provider), "safe", {}, SCHEMA,
+                         transport=httpx.MockTransport(lambda req: requests.append(req) or response(provider))))
+    assert len(requests) == 1
+    assert requests[0].url.host == "provider.invalid"
 
 
 @pytest.mark.parametrize("schema_name", ["GroundedAnswer", "ProposalDraft"])
@@ -340,35 +325,6 @@ def test_openai_strict_wire_schema_requires_all_fields_without_changing_local_sc
 
     asyncio.run(complete(configured(), "safe", {}, schema, transport=httpx.MockTransport(serve)))
     assert json.dumps(schema, sort_keys=True) == original
-
-
-@pytest.mark.parametrize("session", [None, "", "contains\nnewline"])
-def test_opencode_requires_safe_frozen_session_before_dispatch(session, monkeypatch):
-    from oe_studio.llm_runtime import complete, CompletionError
-    monkeypatch.setenv("RUNTIME_TEST_API_KEY", "private-fixture-key")
-    settings = configured("opencode_go")
-    settings.llm_session_id = session
-    requests = []
-    with pytest.raises(CompletionError) as caught:
-        asyncio.run(complete(settings, "safe", {}, SCHEMA,
-                             transport=httpx.MockTransport(lambda req: requests.append(req) or response("openai"))))
-    assert requests == [] and caught.value.record["http_attempted"] is False
-
-
-@pytest.mark.parametrize("estimated", [False, True])
-def test_opencode_reported_charge_and_estimate_are_distinct_from_list_cost(estimated, monkeypatch):
-    from oe_studio.llm_runtime import complete
-    monkeypatch.setenv("RUNTIME_TEST_API_KEY", "key")
-    settings = configured("opencode_go")
-    settings.llm_session_id = "frozen-session"
-    usage = {"prompt_tokens": 7, "completion_tokens": 3, "cost": 0,
-             "opencode": {"billing_source": "byok" if estimated else "go", "list_cost": .02,
-                          "estimated": estimated, "allowance": .04}}
-    _, metadata = asyncio.run(complete(settings, "safe", {}, SCHEMA,
-                                       transport=httpx.MockTransport(lambda req: response("openai", usage=usage))))
-    assert metadata["cost"] == 0 and metadata["cost_missing_reason"] is None
-    assert metadata["cost_is_estimate"] is estimated
-    assert metadata["provider_list_cost"] == .02
 
 
 def test_serialized_request_size_is_bounded_before_http_dispatch(monkeypatch):
@@ -441,3 +397,63 @@ def test_anthropic_json_object_cannot_silently_drop_the_requested_mode(monkeypat
         asyncio.run(complete(configured("anthropic", structured_output="json_object"), "safe", {}, SCHEMA,
                              transport=httpx.MockTransport(lambda req: requests.append(req) or response("anthropic"))))
     assert requests == []
+
+
+@pytest.mark.parametrize('provider,mutation', [
+    ('openai', 'refusal'), ('openai', 'tool_calls'), ('openai', 'function_call'),
+    ('openai', 'truncated'), ('openai', 'missing_choices'), ('openai', 'empty'),
+    ('anthropic', 'tool_use'), ('anthropic', 'refusal'), ('anthropic', 'truncated'),
+    ('anthropic', 'missing_content'), ('anthropic', 'empty'), ('anthropic', 'wrong_provider_finish'),
+])
+def test_native_response_rejects_refusals_tools_and_incomplete_envelopes(provider, mutation, monkeypatch):
+    from oe_studio.llm_runtime import complete, CompletionError
+    monkeypatch.setenv('RUNTIME_TEST_API_KEY', 'private-fixture-key')
+    raw = response(provider).json()
+    if provider == 'openai':
+        if mutation == 'missing_choices':
+            raw.pop('choices')
+        elif mutation == 'truncated':
+            raw['choices'][0]['finish_reason'] = 'length'
+        elif mutation == 'empty':
+            raw['choices'][0]['message']['content'] = ''
+        else:
+            raw['choices'][0]['message'][mutation] = 'unsafe provider content'
+    else:
+        if mutation == 'missing_content':
+            raw.pop('content')
+        elif mutation == 'truncated':
+            raw['stop_reason'] = 'max_tokens'
+        elif mutation == 'wrong_provider_finish':
+            raw['stop_reason'] = 'stop'
+        elif mutation == 'empty':
+            raw['content'] = []
+        else:
+            # Valid-looking text alongside an unsafe block is still rejected.
+            raw['content'].append({'type': mutation, 'text': 'unsafe provider content'})
+    requests = []
+    with pytest.raises(CompletionError) as caught:
+        asyncio.run(complete(configured(provider), 'safe', {}, SCHEMA,
+            transport=httpx.MockTransport(lambda request: requests.append(request) or httpx.Response(200, json=raw))))
+    assert len(requests) == 1
+    assert caught.value.record['http_attempted'] is True
+    assert caught.value.record['status'] == 'failed'
+
+
+@pytest.mark.parametrize('provider', PROVIDERS)
+def test_compressed_response_limit_applies_to_decoded_bytes(provider, monkeypatch):
+    import gzip
+    from oe_studio.llm_runtime import complete, CompletionError
+    monkeypatch.setenv('RUNTIME_TEST_API_KEY', 'key')
+    compressed = gzip.compress(response(provider, 'x' * 5000).content)
+    assert len(compressed) < 4096
+
+    class Compressed(httpx.AsyncByteStream):
+        async def __aiter__(self):
+            yield compressed
+
+    with pytest.raises(CompletionError) as caught:
+        asyncio.run(complete(configured(provider), 'safe', {}, SCHEMA,
+            transport=httpx.MockTransport(lambda request: httpx.Response(200,
+                headers={'Content-Encoding': 'gzip'}, stream=Compressed()))))
+    assert caught.value.record['http_attempted'] is True
+    assert caught.value.record['raw_output'] is None

@@ -152,8 +152,7 @@ def main():
                                   host='127.0.0.1', port=54329, database='ontology_studio')
             env = {**os.environ, 'PYTHONPATH': str(ROOT / 'services/api/src'),
                    'OE_POSTGRES_CHECK_URL': base_url.render_as_string(hide_password=False),
-                   'OE_POSTGRES_CHECK_STATE': str(state), 'OE_POSTGRES_CHECK_OWNER': nonce,
-                   'OE_MODEL_URL': '', 'OE_MODEL_NAME': '', 'OE_MODEL_API_KEY': '', 'OE_SERVICE_TOKEN': ''}
+                   'OE_POSTGRES_CHECK_STATE': str(state), 'OE_POSTGRES_CHECK_OWNER': nonce, 'OE_SERVICE_TOKEN': ''}
             result = run([sys.executable, '-m', 'pytest', 'tests/integration/test_postgres.py', '-q',
                           '--junitxml=' + str(state / 'pytest.xml')], env=env, timeout=240, check=False)
             output = redact(result.stdout.decode(errors='replace') + result.stderr.decode(errors='replace'))

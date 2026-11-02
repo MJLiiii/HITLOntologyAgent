@@ -48,7 +48,7 @@ def _cost_basis(path, profile, payload):
                 or not bound['source'].startswith('https://')
                 or type(bound['tokens']) is not int or bound['tokens'] <= 0):
             raise ValueError('Missing verified accepted-context input bound')
-        output = payload['max_tokens']
+        output = payload.get('max_completion_tokens', payload.get('max_tokens'))
         if type(output) is not int or not 1 <= output <= 4096:
             raise ValueError('Smoke output limit must be 1..4096 tokens')
         input_price = Decimal(entry['input_usd_per_million'])
