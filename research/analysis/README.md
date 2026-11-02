@@ -4,13 +4,8 @@ No confirmatory study has been run. `make research-pilot` exports a synthetic de
 
 The future analysis must aggregate replicate outcomes within tasks, use tasks as paired/resampling units, preserve D pre/post-review results, retain unsuccessful cases and count all active expert minutes. Freeze code, rubric, exclusions and hashes before confirmatory data collection. Do not compute confidence intervals or significance from repeated deterministic demo outputs. Proposed sample sizes and outcomes in the development plan are targets, not observed findings.
 
-To exercise the actual configured model without starting a study:
+Use the authenticated application experiment API with a project-authorized API model profile to exercise actual generation without starting a study. See [model configuration](../../docs/multi-llm.md) and [workflow](../../docs/workflow.md). Select `protocol_id: "model-pilot-v1"` and an allowed `model_profile_id`; keep credentials on the server. Model runs share physical call IDs across A–D, so summing all row token values would double-count shared work. Generation never records a human approval.
 
-```sh
-OE_MODEL_URL=http://127.0.0.1:11434 OE_MODEL_NAME=qwen3:1.7b \
-  .venv/bin/python scripts/research_pilot.py --mode model --maximum-repairs 2
-```
-
-Each invocation creates a fresh output directory and retains failed generations. An explicit existing model output cannot be overwritten. `--export-only --output PATH` recreates CSV from the frozen JSON. Model runs share physical call IDs across A–D; summing all row token values would double-count shared work. No command records a human approval.
+The standalone deterministic pilot still writes fresh output directories. `--export-only --output PATH` recreates CSV from frozen JSON without generating new observations.
 
 The separate [evaluator workflow](../EVALUATOR.md) defines external frozen manifests, private inputs/reports, RQ3 exposure-safe allocation, full active-time/censoring calculations and paired task-level descriptive analysis. An optional [task bootstrap helper](bootstrap-policy.md) now implements an explicitly seeded percentile interval over supplied independent task pairs, with a six-task floor and explicit missingness/no-estimate rules. It is not invoked on demonstration runs. Its tests use known-answer synthetic fixtures only; real evaluator mounts and study approvals remain external requirements.

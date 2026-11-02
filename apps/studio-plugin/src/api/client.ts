@@ -3,6 +3,8 @@ import type { ApiJobResults, ApiOperations, JobRefResponse } from './openapi';
 export class ApiError extends Error {
   constructor(message: string, readonly status: number, readonly code: string, readonly correlationId?: string) { super(message); this.name = 'ApiError'; }
 }
+let csrfToken: string | undefined;
+export function setCsrfToken(token?: string | null) { csrfToken = token || undefined; }
 type Key = keyof ApiOperations;
 type RequiredKeys<T> = { [K in keyof T]-?: {} extends Pick<T, K> ? never : K }[keyof T];
 type Part<K extends Key, P extends 'path' | 'query' | 'headers'> =
@@ -26,6 +28,7 @@ async function send(key: Key, options: RuntimeOptions): Promise<unknown> {
   if (query.size) path += `?${query}`;
   const headers = new Headers();
   for (const [name, value] of Object.entries(options.headers || {})) if (value !== undefined) headers.set(name, value);
+  if (csrfToken && !['GET', 'HEAD', 'OPTIONS'].includes(method)) headers.set('X-CSRF-Token', csrfToken);
   const multipart = options.body instanceof FormData;
   if (options.body !== undefined && !multipart) headers.set('Content-Type', 'application/json');
   const response = await fetch(path, { method, headers, credentials: 'same-origin',

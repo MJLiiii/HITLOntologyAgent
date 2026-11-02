@@ -61,7 +61,7 @@ def pg_case(request, monkeypatch):
     app = create_app(settings)
     with app.state.studio.db.engine.connect() as connection:
         assert compare_metadata(MigrationContext.configure(connection), Base.metadata) == []
-        assert connection.scalar(text('SELECT version_num FROM alembic_version')) == '0001'
+        assert connection.scalar(text('SELECT version_num FROM alembic_version')) == '0002'
     with TestClient(app) as client:
         assert client.get('/api/v1/session', headers={'X-OE-Session-Token': app.state.bootstrap_token}).status_code == 200
         yield client, case_url, data_dir
@@ -110,11 +110,13 @@ def test_postgres_migrations_and_verified_existing_schema_adoption(pg_case):
     studio = client.app.state.studio
     before = client.get('/api/v1/projects').json()
     with studio.db.engine.begin() as connection:
+        for name in ('login_throttles', 'project_memberships', 'account_sessions', 'accounts'):
+            connection.exec_driver_sql(f'DROP TABLE {name}')
         connection.exec_driver_sql('DROP TABLE alembic_version')
     migrate(url, data_dir)
     assert client.get('/api/v1/projects').json() == before
     with studio.db.engine.connect() as connection:
-        assert connection.scalar(text('SELECT version_num FROM alembic_version')) == '0001'
+        assert connection.scalar(text('SELECT version_num FROM alembic_version')) == '0002'
 
 
 def test_postgres_two_independent_publishers_advance_only_once(pg_case):
@@ -163,3 +165,25 @@ def test_postgres_fresh_instance_recovers_publication(pg_case, monkeypatch, stag
         assert_single_release(restarted, project_id)
     finally:
         restarted.db.engine.dispose()
+
+
+def test_postgres_team_account_authority_and_revocation(pg_case):
+    from oe_studio import accounts
+    from oe_studio.errors import Problem
+    from oe_studio.settings import Settings
+    client, url, data_dir = pg_case
+    db = client.app.state.studio.db
+    settings = Settings(mode='team', data_dir=data_dir, database_url=url.render_as_string(hide_password=False),
+                        team_origin='https://studio.example')
+    user = accounts.create_account(db, 'synthetic-team-member', 'synthetic password only')
+    project_id = client.get('/api/v1/projects').json()['items'][0]['id']
+    accounts.grant_project(db, user.id, project_id, ['researcher'])
+    actor, token, csrf = accounts.login(db, settings, user.username, 'synthetic password only', 'synthetic-peer')
+    assert accounts.rotate_csrf(db, actor, token) == csrf
+    assert accounts.rotate_csrf(db, actor, token) == csrf
+    assert accounts.authorize_project(db, actor, project_id, 'viewer')['subject'] == user.id
+    with pytest.raises(Problem):
+        accounts.authorize_project(db, actor, project_id, 'approver')
+    accounts.reset_password(db, user.id, 'replacement synthetic password')
+    with pytest.raises(Problem):
+        accounts.authorize_project(db, actor, project_id, 'researcher')

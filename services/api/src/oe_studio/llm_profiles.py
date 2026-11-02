@@ -11,7 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from .artifacts import digest
 from .errors import Problem
 
-Operation = Literal['chat', 'proposal', 'repair', 'experiment', 'extraction']
+Operation = Literal['chat', 'proposal', 'repair', 'experiment', 'extraction', 'test_generation']
 ProfileId = str
 
 
@@ -22,7 +22,7 @@ class Profile(BaseModel):
     model: str = Field(min_length=1, max_length=200, pattern=r'^[^\s]+$')
     base_url: str | None = None
     api_key_env: str | None = Field(default=None, pattern=r'^[A-Za-z_][A-Za-z0-9_]*$')
-    purposes: list[Operation] = Field(min_length=1, max_length=5)
+    purposes: list[Operation] = Field(min_length=1, max_length=6)
     timeout: float = Field(default=45, gt=0, le=120)
     max_output_tokens: int = Field(default=4096, gt=0, le=4096)
     temperature: float | None = Field(default=0, ge=0, le=2)
@@ -119,7 +119,7 @@ def legacy_profile(settings):
         return None
     return _snapshot(Profile(id='legacy-ollama', provider='ollama', model=settings.model_name,
                              base_url=settings.model_url, timeout=settings.model_timeout,
-                             purposes=['chat', 'proposal', 'repair', 'experiment', 'extraction']))
+                             purposes=['chat', 'proposal', 'repair', 'experiment', 'extraction', 'test_generation']))
 
 
 def resolve_profile(settings, project_id, operation, profile_id=None):
@@ -152,7 +152,7 @@ def authorize_inherited(settings, project_id, operation, snapshot):
     else:
         permitted = snapshot['id'] == 'legacy-ollama'
     if not permitted or operation not in snapshot['purposes'] or not _available(settings, snapshot):
-        raise Problem(403, 'model_profile_forbidden', 'The originating model profile is not permitted or configured for repair')
+        raise Problem(403, 'model_profile_forbidden', 'The frozen model profile is no longer permitted or configured for this operation')
     return deepcopy(snapshot)
 
 

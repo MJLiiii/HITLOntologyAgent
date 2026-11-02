@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from threading import RLock
 from uuid import uuid4
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, UniqueConstraint, create_engine, event, text
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, UniqueConstraint, create_engine, event, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 
@@ -73,6 +73,17 @@ class Database:
     def initialize(self):
         Base.metadata.create_all(self.engine)
 
+    def ensure_migrated(self):
+        """Team runtimes inspect migration state; only the operator migration command runs DDL."""
+        with self.engine.connect() as connection:
+            if 'alembic_version' not in inspect(connection).get_table_names():
+                raise ValueError('Team database is not migrated; stop Studio and run make migrate')
+            versions = list(connection.scalars(text('SELECT version_num FROM alembic_version')))
+            if versions != ['0002']:
+                raise ValueError('Team database migration is out of date; stop Studio and run make migrate')
+            if not set(Base.metadata.tables) <= set(inspect(connection).get_table_names()):
+                raise ValueError('Team database schema is incomplete; restore or repair the migrated database before starting Studio')
+
     @contextmanager
     def session(self, write=False):
         # ponytail: serialize local writes; switch to per-project locks for multi-project throughput.
@@ -94,3 +105,37 @@ class _NoLock:
 
     def __exit__(self, *_):
         return False
+
+
+class Account(Base):
+    __tablename__ = 'accounts'
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=uid)
+    username: Mapped[str] = mapped_column(String, unique=True)
+    password_hash: Mapped[str] = mapped_column(String)
+    enabled: Mapped[bool] = mapped_column(default=True)
+    auth_version: Mapped[int] = mapped_column(Integer, default=1)
+
+
+class AccountSession(Base):
+    __tablename__ = 'account_sessions'
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=uid)
+    account_id: Mapped[str] = mapped_column(ForeignKey('accounts.id'), index=True)
+    token_hash: Mapped[str] = mapped_column(String, unique=True)
+    csrf_hash: Mapped[str] = mapped_column(String)
+    auth_version: Mapped[int] = mapped_column(Integer)
+    expires_at: Mapped[str] = mapped_column(String)
+    revoked: Mapped[bool] = mapped_column(default=False)
+
+
+class ProjectMembership(Base):
+    __tablename__ = 'project_memberships'
+    account_id: Mapped[str] = mapped_column(ForeignKey('accounts.id'), primary_key=True)
+    project_id: Mapped[str] = mapped_column(ForeignKey('projects.id'), primary_key=True)
+    roles: Mapped[list] = mapped_column(JSON)
+
+
+class LoginThrottle(Base):
+    __tablename__ = 'login_throttles'
+    key: Mapped[str] = mapped_column(String, primary_key=True)
+    failures: Mapped[int] = mapped_column(Integer, default=0)
+    window_start: Mapped[str] = mapped_column(String)

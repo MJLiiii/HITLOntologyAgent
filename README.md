@@ -1,8 +1,8 @@
 # Ontology Engineering Studio
 
-A local web application for source-grounded ontology chat, proposals, Jena validation, OntoCheck assessment and human review before Git publication. Its six views are Chat, Ontology, Sources, Proposals, Validation and Experiments.
+A web application for source-grounded ontology chat, independently testable proposal and test-generation agents, Jena validation, OntoCheck assessment and human review before Git publication. Its six views are Chat, Ontology, Sources, Proposals, Validation and Experiments.
 
-The running application uses synthetic service-ownership data. The next selected domain is **financial regulatory compliance / DORA contractual obligations**: the [domain specification](docs/domain-scope.md) and [public source packet](research/corpora/dora-v1/README.md) are prepared, but DORA is not yet an application domain or registered experiment. Real studies, confidential ingestion and shared deployment remain outside the approved scope.
+The running application uses synthetic service-ownership data. The next selected domain is **financial regulatory compliance / DORA contractual obligations**: the [domain specification](docs/domain-scope.md) and [public source packet](research/corpora/dora-v1/README.md) are prepared, but DORA is not yet an application domain or registered experiment. Real studies, confidential ingestion and hosted deployment remain outside the approved scope.
 
 ## Start
 
@@ -18,14 +18,14 @@ make demo
 
 Open the private local session URL printed by `make demo`. The command builds the Java runner and both frontend bundles, migrates the database, and starts the UI and API at [127.0.0.1:8000](http://127.0.0.1:8000). API documentation is at `/docs`. Keep the session URL private and serve this local identity mode only on loopback.
 
-Application data, immutable artifacts and ontology Git history live in `.data/`. For development, run `make dev-api` and `make dev-ui` in separate terminals. The deterministic demo needs no model key; see [model configuration](docs/multi-llm.md) and [local model setup](docs/workflow.md#models-and-development-servers) for optional generation.
+Application data, immutable artifacts and ontology Git history live in `.data/`. For development, run `make dev-api`, `make dev-worker` and `make dev-ui` in separate terminals. Team mode adds operator-created accounts and project roles; see [team startup](docs/operations.md#team-development-on-mac). The deterministic demo needs no model key; see [model configuration](docs/multi-llm.md) for API-backed generation. No local model installation is required.
 
 ## Workflow
 
 1. Select sources and scope; freeze the evidence snapshot.
 2. Ask source-grounded questions and create an ontology proposal.
 3. Inspect its changes, citations and immutable revision.
-4. Run Jena validation and OntoCheck assessment; correct failures in a successor revision.
+4. Suggest development tests, review their expectations, then run Jena validation and OntoCheck assessment; correct failures in a successor revision.
 5. Record an authorized human decision over the exact checked bundle.
 6. Publish that approved revision to ontology Git history.
 

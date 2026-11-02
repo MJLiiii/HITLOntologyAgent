@@ -35,3 +35,11 @@ The privately configured credential enabled four actual Studio workflow calls us
 All four attempts remain reserved: USD 0.834937600 of the USD 1 ceiling, with no retries or reset. Provider-reported cost was zero; reported list cost was USD 0.014945400 in total. No approval, publication, engine execution or live TrustGraph extraction/import was included. The earlier credential-blocked observations remain historical evidence.
 
 A subsequent requested DeepSeek V4.1 Flash chat passed schema, citation and known-answer checks in 7.879 seconds. Its proposal was budget-blocked before dispatch. The shared ledger now retains 5 attempts and USD 0.987395200 reserved; no reset or increase occurred. Argon was not called: its advertised Google transport is unsupported and its conservative reservation exceeds the existing ceiling. See the DeepSeek/Argon follow-up in [comparison evidence](model-comparison.md) and `.runtime/multi-llm/deepseek-live-report.md`.
+
+
+### Two-agent contract and local test-generation check — 2 November 2026
+
+The Proposal Agent and Test Generation Agent share ModelClient transport but use separate input schemas, prompts, profile purposes and persisted generation records. Controlled cases verify malformed references/queries/fixtures, authority-field rejection, frozen profile settings and revocation before result commit. A bounded installed Qwen3 1.7B attempt returned an ASK draft without its query; it was rejected with output and daemon usage retained, without fallback. No hosted-provider call or budget reservation occurred, and existing comparison ledgers were not reset. [The dated report](evidence/two-agent-team-2026-11-02.md) distinguishes controlled detection results from the unsuccessful actual local response.
+
+
+The user subsequently selected API-backed generation only. Bundled Qwen setup/launch commands and the local test-agent benchmark option were removed; observations above remain historical. Current verification uses controlled API responses, without invoking a local or paid model.

@@ -22,7 +22,7 @@ export function ScopePanel({project,session,onRefresh}: {project:Project;session
   const base=`/projects/${encodeURIComponent(project.id)}`;
   const human=session.actor.kind==='human';
   const canEdit=human&&session.actor.roles.includes('researcher')&&!project.pending_publication_id;
-  const canAccept=human&&project.domain==='demo'&&!project.pending_publication_id;
+  const canAccept=human&&(session.mode!=='team'||session.actor.roles.includes('approver'))&&project.domain==='demo'&&!project.pending_publication_id;
   const viewed=inspected||scope;
   const historical=!!inspected&&inspected.digest!==project.scope_digest;
   useEffect(()=>{

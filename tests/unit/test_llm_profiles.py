@@ -56,7 +56,7 @@ def test_invalid_registry_is_sanitized(tmp_path, changes):
 def test_legacy_and_frozen_demo(tmp_path):
     settings = Settings(_env_file=None, data_dir=tmp_path, model_url='', model_name='')
     assert resolve_profile(settings, 'anything', 'chat') is None
-    settings.model_url, settings.model_name = 'http://localhost:11434', 'qwen3:1.7b'
+    settings.model_url, settings.model_name = 'http://localhost:11434', 'legacy-fixture'
     assert resolve_profile(settings, 'anything', 'chat')['id'] == 'legacy-ollama'
     assert model_configured(settings)
     assert not model_configured(profile_settings(settings, None))

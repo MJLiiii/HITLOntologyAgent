@@ -9,6 +9,9 @@ from .errors import Problem
 
 def require_actor(request: Request):
     settings = request.app.state.settings
+    if settings.mode == "team":
+        from .accounts import authenticate_request
+        return authenticate_request(request)
     host = request.url.hostname
     peer = request.client.host if request.client else ""
     if host not in {"localhost", "127.0.0.1", "[::1]", "::1", "testserver"} or peer not in {"127.0.0.1", "::1", "testclient"}:

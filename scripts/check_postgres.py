@@ -196,10 +196,10 @@ def main():
                             'state': before}
                 (backup / 'backup-manifest.json').write_text(json.dumps(evidence, sort_keys=True, indent=2) + '\n')
                 report['checks'].append(evidence)
-            if len(report['checks']) != 6:
-                raise ValueError('Expected all six migration/concurrency/recovery verification cases')
+            if len(report['checks']) != 7:
+                raise ValueError('Expected all seven migration/concurrency/recovery/team-account verification cases')
             report['status'] = 'passed'
-            print('All six databases restored with identical rows, artifacts and Git heads.', flush=True)
+            print('All seven databases restored with identical rows, artifacts and Git heads.', flush=True)
     except Exception as exc:
         report.update(status='failed', error=redact(str(exc)))
         raise

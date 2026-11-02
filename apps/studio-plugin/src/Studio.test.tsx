@@ -71,3 +71,38 @@ describe('workspace session and grounded conversation',()=>{
     expect(posts).toEqual(['/api/v1/projects/p/question-jobs']);
   });
 });
+
+it('signs in with team credentials, applies project roles, and signs out with CSRF',async()=>{
+  let signedIn=false;
+  const teamSession={...session,mode:'team',csrf_token:'csrf-team',memberships:[{project_id:'p',roles:['viewer']}]};
+  const fetcher=vi.fn(async(path:string,options:RequestInit={})=>{
+    if(path.endsWith('/login')){signedIn=true;return new Response(JSON.stringify(teamSession));}
+    if(path.endsWith('/logout')){signedIn=false;return new Response(null,{status:204});}
+    if(path.endsWith('/session'))return signedIn?new Response(JSON.stringify(teamSession)):new Response(JSON.stringify({code:'login_required',message:'Sign in required'}),{status:401});
+    return new Response(JSON.stringify(fixture(path)));
+  });
+  vi.stubGlobal('fetch',fetcher);
+  const save=vi.spyOn(Storage.prototype,'setItem');
+  render(<Studio/>);
+  fireEvent.change(await screen.findByLabelText('Username'),{target:{value:'alice'}});
+  fireEvent.change(screen.getByLabelText('Password'),{target:{value:'private-password'}});
+  fireEvent.click(screen.getByRole('button',{name:'Sign in'}));
+  await screen.findByText('Good questions.');
+  fireEvent.click(screen.getByRole('button',{name:'Proposals'}));
+  expect(await screen.findByRole('button',{name:'New proposal'})).toBeDisabled();
+  fireEvent.click(screen.getByRole('button',{name:'Sign out'}));
+  expect(await screen.findByLabelText('Password')).toHaveValue('');
+  const logout=(fetcher.mock.calls as [string,RequestInit][]).find(([path])=>path.endsWith('/logout'))!;
+  expect(new Headers(logout[1].headers).get('X-CSRF-Token')).toBe('csrf-team');
+  expect(save).not.toHaveBeenCalled();
+});
+
+it('clears the password after a rejected team login',async()=>{
+  vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({code:'login_required',message:'Invalid credentials'}),{status:401})));
+  render(<Studio/>);
+  fireEvent.change(await screen.findByLabelText('Username'),{target:{value:'alice'}});
+  fireEvent.change(screen.getByLabelText('Password'),{target:{value:'wrong-secret'}});
+  fireEvent.click(screen.getByRole('button',{name:'Sign in'}));
+  await screen.findByText('Username or password was not accepted.');
+  expect(screen.getByLabelText('Password')).toHaveValue('');
+});

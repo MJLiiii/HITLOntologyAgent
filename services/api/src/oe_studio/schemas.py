@@ -224,6 +224,23 @@ class TestSpec(StrictModel):
 class TestGenerationRequest(StrictModel):
     proposal_id: str
     revision: int = Field(ge=1)
+    generator_mode: Literal['deterministic', 'model'] = 'deterministic'
+    model_profile_id: str | None = Field(default=None, pattern=r'^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,79}$')
+    bundle_digest: str | None = Field(default=None, pattern=r'^sha256:[a-f0-9]{64}$')
+
+    @model_validator(mode='after')
+    def generation_selection(self):
+        if self.generator_mode == 'model' and not self.bundle_digest:
+            raise ValueError('Model test generation requires the exact target bundle digest')
+        if self.generator_mode == 'deterministic' and self.model_profile_id:
+            raise ValueError('Deterministic generation cannot select a model')
+        return self
+
+
+class LoginRequest(StrictModel):
+    model_config = ConfigDict(extra='forbid', str_strip_whitespace=False)
+    username: str = Field(min_length=1, max_length=64)
+    password: str = Field(min_length=1, max_length=1024, repr=False)
 
 
 class OracleDecision(StrictModel):

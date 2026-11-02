@@ -2,22 +2,13 @@ SHELL := /bin/sh
 PYTHON := .venv/bin/python
 export PYTHONPATH := services/api/src
 
-.PHONY: setup-model model-serve demo-model
-setup-model:
-	$(PYTHON) scripts/setup_model.py setup
-
-model-serve:
-	$(PYTHON) scripts/setup_model.py serve
-
-demo-model: build migrate
-	OE_MODEL_URL=http://127.0.0.1:11434 OE_MODEL_NAME=qwen3:1.7b $(PYTHON) -m uvicorn oe_studio.main:app --host 127.0.0.1 --port 8000
 # Override JAVA_HOME on other installations; the default resolves this Mac's Java 21.
 JAVA_HOME ?= /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 export JAVA_HOME
 OE_JAVA_EXECUTABLE ?= $(JAVA_HOME)/bin/java
 export OE_JAVA_EXECUTABLE
 
-.PHONY: setup build build-jena demo dev-up dev-down dev-api dev-ui migrate test test-unit test-contract test-integration test-e2e lint research-pilot export-results export-pilot backup-restore-check api-contracts check-api-contracts
+.PHONY: setup build build-jena demo dev-up dev-down api dev-api dev-worker dev-ui migrate test test-unit test-contract test-integration test-e2e lint research-pilot export-results export-pilot backup-restore-check api-contracts check-api-contracts
 
 setup:
 	uv sync --frozen
@@ -36,10 +27,15 @@ migrate:
 	$(PYTHON) scripts/migrate.py
 
 demo: build migrate
-	$(PYTHON) -m uvicorn oe_studio.main:app --host 127.0.0.1 --port 8000
+	OE_EMBEDDED_WORKER=true $(PYTHON) -m uvicorn oe_studio.main:app --host 127.0.0.1 --port 8000
+
+api: dev-api
+
+dev-worker: migrate
+	$(PYTHON) -m oe_studio.worker
 
 dev-api: migrate
-	$(PYTHON) -m uvicorn oe_studio.main:app --host 127.0.0.1 --port 8000 --reload
+	OE_EMBEDDED_WORKER=false $(PYTHON) -m uvicorn oe_studio.main:app --host 127.0.0.1 --port 8000 --reload
 
 dev-ui:
 	npm --prefix apps/studio-plugin run dev

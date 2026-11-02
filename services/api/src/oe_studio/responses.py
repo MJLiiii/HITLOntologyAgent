@@ -33,6 +33,10 @@ class Actor(WireModel):
     subject: str
     kind: Literal['human', 'service']
     roles: list[str]
+    username: str | None = None
+    auth_mode: Literal['team'] | None = None
+    session_id: str | None = None
+    auth_version: int | None = None
 
 
 class ArtifactRef(WireModel):
@@ -66,11 +70,22 @@ class ProblemResponse(WireModel):
     correlation_id: str
 
 
+class Membership(WireModel):
+    project_id: str
+    roles: list[str]
+
+
 class SessionResponse(WireModel):
     actor: Actor
     mode: str
     model_mode: Literal['local', 'model']
     integrations: dict[str, str] | None = None
+    csrf_token: str | None = None
+    memberships: list[Membership] | None = None
+
+
+class LogoutResponse(WireModel):
+    status: Literal['logged_out']
 
 
 class LiveResponse(WireModel):
@@ -423,6 +438,12 @@ class TestGenerator(WireModel):
     implementation_sha256: str
     maximum_cases: int
     oracle_policy: str
+    generation_run_id: str | None = None
+    model_profile_id: str | None = None
+    profile_revision: str | None = None
+    input_digest: str | None = None
+    prompt_version: str | None = None
+    schema_version: str | None = None
 
 
 class CoverageGap(WireModel):
@@ -507,14 +528,14 @@ class GenerationResponse(DiagnosticRecord):
     created_at: str
     kind: str
     context: JSON
-    provider: str
-    model: str
-    prompt_digest: str
-    system_prompt: str
-    temperature: Number | None
-    seed: int | None
-    cost: Number | None
-    cost_missing_reason: str | None
+    provider: str | None = None
+    model: str | None = None
+    prompt_digest: str | None = None
+    system_prompt: str | None = None
+    temperature: Number | None = None
+    seed: int | None = None
+    cost: Number | None = None
+    cost_missing_reason: str | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
     elapsed_seconds: Number | None = None

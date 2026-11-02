@@ -66,3 +66,16 @@ function compileContract() {
   list('GET /api/v1/projects/{p}',{path:{p:'p'}});
 }
 void compileContract;
+
+it('keeps CSRF only in memory and sends it only on mutations',async()=>{
+  const {setCsrfToken}=await import('./client');
+  const fetcher=vi.fn().mockImplementation(async()=>new Response(JSON.stringify({items:[],next_cursor:null})));
+  vi.stubGlobal('fetch',fetcher);
+  setCsrfToken('csrf-secret');
+  try {
+    await operation('GET /api/v1/projects',{});
+    await operation('POST /api/v1/projects',{body:{name:'Synthetic',domain:'demo'}});
+    expect(new Headers(fetcher.mock.calls[0][1].headers).has('X-CSRF-Token')).toBe(false);
+    expect(new Headers(fetcher.mock.calls[1][1].headers).get('X-CSRF-Token')).toBe('csrf-secret');
+  } finally {setCsrfToken();}
+});

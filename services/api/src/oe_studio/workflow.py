@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 from sqlalchemy import select
 from .artifacts import ArtifactStore, canonical_json, digest
-from .auth import human
 from .chat import answer_question, select_context
 from .db import Database, Item, Job, Project, now, uid
 from .demo import FIXTURES, ONTOLOGY, POLICY, QUESTIONS, SHAPES, SOURCES
@@ -35,10 +34,41 @@ class Studio:
         self.settings = settings
         settings.data_dir.mkdir(parents=True, exist_ok=True)
         self.db = Database(settings.database_url)
-        self.db.initialize()
+        if settings.mode == 'team' and not settings.team_test_sqlite:
+            self.db.ensure_migrated()
+        else:
+            self.db.initialize()
         self.artifacts = ArtifactStore(settings.data_dir / "artifacts")
         self.git = GitStore(settings.data_dir / "ontology.git")
         self.initialize_demo()
+
+    def authorize(self, project_id, actor, role='viewer'):
+        from .accounts import authorize_project
+        if self.settings.mode == 'local':
+            return actor
+        if self.settings.mode == 'team' and actor.get('auth_mode') != 'team':
+            raise Problem(401, 'login_required', 'A current team session is required')
+        return authorize_project(self.db, actor, project_id, role)
+
+    def authorize_human(self, project_id, actor, role='approver'):
+        if self.settings.mode == 'local':
+            from .auth import human
+            human(actor)
+            return actor
+        if actor.get('kind') != 'human':
+            raise Problem(403, 'human_required', 'Only an authorized human can decide or publish')
+        if role == 'review_participant':
+            try:
+                return self.authorize(project_id, actor, 'reviewer')
+            except Problem as exc:
+                if exc.status != 403:
+                    raise
+                return self.authorize(project_id, actor, 'approver')
+        return self.authorize(project_id, actor, role)
+
+    def require_accepted_scope(self, project):
+        if self.settings.mode == 'team' and not project.data.get('scope_accepted'):
+            raise Problem(409, 'scope_acceptance_required', 'An approver must accept the current scope before agent generation')
 
     def add(self, session, project_id, kind, data, status="created", item_id=None):
         ref = self.artifacts.put(canonical_json(data), "application/json")
@@ -107,16 +137,27 @@ class Studio:
                 "property_count": sum(t["object"].endswith(("#ObjectProperty", "#DatatypeProperty")) for t in ts)}
 
     def create_project(self, name, domain, actor):
+        if self.settings.mode == 'team':
+            from .accounts import revalidate_actor
+            from .db import ProjectMembership
+            if actor.get('auth_mode') != 'team':
+                raise Problem(401, 'login_required', 'A current team session is required')
+            actor = revalidate_actor(self.db, actor)
+            with self.db.session() as s:
+                if not any('researcher' in m.roles for m in s.scalars(select(ProjectMembership).where(ProjectMembership.account_id == actor['subject']))):
+                    raise Problem(403, 'role_required', 'A researcher role is required to create projects')
         with self.db.session(write=True) as s:
             p = Project(id=uid(), name=name, domain=domain, data={"mode": "demo" if domain == "demo" else "unselected", "scope_accepted": False,
                       "scope_digest": digest({"domain": domain, "name": name}), "review_policy_id": POLICY["id"], "competency_questions": QUESTIONS})
             s.add(p)
             s.flush()
+            if self.settings.mode == 'team':
+                s.add(ProjectMembership(account_id=actor['subject'], project_id=p.id, roles=['researcher']))
             self.audit(s, p.id, actor, "project_created", p.id, p.data)
             return self.project_body(p)
 
     def scope_decision(self, p_id, request, actor):
-        human(actor)
+        actor = self.authorize_human(p_id, actor, 'approver')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
             if request.scope_digest != p.data["scope_digest"]:
@@ -129,6 +170,7 @@ class Studio:
             return self.body(decision)
 
     def upload_scope(self, p_id, request, actor):
+        actor = self.authorize(p_id, actor, 'researcher')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
             if p.pending_publication_id:
@@ -163,6 +205,7 @@ class Studio:
             return {**scope, "accepted": p.data["scope_accepted"]}
 
     def draft_mappings(self, p_id, request, actor):
+        actor = self.authorize(p_id, actor, 'researcher')
         mappings = [m.model_dump() for m in request.mappings]
         if len({m["requirement_iri"] for m in mappings}) != len(mappings):
             raise Problem(422, "duplicate_mapping", "Each requirement may have one reviewed correspondence")
@@ -178,7 +221,7 @@ class Studio:
 
     def decide_mappings(self, p_id, request, actor):
         from .assessment_contracts import ApprovedMapping
-        human(actor)
+        actor = self.authorize_human(p_id, actor, 'reviewer')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
             item = self.get(s, p_id, request.mapping_set_id, "mapping_set")
@@ -227,6 +270,7 @@ class Studio:
                         "content_hash": hashlib.sha256(content).hexdigest()}, "uploaded")
 
     def upload(self, p, title, content, edition, classification, rights, actor, media_type="text/plain"):
+        actor = self.authorize(p, actor, 'researcher')
         with self.db.session(write=True) as s:
             self.project(s, p)
             doc = self._document(s, p, title, content, edition, classification, rights, media_type)
@@ -314,6 +358,7 @@ class Studio:
         return self.body(corpus)
 
     def freeze_corpus(self, p_id, run_ids, actor):
+        actor = self.authorize(p_id, actor, 'researcher')
         with self.db.session(write=True) as s:
             result = self._freeze_corpus(s, self.project(s, p_id), run_ids)
             self.audit(s, p_id, actor, "corpus_frozen", result["id"], result)
@@ -449,8 +494,18 @@ class Studio:
 
     def generate(self, p_id, system, context, schema, check, kind, *, model_settings=None, **links):
         from .model import ModelClient, ModelGenerationError
+        from .agents.proposal import ProposalAgent, ProposalAgentInput, ProposalDraft
+        with self.db.session(write=True) as s:
+            self.add(s, p_id, 'agent_input', {'agent': kind, 'version': 'proposal-agent-v1' if schema is ProposalDraft else 'generation-v1',
+                     'context': context, 'system_prompt': system, 'input_digest': digest(context),
+                     'model_configuration': getattr(model_settings, 'resolved_llm_profile', None), **links}, 'frozen')
         try:
-            output, metadata = ModelClient(model_settings or self.settings).generate(system, context, schema)
+            client = ModelClient(model_settings or self.settings)
+            if schema is ProposalDraft:
+                result = ProposalAgent(client).run(ProposalAgentInput(operation=kind, system_prompt=system, context=context))
+                output, metadata = result.draft, result.generation_record
+            else:
+                output, metadata = client.generate(system, context, schema)
         except ModelGenerationError as error:
             with self.db.session(write=True) as s:
                 self.add(s, p_id, "generation", {**error.record, "kind": kind, "context": context, **links}, "failed")
@@ -470,6 +525,10 @@ class Studio:
         return output, checked, record_id
 
     def create_proposal(self, p_id, payload, actor):
+        actor = self.authorize(p_id, actor, 'researcher')
+        if self.settings.mode == 'team':
+            with self.db.session() as s:
+                self.require_accepted_scope(self.project(s, p_id))
         def selected_questions(project):
             questions = project.data.get("competency_questions", QUESTIONS)
             by_id = {question["id"]: question for question in questions}
@@ -509,6 +568,7 @@ class Studio:
             generated = (draft, generation_id)
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
+            self.require_accepted_scope(p)
             if payload.get("base_version_id") != p.approved_version_id:
                 raise Problem(409, "stale_head", "Proposal base is not the current approved head")
             if generated:
@@ -559,8 +619,11 @@ class Studio:
             return self._complete_job(s, payload, {"proposal_id": proposal.id, "revision": 1, "bundle_digest": revision.data["bundle_digest"]})
 
     def revise(self, p_id, proposal_id, request, if_match, actor, *, repair_completion=None):
+        actor = self.authorize(p_id, actor, 'researcher')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
+            if repair_completion:
+                self.require_accepted_scope(p)
             if p.pending_publication_id:
                 raise Problem(409, "publication_pending", "Finish the pending publication before revising")
             old = self.revisions(s, p_id, proposal_id)[-1]
@@ -654,6 +717,7 @@ class Studio:
                 "history": [{"revision": v.data["revision"], "status": v.status, "created_at": v.created_at} for v in self.revisions(s, p.id, r.data["proposal_id"])]}
 
     def submit(self, p_id, request, if_match, actor):
+        actor = self.authorize(p_id, actor, 'researcher')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
             r = self.revision(s, p_id, request.proposal_id, request.revision)
@@ -669,7 +733,7 @@ class Studio:
             return self.revision_body(s, p, r)
 
     def review(self, p_id, request, actor):
-        human(actor)
+        actor = self.authorize_human(p_id, actor, 'approver' if request.decision == 'accept' else 'reviewer')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
             r = self.revision(s, p_id, request.proposal_id, request.revision)
@@ -774,6 +838,13 @@ class Studio:
         """Commit a side effect and its job result together, fenced by the worker lease."""
         if job_id := payload.get("_job_id"):
             job = self._running_job(s, job_id)
+            self.authorize(job.project_id, job.actor, 'researcher')
+            if job.kind in {'proposal', 'repair', 'test-generation'}:
+                self.require_accepted_scope(self.project(s, job.project_id))
+            if (profile := job.payload.get('_resolved_llm_profile')) and ('purposes' in profile or not job.kind.startswith('trustgraph-')):
+                operation = {'question': 'chat', 'test-generation': 'test_generation',
+                             'synthetic-experiment': 'experiment', 'trustgraph-ingestion': 'extraction'}.get(job.kind, job.kind)
+                authorize_inherited(self.settings, job.project_id, operation, profile)
             job.status, job.result, job.lease_until, job.error = "succeeded", result, None, None
         return result
 
@@ -799,17 +870,30 @@ class Studio:
         return None
 
     def create_job(self, p_id, kind, payload, key, actor):
+        actor = self.authorize(p_id, actor, 'researcher')
         if not key or len(key) > 200:
             raise Problem(422, "idempotency_required", "A bounded Idempotency-Key header is required")
         request_digest = digest({"kind": kind, "payload": payload, "actor": actor})
         with self.db.session(write=True) as s:
-            self.project(s, p_id)
+            project = self.project(s, p_id)
+            if kind in {'proposal', 'repair', 'test-generation'}:
+                self.require_accepted_scope(project)
             old = s.scalar(select(Job).where(Job.project_id == p_id, Job.idempotency_key == key))
             if old:
                 if old.payload_digest != request_digest:
                     raise Problem(409, "idempotency_conflict", "This idempotency key was used for a different request")
                 return {"job_id": old.id, "status_url": f"/api/v1/jobs/{old.id}"}
             payload = dict(payload)
+            if kind == 'test-generation':
+                frozen, state = self.test_generation_inputs(s, p_id, payload)
+                payload['bundle_digest'] = frozen['bundle_digest']
+                payload['_agent_input'], payload['_agent_state'] = frozen, state
+                if payload.get('generator_mode', 'deterministic') == 'model':
+                    profile = resolve_profile(self.settings, p_id, 'test_generation', payload.get('model_profile_id'))
+                    if not profile:
+                        raise Problem(422, 'model_required', 'Model test generation requires a configured model profile')
+                    payload['_resolved_llm_profile'] = profile
+                    payload['_llm_session_id'] = digest({'project': p_id, 'test_generation': uid()})
             operations = {"proposal": "proposal", "question": "chat", "repair": "repair",
                           "experiment": "experiment", "synthetic-experiment": "experiment"}
             if kind in operations:
@@ -851,6 +935,10 @@ class Studio:
             p, kind, payload, actor = job.project_id, job.kind, dict(job.payload), dict(job.actor)
             payload["_job_id"] = job_id
         try:
+            actor = self.authorize(p, actor, "researcher")
+            if payload.get("_resolved_llm_profile") and ('purposes' in payload['_resolved_llm_profile'] or not kind.startswith('trustgraph-')):
+                operation = {"question": "chat", "test-generation": "test_generation", "synthetic-experiment": "experiment", "trustgraph-ingestion": "extraction"}.get(kind, kind)
+                authorize_inherited(self.settings, p, operation, payload["_resolved_llm_profile"])
             if kind == "proposal":
                 result = self.create_proposal(p, payload, actor)
             elif kind == "validation":
@@ -953,6 +1041,7 @@ class Studio:
         return {**self.body(item), **record, "stored_at": item.created_at}
 
     def stage_experiment(self, p_id, run_id, actor):
+        actor = self.authorize(p_id, actor, 'researcher')
         from .rdf import to_dict
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
@@ -1000,7 +1089,7 @@ class Studio:
 
     def link_experiment_review(self, p_id, run_id, review_id, actor):
         from .experiments import append_human_review
-        human(actor)
+        actor = self.authorize_human(p_id, actor, 'approver')
         with self.db.session() as s:
             item = self.get(s, p_id, run_id, "experiment")
             pre = self.experiment_record(item)
@@ -1042,6 +1131,7 @@ class Studio:
             return self.experiment_body(item)
 
     def seed_import(self, p_id, payload, actor):
+        actor = self.authorize(p_id, actor, 'researcher')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
             if p.approved_version_id or p.pending_publication_id:
@@ -1059,27 +1149,96 @@ class Studio:
             self.audit(s, p_id, actor, "seed_staged", proposal.id, revision.data)
             return self._complete_job(s, payload, {"proposal_id": proposal.id, "revision": 1, "bundle_digest": revision.data["bundle_digest"]})
 
+    def test_generation_inputs(self, s, p_id, payload):
+        p = self.project(s, p_id)
+        self.require_accepted_scope(p)
+        r = self.revision(s, p_id, payload['proposal_id'], payload['revision'])
+        if payload.get('bundle_digest'):
+            self.exact_bundle(r, payload['bundle_digest'])
+        if (r != self.revisions(s, p_id, r.data['proposal_id'])[-1]
+                or r.data['base_version_id'] != p.approved_version_id
+                or r.status in {'published', 'rejected'} or p.pending_publication_id):
+            raise Problem(409, 'stale_revision', 'Generate tests for the current unreserved candidate')
+        if (r.data['manifest']['scope_digest'] != p.data['scope_digest']
+                or r.data['manifest'].get('assessment_mappings_digest', digest([])) != p.data.get('assessment_mappings_digest', digest([]))):
+            raise Problem(409, 'scope_changed', 'Create a successor under the current scope and mappings')
+        evidence = [self.evidence(s, p_id, i) for i in r.data['evidence_ids']]
+        if not evidence or not all(e['resolved'] for e in evidence):
+            raise Problem(409, 'unresolved_evidence', 'Test generation requires resolved source evidence')
+        inputs = dict(candidate_ttl=self.artifacts.get_verified(r.data['ontology']).decode(),
+                      shapes_ttl=self.artifacts.get_verified(r.data['shapes']).decode(),
+                      fixtures_ttl=self.artifacts.get_verified(r.data['fixtures']).decode(),
+                      questions=json.loads(self.artifacts.get_verified(r.data['questions'])),
+                      changes={'additions': r.data['additions'], 'deletions': r.data['deletions']},
+                      evidence=evidence, bundle_digest=r.data['bundle_digest'])
+        state = {'revision_id': r.id, 'base_version_id': p.approved_version_id,
+                 'scope_digest': p.data['scope_digest'], 'configuration': self.engine_configuration()}
+        return inputs, state
+
     def generate_tests(self, p_id, payload, actor):
         from .testspecs import generate_suite
+        from .agents.test_generation import TestGenerationAgent, TestGenerationAgentInput, SYSTEM_PROMPT
+        from .model import ModelClient, ModelGenerationError
+        actor = self.authorize(p_id, actor, 'researcher')
+        with self.db.session() as s:
+            inputs, state = self.test_generation_inputs(s, p_id, payload)
+        frozen, frozen_state = payload.get('_agent_input', inputs), payload.get('_agent_state', state)
+        if frozen != inputs or frozen_state != state:
+            raise Problem(409, 'generation_context_changed', 'Frozen test generation inputs are no longer current')
+        mode = payload.get('generator_mode', 'deterministic')
+        if mode == 'model':
+            scoped = self.model_settings(p_id, payload, 'test_generation')
+            if not model_configured(scoped):
+                raise Problem(422, 'model_required', 'Model test generation requires a configured model profile')
+            profile = getattr(scoped, 'resolved_llm_profile', None) or {}
+            with self.db.session(write=True) as s:
+                self.add(s, p_id, 'agent_input', {'agent': 'test_generation', 'version': 'test-generation-agent-v1',
+                         'context': frozen, 'input_digest': digest(frozen), 'system_prompt': SYSTEM_PROMPT,
+                         'model_configuration': profile, 'job_id': payload.get('_job_id')}, 'frozen')
+            try:
+                result = TestGenerationAgent(ModelClient(scoped)).run(TestGenerationAgentInput(**frozen))
+            except (ModelGenerationError, ValueError) as error:
+                with self.db.session(write=True) as s:
+                    self.add(s, p_id, 'generation', {**getattr(error, 'record', {}), 'kind': 'test_generation',
+                             'context': frozen, 'error': str(error), 'job_id': payload.get('_job_id')}, 'failed')
+                raise
+            with self.db.session(write=True) as s:
+                record = self.add(s, p_id, 'generation', {**result.generation_record, 'kind': 'test_generation',
+                                  'context': frozen, 'job_id': payload.get('_job_id')}, 'completed')
+                generation_id = record.id
+            import inspect
+            generated = {'tests': [case.model_dump() for case in result.tests],
+                         'input_manifest': result.input_manifest, 'coverage_gaps': [],
+                         'generator': {'mode': 'model', 'version': result.version,
+                           'implementation_sha256': hashlib.sha256(Path(inspect.getfile(TestGenerationAgent)).read_bytes()).hexdigest(),
+                           'maximum_cases': 40, 'oracle_policy': 'Human review required; model expectations are suggestions',
+                           'generation_run_id': generation_id, 'model_profile_id': profile.get('id'),
+                           'profile_revision': profile.get('revision'), 'input_digest': digest(frozen),
+                           'prompt_version': 'test-generation-v1:' + hashlib.sha256(SYSTEM_PROMPT.encode()).hexdigest(),
+                           'schema_version': result.version}}
+        else:
+            generated = generate_suite(**frozen)
         with self.db.session(write=True) as s:
-            r = self.revision(s, p_id, payload["proposal_id"], payload["revision"])
-            generated = generate_suite(candidate_ttl=self.artifacts.get_verified(r.data["ontology"]).decode(),
-                shapes_ttl=self.artifacts.get_verified(r.data["shapes"]).decode(),
-                fixtures_ttl=self.artifacts.get_verified(r.data["fixtures"]).decode(),
-                questions=json.loads(self.artifacts.get_verified(r.data["questions"])),
-                changes={"additions": r.data["additions"], "deletions": r.data["deletions"]},
-                evidence=[self.evidence(s, p_id, i) for i in r.data["evidence_ids"]], bundle_digest=r.data["bundle_digest"])
-            fixture_artifacts = {case["test_id"]: (self.artifacts.put(case["fixtures_ttl"].encode(), "text/turtle")
-                                 if case.get("fixtures_ttl") is not None else r.data["fixtures"]) for case in generated["tests"]}
-            manifest = {"revision_id": r.id, "bundle_digest": r.data["bundle_digest"], **generated,
-                        "fixture_artifacts": fixture_artifacts, "split": "development", "origin": "synthetic"}
-            suite = self.add(s, p_id, "test_suite", {**manifest, "digest": digest(manifest), "actor": actor}, "needs_review")
-            self.audit(s, p_id, actor, "test_suite_generated", suite.id, manifest)
+            actor = self.authorize(p_id, actor, 'researcher')
+            if mode == 'model':
+                authorize_inherited(self.settings, p_id, 'test_generation', profile)
+            current, current_state = self.test_generation_inputs(s, p_id, payload)
+            if current != frozen or current_state != frozen_state:
+                raise Problem(409, 'generation_context_changed', 'Context changed during generation; retained output was not applied')
+            r = self.get(s, p_id, state['revision_id'], 'revision')
+            fixture_artifacts = {case['test_id']: (self.artifacts.put(case['fixtures_ttl'].encode(), 'text/turtle')
+                                 if case.get('fixtures_ttl') is not None else r.data['fixtures']) for case in generated['tests']}
+            manifest = {'revision_id': r.id, 'bundle_digest': r.data['bundle_digest'], **generated,
+                        'fixture_artifacts': fixture_artifacts, 'split': 'development', 'origin': 'synthetic'}
+            suite = self.add(s, p_id, 'test_suite', {**manifest, 'digest': digest(manifest), 'actor': actor}, 'needs_review')
+            self.audit(s, p_id, actor, 'test_suite_generated', suite.id, manifest)
             return self._complete_job(s, payload, self.body(suite))
 
     def repair(self, p_id, payload, actor):
+        actor = self.authorize(p_id, actor, 'researcher')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
+            self.require_accepted_scope(p)
             r = self.revision(s, p_id, payload["proposal_id"], payload["revision"])
             self.exact_bundle(r, payload["bundle_digest"])
             if p.pending_publication_id or r != self.revisions(s, p_id, payload["proposal_id"])[-1]:
@@ -1126,7 +1285,7 @@ class Studio:
         return {"proposal_id": payload["proposal_id"], "revision": revised["revision"], "bundle_digest": revised["bundle_digest"], "repair_attempt": attempt_number}
 
     def oracle_decision(self, p_id, request, actor):
-        human(actor)
+        actor = self.authorize_human(p_id, actor, 'reviewer')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
             if p.pending_publication_id:
@@ -1158,7 +1317,7 @@ class Studio:
             return self.revision_body(s, p, new)
 
     def review_session(self, p_id, request, actor):
-        human(actor)
+        actor = self.authorize_human(p_id, actor, 'review_participant')
         with self.db.session(write=True) as s:
             self.get(s, p_id, request.revision_id, "revision")
             if request.event in {"start", "resume"}:
@@ -1184,7 +1343,7 @@ class Studio:
             return self.body(event)
 
     def withdraw_source(self, p_id, document_id, rationale, actor):
-        human(actor)
+        actor = self.authorize_human(p_id, actor, 'approver')
         with self.db.session(write=True) as s:
             p = self.project(s, p_id)
             if p.pending_publication_id:
@@ -1195,7 +1354,7 @@ class Studio:
             return self.document_body(s, doc)
 
     def publish(self, p_id, request, key, actor):
-        human(actor)
+        actor = self.authorize_human(p_id, actor, 'approver')
         if not key or len(key) > 200:
             raise Problem(422, "idempotency_required", "An Idempotency-Key is required")
         request_data = request.model_dump()

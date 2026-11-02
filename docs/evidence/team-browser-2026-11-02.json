@@ -1,0 +1,968 @@
+{
+  "scope": "synthetic software verification, not an expert study",
+  "database": "PostgreSQL",
+  "migration": "0002",
+  "jobs_mode": "separate worker, non-eager",
+  "model_calls_authorized": false,
+  "projects": [
+    {
+      "id": "a95973e1-cf44-4efa-a81a-3f4839ba6cbc",
+      "name": "Service knowledge",
+      "approved_version_id": "0101bb34-b904-4f2a-ad09-81255a8c538a",
+      "pending_publication_id": null,
+      "scope_accepted": true
+    }
+  ],
+  "accounts": [
+    {
+      "subject": "9f49e843-2fef-43b9-99ae-38c9ff2cda6d",
+      "username": "browser-researcher",
+      "memberships": [
+        {
+          "project_id": "a95973e1-cf44-4efa-a81a-3f4839ba6cbc",
+          "roles": [
+            "researcher"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "625f0e32-0aad-4cb1-9930-69511a0a5550",
+      "username": "browser-reviewer",
+      "memberships": [
+        {
+          "project_id": "a95973e1-cf44-4efa-a81a-3f4839ba6cbc",
+          "roles": [
+            "reviewer"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "4138508d-7da9-4601-9f17-36ac7aeaf969",
+      "username": "browser-approver",
+      "memberships": [
+        {
+          "project_id": "a95973e1-cf44-4efa-a81a-3f4839ba6cbc",
+          "roles": [
+            "approver"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "d7a34100-4154-42a2-9d7a-05023c39be0b",
+      "username": "browser-viewer",
+      "memberships": [
+        {
+          "project_id": "a95973e1-cf44-4efa-a81a-3f4839ba6cbc",
+          "roles": [
+            "viewer"
+          ]
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "4a7e80fc-b19a-4a92-934a-fee75ab545e1",
+      "kind": "version",
+      "status": "reference",
+      "actor_subject": null,
+      "data": {
+        "commit": null
+      }
+    },
+    {
+      "id": "30a4a4d8-fea5-4a4e-98f8-1c84a4f8c808",
+      "kind": "scope_decision",
+      "status": "created",
+      "actor_subject": "4138508d-7da9-4601-9f17-36ac7aeaf969",
+      "data": {
+        "decision": "accept",
+        "rationale": "SYNTHETIC SOFTWARE VERIFICATION ONLY \u2014 disposable scope acceptance, not an expert study decision."
+      }
+    },
+    {
+      "id": "f869b27e-3aca-4561-88c6-8f09fc79f5de",
+      "kind": "revision",
+      "status": "draft",
+      "actor_subject": "9f49e843-2fef-43b9-99ae-38c9ff2cda6d",
+      "data": {
+        "proposal_id": "1ef71c88-68b4-4cb8-b2b1-b59dc462b20f",
+        "revision": 1,
+        "base_version_id": null,
+        "bundle_digest": "sha256:2bc4328edcc2f77361335215552d2a855beb1287853072191cc4a2f10f10a73a",
+        "rationale": "Deterministic demo proposal from the synthetic fixture. Review all changes against evidence."
+      }
+    },
+    {
+      "id": "fd64fd01-2cb6-4897-8368-1d6c30f2a500",
+      "kind": "test_suite",
+      "status": "accepted",
+      "actor_subject": "9f49e843-2fef-43b9-99ae-38c9ff2cda6d",
+      "data": {
+        "revision_id": "f869b27e-3aca-4561-88c6-8f09fc79f5de",
+        "bundle_digest": "sha256:2bc4328edcc2f77361335215552d2a855beb1287853072191cc4a2f10f10a73a",
+        "generator": {
+          "mode": "deterministic_candidate_derived",
+          "version": "candidate-specs-v1",
+          "implementation_sha256": "b77fae2eb413e2a64382e0ab446f5b05e92688e95eb475892f149f1c57546716",
+          "maximum_cases": 40,
+          "oracle_policy": "Human review required; model/observed engine output never defines expectations."
+        },
+        "input_manifest": {
+          "bundle_digest": "sha256:2bc4328edcc2f77361335215552d2a855beb1287853072191cc4a2f10f10a73a",
+          "candidate_sha256": "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0",
+          "shapes_sha256": "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686",
+          "fixtures_sha256": "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf",
+          "questions_digest": "sha256:39014e3c1321fb555a3f200c51b49d77825bf4cf74697bbfd3560cdb3ab45297",
+          "evidence_digest": "sha256:fd6a7989d5b26b2038dcf3128dd04062bbbf9df2e5abc78d5923830fbb4277cb",
+          "changes_digest": "sha256:1bf68b2ba2ee5bbcb1d56c6e9c68f1d55f58a130e2557979c80ba7b563bcf365",
+          "changes": [
+            {
+              "id": "change:ca9ab875bf2cfbd62ff4c63de80f3a1cbd92b73e9b939d706e87213676637903",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/AnalyticsService",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "object": "https://example.org/oe-demo/Service",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:65710ad54df663e8279d069a182a9eeeba71de1272d047d66ffd693ad0db0fc8",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/AnalyticsService",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+                "object": "Analytics Service",
+                "object_type": "literal",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:0a83d24393708f5df19313ba88b12898b595c9c66a5e025b90f2cac043ffc9e3",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/AnalyticsService",
+                "predicate": "https://example.org/oe-demo/hasOwner",
+                "object": "https://example.org/oe-demo/DataTeam",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:b71284d5635665abdb7dd0548eecb59c6ff8a48b56f3ae9413b45da0478746d3",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/CriticalService",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "object": "http://www.w3.org/2002/07/owl#Class",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:19cf172cc46e45982dad60a7eb651f90e4b206834391890d8c6f312ec16e257f",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/CriticalService",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+                "object": "Critical service",
+                "object_type": "literal",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:690bb35c0c4e53105bb88ca063e31d656a9596356755f3abe7a9cd3cbf792858",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/CriticalService",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+                "object": "https://example.org/oe-demo/Service",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:6954d21665b3208ccc791a153e1e367ce7ac59ee147e23e75fd9db35505b0761",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/DataTeam",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "object": "https://example.org/oe-demo/Team",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:894cda70a08f23835df12d0e3a28d163b3a49645f3d41cb03ad605020d008ddd",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/DataTeam",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+                "object": "Data Team",
+                "object_type": "literal",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:480e8fcefcb7cd0d495acc356873689568d989fb22deda9e8b9723fa2299a34b",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/OperationsTeam",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "object": "https://example.org/oe-demo/Team",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:db21566f5cac4f1d9f39dce401e5235977ec316037ede94e51f4f8249b3a59fd",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/OperationsTeam",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+                "object": "Operations Team",
+                "object_type": "literal",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:80b10a32a13a88c908d34a104f595491664d590215cf2be7572f83eb2fa784d1",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/PayrollService",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "object": "https://example.org/oe-demo/CriticalService",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:e6ac6ab16f89b33b160c4b37a8ea0fa33364c54383c82eaac64733dcab5c4685",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/PayrollService",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+                "object": "Payroll Service",
+                "object_type": "literal",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:d156ed8693ebc29f38baf9c57de6c186da2b8d77fd0b1c41cb8432414b9403b0",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/PayrollService",
+                "predicate": "https://example.org/oe-demo/hasOwner",
+                "object": "https://example.org/oe-demo/OperationsTeam",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:fc5057824c90bfa7999cef41316f1426188ba83485e15c979195eb51eea61803",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/Service",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "object": "http://www.w3.org/2002/07/owl#Class",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:46263d3bc6b08ef070b6a499395ec9fedae605594aad8047a0e18d25b874706c",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/Service",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+                "object": "Service",
+                "object_type": "literal",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:8acfa4bea27102092ec0706c47c4ffb1fcdc64d00ed9cf6dbbd7b27cfba772d4",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/Team",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "object": "http://www.w3.org/2002/07/owl#Class",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:70cc67211af26d0c08a67ae60975468f9e6f901011f35d512d1b8169f5864e5b",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/Team",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+                "object": "Team",
+                "object_type": "literal",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:e0299e6034843596cef3ad9d5af4e784bbb2e27df77245e9d1ed9c405b15e573",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/hasOwner",
+                "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "object": "http://www.w3.org/2002/07/owl#ObjectProperty",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:e8d4c2097b3eff931bdee4aa64dff8e098a942325c076c19d3c9a51e8a2d06c9",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/hasOwner",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#domain",
+                "object": "https://example.org/oe-demo/Service",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:d06c75a97c2757dc2b7d798aabc4fb5d365d187c07a31fb868d668221b97d0a5",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/hasOwner",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+                "object": "has owner",
+                "object_type": "literal",
+                "datatype": null,
+                "language": null
+              }
+            },
+            {
+              "id": "change:8c8dcdceef2cd1a1293f06dc8076dfc428140db2e854d35930e7dfe47cf4c492",
+              "operation": "add",
+              "triple": {
+                "subject": "https://example.org/oe-demo/hasOwner",
+                "predicate": "http://www.w3.org/2000/01/rdf-schema#range",
+                "object": "https://example.org/oe-demo/Team",
+                "object_type": "iri",
+                "datatype": null,
+                "language": null
+              }
+            }
+          ],
+          "split": "development"
+        },
+        "digest": "sha256:c41b701e56ece7e7245c22a56fed1134749250561bcf5e3ee41f6512034a5daa"
+      }
+    },
+    {
+      "id": "f5c43395-26c7-485d-9485-334e090af54a",
+      "kind": "oracle_decision",
+      "status": "created",
+      "actor_subject": "625f0e32-0aad-4cb1-9930-69511a0a5550",
+      "data": {
+        "test_suite_id": "fd64fd01-2cb6-4897-8368-1d6c30f2a500",
+        "test_suite_digest": "sha256:c41b701e56ece7e7245c22a56fed1134749250561bcf5e3ee41f6512034a5daa",
+        "decision": "accept",
+        "rationale": "SYNTHETIC SOFTWARE VERIFICATION ONLY \u2014 accept fixed development expectations in this disposable test; this is not expert-study evidence."
+      }
+    },
+    {
+      "id": "d3eddb29-3641-48b4-81c9-1c59853f11cb",
+      "kind": "revision",
+      "status": "published",
+      "actor_subject": "625f0e32-0aad-4cb1-9930-69511a0a5550",
+      "data": {
+        "proposal_id": "1ef71c88-68b4-4cb8-b2b1-b59dc462b20f",
+        "revision": 2,
+        "base_version_id": null,
+        "bundle_digest": "sha256:6cdb41853e67236064f5b4e748e83d6292403cd4269f6f754ba09d02ba8b7f08",
+        "rationale": "SYNTHETIC SOFTWARE VERIFICATION ONLY \u2014 accept fixed development expectations in this disposable test; this is not expert-study evidence."
+      }
+    },
+    {
+      "id": "6e769ee7-9beb-40de-87e4-814ac8268c32",
+      "kind": "validation",
+      "status": "passed",
+      "actor_subject": null,
+      "data": {
+        "bundle_digest": "sha256:6cdb41853e67236064f5b4e748e83d6292403cd4269f6f754ba09d02ba8b7f08",
+        "status": "passed",
+        "engine": {
+          "name": "Apache Jena",
+          "version": "6.2.0",
+          "runner_version": "0.1.0",
+          "isolation": {
+            "mode": "macos-seatbelt",
+            "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+            "launcher": "/usr/bin/sandbox-exec",
+            "platform": "darwin",
+            "network": "kernel-denied",
+            "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+            "rendered_profile_sha256": "5e893eb944994da1f7a5c473c9db376c51179442e9ed08f58712ae0bd2b71dac",
+            "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+          },
+          "jar_sha256": "6a6e7e3ed45f98607d20b935e1c6f15b973f6dcde5504eff1d4bc284a5abda53"
+        },
+        "profile": "rdfs",
+        "cases": [
+          {
+            "id": "CQ-01",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "CQ-02",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-regression-cd742ae6f2deff91",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-regression-3d0b01ac2999b367",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-4c171a7e65dfeacc",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-9b2154e80fe8550c",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-1bff7c7e950e5fe6",
+            "expected": true,
+            "actual": true,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-866ab0e709079363",
+            "expected": {
+              "conforms": true,
+              "violations": []
+            },
+            "actual": {
+              "conforms": true,
+              "signature_format": "named-or-leaf-shape-sha256-v1",
+              "violations": []
+            },
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-missing_data-427d868fc8f3300f",
+            "expected": {
+              "conforms": false,
+              "violations": [
+                {
+                  "focusNode": "https://example.org/oe-demo/synthetic/788c38ab7b7d8674/shape-cdcec0f8a184/focus",
+                  "path": "https://example.org/oe-demo/hasOwner",
+                  "severity": "http://www.w3.org/ns/shacl#Violation",
+                  "sourceShape": "urn:oe:shacl-leaf:sha256:26760b53cf44f052e79e750e9549f9024397d307f09e4b32a12f8b2bc579f212"
+                }
+              ]
+            },
+            "actual": {
+              "conforms": false,
+              "signature_format": "named-or-leaf-shape-sha256-v1",
+              "violations": [
+                {
+                  "focusNode": "https://example.org/oe-demo/synthetic/788c38ab7b7d8674/shape-cdcec0f8a184/focus",
+                  "path": "https://example.org/oe-demo/hasOwner",
+                  "sourceShape": "urn:oe:shacl-leaf:sha256:26760b53cf44f052e79e750e9549f9024397d307f09e4b32a12f8b2bc579f212",
+                  "severity": "http://www.w3.org/ns/shacl#Violation"
+                }
+              ]
+            },
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-negative-525bf88a18befb0c",
+            "expected": false,
+            "actual": false,
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-boundary-8cf15c04aa5291a5",
+            "expected": {
+              "conforms": true,
+              "violations": []
+            },
+            "actual": {
+              "conforms": true,
+              "signature_format": "named-or-leaf-shape-sha256-v1",
+              "violations": []
+            },
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-contradictory-306fb55b60484b0f",
+            "expected": {
+              "conforms": false,
+              "violations": [
+                {
+                  "focusNode": "https://example.org/oe-demo/synthetic/788c38ab7b7d8674/shape-cdcec0f8a184/focus",
+                  "path": "https://example.org/oe-demo/hasOwner",
+                  "severity": "http://www.w3.org/ns/shacl#Violation",
+                  "sourceShape": "urn:oe:shacl-leaf:sha256:26760b53cf44f052e79e750e9549f9024397d307f09e4b32a12f8b2bc579f212"
+                }
+              ]
+            },
+            "actual": {
+              "conforms": false,
+              "signature_format": "named-or-leaf-shape-sha256-v1",
+              "violations": [
+                {
+                  "focusNode": "https://example.org/oe-demo/synthetic/788c38ab7b7d8674/shape-cdcec0f8a184/focus",
+                  "path": "https://example.org/oe-demo/hasOwner",
+                  "sourceShape": "urn:oe:shacl-leaf:sha256:26760b53cf44f052e79e750e9549f9024397d307f09e4b32a12f8b2bc579f212",
+                  "severity": "http://www.w3.org/ns/shacl#Violation"
+                }
+              ]
+            },
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-9134d1ce52816ffb",
+            "expected": [
+              {
+                "value": {
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "kind": "literal",
+                  "value": "Analytics Service"
+                }
+              }
+            ],
+            "actual": [
+              {
+                "value": {
+                  "kind": "literal",
+                  "value": "Analytics Service",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-f7bdbaa372bf647f",
+            "expected": [
+              {
+                "value": {
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "kind": "literal",
+                  "value": "Critical service"
+                }
+              }
+            ],
+            "actual": [
+              {
+                "value": {
+                  "kind": "literal",
+                  "value": "Critical service",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-dd99fb68fab57eb5",
+            "expected": [
+              {
+                "value": {
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "kind": "literal",
+                  "value": "Data Team"
+                }
+              }
+            ],
+            "actual": [
+              {
+                "value": {
+                  "kind": "literal",
+                  "value": "Data Team",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-5e8d11cbbca56028",
+            "expected": [
+              {
+                "value": {
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "kind": "literal",
+                  "value": "Operations Team"
+                }
+              }
+            ],
+            "actual": [
+              {
+                "value": {
+                  "kind": "literal",
+                  "value": "Operations Team",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-e457085f4aa278a0",
+            "expected": [
+              {
+                "value": {
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "kind": "literal",
+                  "value": "Payroll Service"
+                }
+              }
+            ],
+            "actual": [
+              {
+                "value": {
+                  "kind": "literal",
+                  "value": "Payroll Service",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-f10c93402dc4f1f8",
+            "expected": [
+              {
+                "value": {
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "kind": "literal",
+                  "value": "Service"
+                }
+              }
+            ],
+            "actual": [
+              {
+                "value": {
+                  "kind": "literal",
+                  "value": "Service",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-b928842640ff7558",
+            "expected": [
+              {
+                "value": {
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "kind": "literal",
+                  "value": "Team"
+                }
+              }
+            ],
+            "actual": [
+              {
+                "value": {
+                  "kind": "literal",
+                  "value": "Team",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "status": "passed",
+            "message": "Expected result matched"
+          },
+          {
+            "id": "SYN-positive-7b92c5c187a0c6c0",
+            "expected": [
+              {
+                "value": {
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "kind": "literal",
+                  "value": "has owner"
+                }
+              }
+            ],
+            "actual": [
+              {
+                "value": {
+                  "kind": "literal",
+                  "value": "has owner",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ],
+            "status": "passed",
+            "message": "Expected result matched"
+          }
+        ],
+        "limitations": [
+          "Required checks use Apache Jena RDFS inference, not a complete OWL DL reasoner.",
+          "OWL imports, restrictions, lists, equivalence, inverse, transitivity and disjointness are unsupported in ontology/data graphs.",
+          "Domain and range infer types; required values are checked with SHACL.",
+          "A false ASK result means not entailed under this profile, not proof of negation.",
+          "SPARQL is limited to local ASK/SELECT graph patterns and safe comparison filters; extension functions, paths, aggregates, SERVICE and dataset loading are blocked.",
+          "SHACL uses the asserted graph plus RDFS closure and a restricted SHACL Core vocabulary."
+        ],
+        "input_manifest": {
+          "schema_version": 1,
+          "bundle_digest": "sha256:6cdb41853e67236064f5b4e748e83d6292403cd4269f6f754ba09d02ba8b7f08",
+          "expected_runner_version": "0.1.0",
+          "inference_mode": "rdfs",
+          "validation_graph": "asserted_plus_inferred",
+          "limits": {
+            "timeout_seconds": 30,
+            "heap_mib": 256,
+            "max_input_bytes": 1048576,
+            "max_select_rows": 10000
+          },
+          "artifacts": {
+            "ontology": {
+              "path": "ontology.ttl",
+              "sha256": "dda83555d4b97e076cdc9391bc79d3b60770a7d2e7756f8bdaf1dd7c5db502a0"
+            },
+            "shapes": {
+              "path": "shapes.ttl",
+              "sha256": "3f2da6f175ec95e779c362dc97a167d9c614511fe4cd94ef726de11ad348f686"
+            },
+            "fixtures": {
+              "path": "fixtures.ttl",
+              "sha256": "c7c38986faf704d997a5f10f59dbf69184edf4861f37a4838d36c155b5433dcf"
+            },
+            "tests": {
+              "path": "tests.json",
+              "sha256": "a6f57737b5e80d467c7658d256dc4f4a61272f8d136e602d48e23e2009f00295"
+            },
+            "profile": {
+              "path": "profile.json",
+              "sha256": "d80904672cc6cf2767fc643a079d89fdc5f97851aba36f450e1a17b2dc48e3ec"
+            }
+          }
+        },
+        "revision_id": "d3eddb29-3641-48b4-81c9-1c59853f11cb"
+      }
+    },
+    {
+      "id": "a53463f0-e224-46a8-9ae9-c31c60b12bdc",
+      "kind": "assessment",
+      "status": "completed",
+      "actor_subject": null,
+      "data": {
+        "bundle_digest": "sha256:6cdb41853e67236064f5b4e748e83d6292403cd4269f6f754ba09d02ba8b7f08",
+        "status": "completed",
+        "engine": {
+          "name": "OntoCheck",
+          "version": "0.1.3",
+          "commit": "69d42e38979f381fe531ae547fcc49b8ad58ef15",
+          "network": "disabled",
+          "network_control": "macOS Seatbelt network denial plus Python audit hook",
+          "isolation": {
+            "mode": "macos-seatbelt",
+            "profile_sha256": "de937ba4c2cd4bea54b5093bde1895421814c5e12b3d50e9ff699c279b44909b",
+            "launcher": "/usr/bin/sandbox-exec",
+            "platform": "darwin",
+            "network": "kernel-denied",
+            "filesystem": "runtime-and-declared-inputs-read; run-directory-write",
+            "rendered_profile_sha256": "05d0c1f3d6f7378cbdf3d842e33ddb3f2fdffd1f5fdb5d9db18879b9bd4c43fe",
+            "limitations": "Deprecated macOS launcher; system resources, file metadata and IPC remain accessible. No protection against a malicious operator who owns the server or its runtime."
+          },
+          "python": "3.12.14",
+          "resources": {
+            "nltk_english_stopwords_sha256": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b"
+          },
+          "packages": {
+            "ontocheck": "0.1.3",
+            "rdflib": "7.6.0",
+            "networkx": "3.7",
+            "nltk": "3.10.4"
+          },
+          "configuration": {
+            "domain_prefixes": [
+              "demo"
+            ],
+            "domain_ns_fragments": [
+              "https://example.org/oe-demo/"
+            ],
+            "authorize_prefix_mapping": false,
+            "mappings": {},
+            "mappings_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "weighting": "canonical",
+            "max_hops": 8,
+            "lam": 0.6931471805599453
+          }
+        },
+        "vocabulary_coverage": 1.0,
+        "vocabulary_utilisation": 0.5,
+        "strict_fitness": 1.0,
+        "approximate_fitness": 1.0,
+        "limitations": [
+          "Vocabulary overlap measures task coverage and utilisation, not answer correctness.",
+          "Schema fitness is diagnostic; approximate matches are not approved equivalence mappings.",
+          "Jena benchmark equivalence and held-out evaluation are not verified (TODO-ONTOCHECK-02)."
+        ],
+        "revision_id": "d3eddb29-3641-48b4-81c9-1c59853f11cb"
+      }
+    },
+    {
+      "id": "6671edc1-d682-4fe8-9601-c0418761d6b4",
+      "kind": "review",
+      "status": "created",
+      "actor_subject": "4138508d-7da9-4601-9f17-36ac7aeaf969",
+      "data": {
+        "proposal_id": "1ef71c88-68b4-4cb8-b2b1-b59dc462b20f",
+        "revision": 2,
+        "bundle_digest": "sha256:6cdb41853e67236064f5b4e748e83d6292403cd4269f6f754ba09d02ba8b7f08",
+        "validation_run_id": "6e769ee7-9beb-40de-87e4-814ac8268c32",
+        "decision": "accept",
+        "rationale": "SYNTHETIC SOFTWARE VERIFICATION ONLY \u2014 accept this exact checked disposable bundle to exercise the release gate; no expert-study or production approval is represented.",
+        "revision_id": "d3eddb29-3641-48b4-81c9-1c59853f11cb"
+      }
+    },
+    {
+      "id": "73a02f3c-4e20-4eea-b4bb-cdf190bb560b",
+      "kind": "publication",
+      "status": "completed",
+      "actor_subject": "4138508d-7da9-4601-9f17-36ac7aeaf969",
+      "data": {
+        "proposal_id": "1ef71c88-68b4-4cb8-b2b1-b59dc462b20f",
+        "revision": 2,
+        "bundle_digest": "sha256:6cdb41853e67236064f5b4e748e83d6292403cd4269f6f754ba09d02ba8b7f08",
+        "approval_ids": [
+          "6671edc1-d682-4fe8-9601-c0418761d6b4"
+        ],
+        "revision_id": "d3eddb29-3641-48b4-81c9-1c59853f11cb"
+      }
+    },
+    {
+      "id": "980e2a29-f529-4c59-8fc3-2246fd84eef6",
+      "kind": "publication_commit",
+      "status": "created",
+      "actor_subject": null,
+      "data": {
+        "publication_id": "73a02f3c-4e20-4eea-b4bb-cdf190bb560b",
+        "commit": "45300512bd68bce5d79d3ca807a8988e6e87a6fd"
+      }
+    },
+    {
+      "id": "0101bb34-b904-4f2a-ad09-81255a8c538a",
+      "kind": "version",
+      "status": "approved",
+      "actor_subject": null,
+      "data": {
+        "commit": "45300512bd68bce5d79d3ca807a8988e6e87a6fd",
+        "bundle_digest": "sha256:6cdb41853e67236064f5b4e748e83d6292403cd4269f6f754ba09d02ba8b7f08",
+        "publication_id": "73a02f3c-4e20-4eea-b4bb-cdf190bb560b"
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "id": "84694f6f-d161-4353-939d-eb425d88508e",
+      "kind": "assessment",
+      "status": "succeeded",
+      "attempt": 1,
+      "actor_subject": "9f49e843-2fef-43b9-99ae-38c9ff2cda6d",
+      "error": null
+    },
+    {
+      "id": "0d83e0aa-ff81-4ad6-960b-8d762d34dc7e",
+      "kind": "proposal",
+      "status": "succeeded",
+      "attempt": 1,
+      "actor_subject": "9f49e843-2fef-43b9-99ae-38c9ff2cda6d",
+      "error": null
+    },
+    {
+      "id": "1df44215-5b17-42ad-ac09-e3a66e363e2b",
+      "kind": "test-generation",
+      "status": "succeeded",
+      "attempt": 1,
+      "actor_subject": "9f49e843-2fef-43b9-99ae-38c9ff2cda6d",
+      "error": null
+    },
+    {
+      "id": "7a68167d-b651-4943-bb08-3da305e0ade0",
+      "kind": "validation",
+      "status": "succeeded",
+      "attempt": 1,
+      "actor_subject": "9f49e843-2fef-43b9-99ae-38c9ff2cda6d",
+      "error": null
+    }
+  ],
+  "record_kinds": [
+    "assessment",
+    "audit",
+    "corpus",
+    "document",
+    "evidence",
+    "ingestion",
+    "oracle_decision",
+    "proposal",
+    "publication",
+    "publication_commit",
+    "review",
+    "revision",
+    "scope_decision",
+    "test_suite",
+    "validation",
+    "version"
+  ]
+}

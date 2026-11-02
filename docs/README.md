@@ -7,7 +7,8 @@ Start with the [application README](../README.md) for installation and the repos
 | Document | Use it for |
 | --- | --- |
 | [Workflow](workflow.md) | Sources → proposal → checks → human review → publication; experiments and exports |
-| [Operations](operations.md) | Local identity, migrations, backup and recovery |
+| [Operations](operations.md) | Local/team identity, independent processes, migrations, backup and recovery |
+| [Two-agent design](two-agent-team-development.md) | Agent boundaries, roles and implementation decisions |
 | [Model configuration](multi-llm.md) | Server-owned profiles, providers and bounded comparisons |
 | [Known limitations](known-limitations.md) | Current capability boundaries and external gates |
 | [Contributor guidance](../AGENTS.md) | Code ownership, workflow invariants and verification commands |
@@ -39,6 +40,7 @@ Start with the [application README](../README.md) for installation and the repos
 
 Use these records for what was actually tested, including failures and limits. Test counts and live-service observations are dated evidence, not assertions about a new checkout.
 
+- [Two-agent/team verification](evidence/two-agent-team-2026-11-02.md) and [actual team browser workflow](evidence/team-browser-2026-11-02.md): Mac accounts, agents, independent processes and comparison results.
 - [Implementation ledger](implementation-ledger.md) and [requirements audit](requirements-audit.md): implementation decisions and coverage.
 - [Multi-LLM verification](multi-llm-verification.md) and [model comparison](model-comparison.md): model-layer checks and bounded live observations.
 - [Release verification](evidence/release-verification.md), [backend review](evidence/backend-review.md) and [bundled resources audit](evidence/bundled-resources-audit.md).

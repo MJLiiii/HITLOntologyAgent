@@ -4,8 +4,10 @@ import time
 from pydantic import Field, ValidationError
 from .artifacts import digest
 from .llm_runtime import complete, CompletionError
-from .schemas import ChangeSet, StrictModel, Triple
-from typing import Literal
+from .schemas import StrictModel
+from .agents.proposal import (
+    GeneratedChange as GeneratedChange, ProposalDraft as ProposalDraft, checked_proposal as checked_proposal,
+)
 
 
 class GroundedAnswer(StrictModel):
@@ -13,20 +15,6 @@ class GroundedAnswer(StrictModel):
     evidence_ids: list[str] = Field(max_length=20)
     triple_indices: list[int] = Field(max_length=100)
     unresolved_points: list[str] = Field(default_factory=list, max_length=20)
-
-
-class GeneratedChange(StrictModel):
-    operation: Literal["add", "delete"]
-    triple: Triple
-    evidence_ids: list[str] = Field(min_length=1, max_length=20)
-    rationale: str = Field(min_length=5, max_length=2000)
-
-
-class ProposalDraft(StrictModel):
-    summary: str = Field(min_length=5, max_length=1000)
-    changes: list[GeneratedChange] = Field(min_length=1, max_length=100)
-    assumptions: list[str] = Field(default_factory=list, max_length=20)
-    unresolved_questions: list[str] = Field(default_factory=list, max_length=20)
 
 
 class ModelGenerationError(ValueError):
@@ -84,13 +72,3 @@ def checked_answer(value: GroundedAnswer, evidence, triples):
     return {"answer": value.answer, "evidence": [allowed[i] for i in dict.fromkeys(value.evidence_ids)],
             "triples": [triples[i] for i in dict.fromkeys(value.triple_indices)], "unresolved_points": value.unresolved_points,
             "mode": "model", "limitations": ["AI explanation based on the cited evidence; citation validity does not establish semantic correctness."]}
-
-
-def checked_proposal(value: ProposalDraft, evidence):
-    allowed = {e["id"] for e in evidence if e["resolved"]}
-    if any(not set(change.evidence_ids) <= allowed for change in value.changes):
-        raise ValueError("Proposal contains evidence outside the frozen context")
-    if value.unresolved_questions:
-        raise ValueError("Proposal has unresolved modelling questions: " + "; ".join(value.unresolved_questions))
-    return ChangeSet(additions=[c.triple for c in value.changes if c.operation == "add"],
-                     deletions=[c.triple for c in value.changes if c.operation == "delete"])

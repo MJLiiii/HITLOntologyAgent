@@ -592,7 +592,7 @@ def _execute_model_task(packet, *, settings, condition, replicate_ids, model_cli
     root = Path(__file__).resolve().parents[4]
     environment = {name: sha((root / name).read_bytes()) if (root / name).is_file() else None
                    for name in ('uv.lock', 'requirements-ontocheck.lock', 'infra/versions.lock.yaml',
-                                'infra/model.lock.json', 'services/api/src/oe_studio/experiments.py',
+                                'services/api/src/oe_studio/experiments.py',
                                 'services/api/src/oe_studio/model.py')}
     records = []
     batch_id = str(uuid4())

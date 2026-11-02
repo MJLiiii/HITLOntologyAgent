@@ -75,7 +75,7 @@ def test_migration_matches_declared_schema(tmp_path, monkeypatch):
     command.upgrade(config, 'head')
     command.check(config)
     db = Database(f'sqlite:///{tmp_path / "studio.sqlite"}')
-    assert {'projects', 'items', 'jobs', 'alembic_version'} == set(inspect(db.engine).get_table_names())
+    assert {'projects', 'items', 'jobs', 'accounts', 'account_sessions', 'project_memberships', 'login_throttles', 'alembic_version'} == set(inspect(db.engine).get_table_names())
     assert json.dumps(inspect(db.engine).get_unique_constraints('jobs'))
     db.engine.dispose()
 
@@ -83,6 +83,11 @@ def test_migration_matches_declared_schema(tmp_path, monkeypatch):
 def test_migrate_adopts_only_identical_legacy_schema_and_preserves_rows(tmp_path, monkeypatch):
     source = tmp_path / 'data'
     populated_store(source)
+    db = Database(f'sqlite:///{source / "studio.sqlite"}')
+    with db.engine.begin() as connection:
+        for name in ('login_throttles', 'project_memberships', 'account_sessions', 'accounts'):
+            connection.exec_driver_sql(f'DROP TABLE {name}')
+    db.engine.dispose()
     monkeypatch.setenv('OE_DATA_DIR', str(source))
     monkeypatch.setenv('OE_DATABASE_URL', f'sqlite:///{source / "studio.sqlite"}')
     migrate()
@@ -105,3 +110,22 @@ def test_migrate_refuses_unversioned_schema_drift(tmp_path, monkeypatch):
         migrate()
     with sqlite3.connect(source / 'studio.sqlite') as connection:
         assert connection.execute("SELECT count(*) FROM sqlite_master WHERE name='alembic_version'").fetchone()[0] == 0
+
+
+def test_migrate_adopts_exact_unversioned_team_schema_preserving_rows(tmp_path, monkeypatch):
+    source = tmp_path / 'data'
+    populated_store(source)
+    monkeypatch.setenv('OE_DATA_DIR', str(source))
+    monkeypatch.setenv('OE_DATABASE_URL', f'sqlite:///{source / "studio.sqlite"}')
+    from oe_studio.accounts import create_account
+    db = Database(f'sqlite:///{source / "studio.sqlite"}')
+    account = create_account(db, 'synthetic', 'synthetic account password')
+    db.engine.dispose()
+    migrate()
+    from oe_studio.db import Account
+    db = Database(f'sqlite:///{source / "studio.sqlite"}')
+    db.ensure_migrated()
+    with db.session() as session:
+        assert session.get(Project, 'demo-project').approved_version_id == 'release'
+        assert session.get(Account, account.id).password_hash == account.password_hash
+    db.engine.dispose()

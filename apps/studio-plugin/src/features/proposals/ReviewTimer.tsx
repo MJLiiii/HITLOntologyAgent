@@ -26,7 +26,7 @@ export function ReviewTimer({projectId,revisionId,session,disabled=false}: {proj
   const recorded=latest?.active_seconds ?? 0;
   const started=latest?Date.parse(latest.time):NaN;
   const elapsed=recorded+(running&&Number.isFinite(started)?Math.max(0,clock-started)/1000:0);
-  const human=session.actor.kind==='human';
+  const human=session.actor.kind==='human'&&(session.mode!=='team'||session.actor.roles.includes('reviewer')||session.actor.roles.includes('approver'));
   const blocked=disabled||busy||loading||!human;
   useEffect(()=>{
     let active=true;setLoading(true);setError('');setEvents([]);

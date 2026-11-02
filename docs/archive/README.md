@@ -36,3 +36,8 @@ References to the original root filenames in old records now resolve to the same
 The dated Markdown reports formerly at `docs/{name}.md` now reside at `docs/evidence/{name}.md`, retaining their filenames: `backend-review`, `browser-acceptance`, `browser-smoke`, `bundled-resources-audit`, `native-editor-boundary`, `ontocheck-benchmark-compatibility`, `portal-smoke`, `release-verification`, and `trustgraph-pipeline-smoke`. Their observations are preserved and navigation links updated. Evidence JSON files and screenshots remain at their existing paths. The two completed implementation records use the exact old-to-new mapping above. Historical manifests retain the original paths and hashes rather than being rewritten to describe this reorganization.
 
 Future plans and reviews belong under `docs/`; current working instructions belong in root `AGENTS.md`. Preserve these source documents rather than updating their historical checkboxes to look current.
+
+
+## Retired local-model setup
+
+On 2 November 2026 the user selected API-backed generation and removed the bundled Qwen installer, model-launch Make targets and local-model test-agent benchmark option. [The original model pin](qwen-model.lock.json) preserves the bytes formerly at `infra/model.lock.json` for historical verification. Earlier release manifests and local-model observations remain historical; use [the current API setup](../multi-llm.md) for new runs.

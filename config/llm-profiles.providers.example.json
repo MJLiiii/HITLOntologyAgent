@@ -9,7 +9,8 @@
         "chat",
         "proposal",
         "repair",
-        "experiment"
+        "experiment",
+        "test_generation"
       ]
     },
     {
@@ -21,22 +22,9 @@
         "chat",
         "proposal",
         "repair",
-        "experiment"
-      ]
-    },
-    {
-      "id": "local-ollama",
-      "provider": "ollama",
-      "model": "your-installed-model",
-      "base_url": "http://127.0.0.1:11434",
-      "purposes": [
-        "chat",
-        "proposal",
-        "repair",
         "experiment",
-        "extraction"
-      ],
-      "structured_output": "json_schema"
+        "test_generation"
+      ]
     },
     {
       "id": "compatible-gateway",
@@ -46,7 +34,8 @@
       "api_key_env": "GATEWAY_API_KEY",
       "purposes": [
         "chat",
-        "proposal"
+        "proposal",
+        "test_generation"
       ],
       "structured_output": "json_object"
     },
@@ -61,7 +50,8 @@
         "proposal",
         "repair",
         "experiment",
-        "extraction"
+        "extraction",
+        "test_generation"
       ],
       "structured_output": "prompt_json"
     }
@@ -70,7 +60,6 @@
     "REPLACE_WITH_PROJECT_ID": [
       "openai-chat",
       "claude-chat",
-      "local-ollama",
       "compatible-gateway",
       "litellm-proxy"
     ]

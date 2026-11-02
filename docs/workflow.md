@@ -26,21 +26,11 @@ Job effects and completion results now commit together, including repair success
 
 ## Models and development servers
 
-For development, run `make dev-api` and `make dev-ui` in separate terminals. The Vite frontend proxies `/api` to the loopback backend. Optional `OE_MODEL_URL`, `OE_MODEL_NAME` and `OE_MODEL_API_KEY` configure model generation; empty model settings keep the clearly labelled deterministic fallback. Model output cannot authorize publication.
+Run `make dev-api`, `make dev-worker` and `make dev-ui` in separate terminals. The frontend forwards `/api` to the backend. Model generation uses server-owned API profiles; no Qwen/Ollama runtime setup or model download is part of this workflow.
 
-Server-owned, project-allowlisted profiles also support OpenAI, Claude, Ollama, OpenAI-compatible gateways, a LiteLLM proxy and OpenCode Go through a shared SDK runtime. API requests can select an authorized profile; queued jobs retain its frozen non-secret configuration. See [multi-LLM configuration and bounded comparison](multi-llm.md). The website keeps its existing workflow.
+Copy an API provider descriptor from `config/llm-profiles.providers.example.json` to a private file, replace its model placeholder and project ID, and configure `OE_LLM_CONFIG_FILE` and `OE_LLM_DEFAULT_PROFILE`. Keep API credentials in the server environment or private `.env`. Include `proposal`, `repair` and `test_generation` in the selected profile's permitted purposes for both agents. See [model configuration](multi-llm.md) for provider endpoints, project allowlists and credential handling.
 
-The optional model adapter uses the Ollama-compatible `/api/chat` protocol. Set `OE_MODEL_URL` to the server base URL, for example `http://127.0.0.1:11434`, and `OE_MODEL_NAME` to an already installed model's exact identifier; the adapter appends `/api/chat`. An optional API key is sent server-side only. Model setup/download is separate from `make setup`.
-
-On Apple Silicon, the bundled setup pins and verifies Ollama 0.40.13 and Qwen3 1.7B from official sources, storing the runtime and model under `.runtime/`:
-
-```sh
-make setup-model
-make model-serve     # keep running in one terminal
-make demo-model      # run in a second terminal
-```
-
-Real local model chat and a follow-up question were verified in the browser on 1 November 2026; see [browser evidence](evidence/browser-smoke.md). This is a functional check, not a model-quality study. The model's structured citations are restricted to the supplied evidence and ontology indices, and generation has a total deadline. Invalid output is retained and rejected. A separate real model experiment attempted a duplicate triple and correctly produced failed observations for all scheduled arms; the small model's proposals are not assumed reliable.
+With no configured model the labelled deterministic demo remains available. Configured API failures remain explicit failures, never automatic demo output. Agents cannot approve expectations or publish. Their sources, prompts, model settings and outputs are frozen and inspectable.
 
 ## Verification, exports and storage
 

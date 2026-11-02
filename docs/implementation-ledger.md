@@ -113,3 +113,15 @@ Fresh verification passed: 242 local Markdown links and 11 heading anchors acros
 This was documentation organization and disposable-cache cleanup. No full application tests, model calls, migrations, study runs, approvals or publication were performed; existing runtime behavior and history were not changed.
 
 Pre-commit verification repeated the packet integrity check, Ruff for its verifier, and local documentation links/anchors. The staged whitespace check detected trailing whitespace in the original downloaded ESMA HTML; those source bytes remain unchanged to preserve provenance and hashes. Authored files passed `git diff --cached --check -- . ':!research/corpora/dora-v1/originals/'`; this exception is confined to retained official originals.
+
+
+### Two-agent team development — 2 November 2026
+
+Implemented independent versioned Proposal/Test Generation agents, model-backed declarative test suggestions with frozen configuration and human oracle successor gates, operator-provisioned Argon2 team accounts with revocable sessions/CSRF/project roles, additive migrations and independent API/worker/frontend startup. PostgreSQL and real Mac browser verification passed; local demo, DORA packet and A–D controls remain preserved. The full backend run passed 593 cases with eight optional skips; the final contract/access/migration checks passed 75 focused cases, with two additional repair regressions. Configuration errors suppress credential-bearing input dictionaries. Frontend 64 tests/builds passed. PostgreSQL passed seven cases and seven exact restores. One actual small local-model test-generation attempt was invalid and retained as a failure; controlled comparison detected four mutants without false positives among three valid variants. See [dated verification](evidence/two-agent-team-2026-11-02.md) for commands, evidence, fixes and limits. No paid/remote provider or participant study was used; Ubuntu/repository split/DORA activation remain deferred.
+
+
+### API-backed generation; retired Qwen setup — 2 November 2026
+
+At the user's request, removed the Qwen installer, launch Make targets and local-daemon benchmark path. The model pin moved unchanged to the archive; existing historical observations, private settings, downloaded files and integration evidence remain preserved. Current setup guides and example profiles use model APIs, including the `test_generation` purpose for the second agent. The controlled benchmark now exercises the OpenAI-compatible API wire with no network/provider calls. Existing generic transport compatibility and the labelled deterministic demo remain available. No new hosted-provider call or budget reset was made.
+
+Verification after API-only cleanup: **608 backend tests passed, eight optional checks skipped in 93.53 seconds** (`/tmp/oe-api-only-backend.log`); focused benchmark/agent tests passed 39 cases. Ruff, TypeScript, OpenAPI reproducibility, Markdown paths and `git diff --check` passed. The archived model pin is byte-identical to the original. No model or paid-provider call was made; generic API compatibility and prior team/approval behavior passed the regression suite.

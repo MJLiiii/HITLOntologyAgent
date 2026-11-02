@@ -11,7 +11,8 @@
         "proposal",
         "repair",
         "experiment",
-        "extraction"
+        "extraction",
+        "test_generation"
       ],
       "timeout": 120.0,
       "max_output_tokens": 4096,
@@ -30,7 +31,8 @@
         "proposal",
         "repair",
         "experiment",
-        "extraction"
+        "extraction",
+        "test_generation"
       ],
       "timeout": 120.0,
       "max_output_tokens": 4096,
@@ -49,7 +51,8 @@
         "proposal",
         "repair",
         "experiment",
-        "extraction"
+        "extraction",
+        "test_generation"
       ],
       "timeout": 120.0,
       "max_output_tokens": 4096,
@@ -68,7 +71,8 @@
         "proposal",
         "repair",
         "experiment",
-        "extraction"
+        "extraction",
+        "test_generation"
       ],
       "timeout": 120.0,
       "max_output_tokens": 4096,
