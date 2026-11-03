@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { Project, Revision, Session, TestSpec, TestSuite } from '../../api/generated';
-import type { ModelProfileResponse, OracleDecision, TestGenerationRequest } from '../../api/openapi';
+import type { OracleDecision, TestGenerationRequest } from '../../api/openapi';
 import { errorMessage, list, operation, runJob } from '../../api/client';
 import { Badge, ErrorNotice, short } from '../../components/ui';
 import { Icon } from '../../components/Icons';
+import { ModelSelector, useModelSelection } from '../../components/ModelSelector';
 
 function GeneratorDetails({suite}:{suite:TestSuite}) {
   return <div className="oracle-generator">{suite.generator&&<><p>Generator: <strong>{suite.generator.mode.replaceAll('_',' ')}</strong>{suite.generator.version&&<> · {suite.generator.version}</>}</p>{suite.generator.oracle_policy&&<p>{suite.generator.oracle_policy}</p>}{suite.generator.implementation_sha256&&<details><summary>Generator identity</summary><code>{suite.generator.implementation_sha256}</code></details>}</>}
@@ -31,9 +32,7 @@ function OracleDetails({test,fixture,base}:{test:TestSpec;fixture?:NonNullable<T
 
 export function TestOraclePanel({project,session,revision,onRefresh,onOpenProposal}: {project:Project;session:Session;revision:Revision;onRefresh:()=>Promise<void>;onOpenProposal:(id:string)=>void}) {
   const [generatorMode,setGeneratorMode]=useState<'deterministic'|'model'>('deterministic');
-  const [profiles,setProfiles]=useState<ModelProfileResponse[]>([]);
-  const [profile,setProfile]=useState('');
-  const [profilesLoading,setProfilesLoading]=useState(false);
+  const model=useModelSelection(project.id,'test_generation',{enabled:generatorMode==='model'});
   const [suites,setSuites]=useState<TestSuite[]>([]);
   const [rationale,setRationale]=useState('');
   const [busy,setBusy]=useState(false);
@@ -52,20 +51,11 @@ export function TestOraclePanel({project,session,revision,onRefresh,onOpenPropos
     list('GET /api/v1/projects/{p}/test-suites',{path:{p:project.id}}).then(result=>{if(active)setSuites(result);}).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setLoading(false);});
     return()=>{active=false;};
   },[base,revision.revision_id,revision.bundle_digest]);
-  useEffect(()=>{
-    if(generatorMode!=='model')return;
-    let active=true;setProfilesLoading(true);setProfiles([]);setProfile('');setError('');
-    list('GET /api/v1/projects/{p}/model-profiles',{path:{p:project.id}}).then(items=>{
-      if(!active)return;
-      const eligible=items.filter(item=>item.purposes.includes('test_generation')&&item.status==='configured_unverified');
-      setProfiles(eligible);setProfile((eligible.find(item=>item.is_default)||eligible[0])?.id||'');
-    }).catch(err=>{if(active)setError(errorMessage(err));}).finally(()=>{if(active)setProfilesLoading(false);});
-    return()=>{active=false;};
-  },[generatorMode,project.id]);
   async function generate() {
+    if(busy||!model.ready)return;
     setBusy(true);setError('');setNotice('');setSuccessor(null);setStage('Generating development test suggestions');
     try {
-      await runJob('POST /api/v1/projects/{p}/test-generation-jobs',{path:{p:project.id},body:{proposal_id:revision.id,revision:revision.revision,...(generatorMode==='model'?{generator_mode:'model',model_profile_id:profile,bundle_digest:revision.bundle_digest}:{})} satisfies TestGenerationRequest},setStage);
+      await runJob('POST /api/v1/projects/{p}/test-generation-jobs',{path:{p:project.id},body:{proposal_id:revision.id,revision:revision.revision,...(generatorMode==='model'?{generator_mode:'model',model_profile_id:model.profileId,bundle_digest:revision.bundle_digest}:{})} satisfies TestGenerationRequest},setStage);
       setSuites(await list('GET /api/v1/projects/{p}/test-suites',{path:{p:project.id}}));
       setNotice('Test suggestions are ready for human review. No expectation has been accepted or added to the candidate.');
     }catch(err){setError(errorMessage(err));}finally{setBusy(false);}
@@ -89,9 +79,9 @@ export function TestOraclePanel({project,session,revision,onRefresh,onOpenPropos
       }else setNotice('The suggested test suite was rejected. The candidate and its existing required checks are unchanged.');
     }catch(err){setError(errorMessage(err));}finally{setBusy(false);}
   }
-  return <section className="panel oracle-panel"><div className="report-heading"><div className="report-icon"><Icon name="shield" size={23}/></div><div><span className="card-eyebrow">DEVELOPMENT TESTS · HUMAN ORACLE</span><h3>Review the expectation before testing the answer</h3><p>Suggested tests are untrusted until a human accepts their expected results.</p></div><button className="button button-secondary small" disabled={busy||loading||(generatorMode==='model'&&(profilesLoading||!profile))||!human||!session.actor.roles.includes('researcher')||!current} onClick={()=>void generate()}><Icon name="spark" size={15}/>Suggest development tests</button></div>
+  return <section className="panel oracle-panel"><div className="report-heading"><div className="report-icon"><Icon name="shield" size={23}/></div><div><span className="card-eyebrow">DEVELOPMENT TESTS · HUMAN ORACLE</span><h3>Review the expectation before testing the answer</h3><p>Suggested tests are untrusted until a human accepts their expected results.</p></div><button className="button button-secondary small" disabled={busy||loading||!model.ready||!human||!session.actor.roles.includes('researcher')||!current} onClick={()=>void generate()}><Icon name="spark" size={15}/>Suggest development tests</button></div>
     <div className="oracle-body">{error&&<ErrorNotice message={error}/>} {notice&&<div className="notice notice-info" role="status"><span>{notice}</span>{successor&&<button className="text-button small" onClick={()=>onOpenProposal(revision.id)}>Open revision {successor}<Icon name="chevron" size={14}/></button>}</div>}
-      <div className="form-grid"><label>Test generator<select value={generatorMode} disabled={busy} onChange={event=>setGeneratorMode(event.target.value as 'deterministic'|'model')}><option value="deterministic">Deterministic suggestions</option><option value="model">Configured model</option></select></label>{generatorMode==='model'&&<label>Test generation model profile<select value={profile} disabled={busy||profilesLoading} onChange={event=>setProfile(event.target.value)}><option value="">{profilesLoading?'Loading profiles…':'Select an available profile'}</option>{profiles.map(item=><option key={item.id} value={item.id}>{item.id} · {item.provider}/{item.model} · {item.revision}</option>)}</select></label>}</div>{generatorMode==='model'&&!profilesLoading&&!profiles.length&&<p className="action-reason">No configured profile is available for test generation in this project.</p>}{generatorMode==='model'&&<p className="small muted">Model failures remain explicit. Target candidate bundle: <code>{revision.bundle_digest}</code></p>}
+      <div className="form-grid"><label>Test generator<select value={generatorMode} disabled={busy} onChange={event=>setGeneratorMode(event.target.value as 'deterministic'|'model')}><option value="deterministic">Deterministic suggestions</option><option value="model">Configured model</option></select></label>{generatorMode==='model'&&<ModelSelector label="Test generation model" selection={model} disabled={busy}/>}</div>{generatorMode==='model'&&<p className="small muted">Model failures remain explicit. Target candidate bundle: <code>{revision.bundle_digest}</code></p>}
       <div className="oracle-principle"><Icon name="validation" size={17}/><p>Existing required checks are preserved. Accepting a test suite creates a new immutable candidate; it does not validate, approve, or publish that candidate.</p></div>
       {(busy||loading)&&<div role="status" className="inline-loading"><span className="spinner"/>{loading?'Loading test suggestions':stage.replaceAll('_',' ')}…</div>}
       {!loading&&!relevant.length&&<p className="muted small oracle-empty">No additional test suite has been proposed for revision {revision.revision}. Suggest development tests to inspect their query, rationale, and expected result.</p>}

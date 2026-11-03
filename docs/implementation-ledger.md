@@ -155,3 +155,23 @@ Reduced active generation to OpenAI and Claude using native bounded HTTPX reques
 ### User-authorized OpenAI API test — 2 November 2026
 
 The new `.env` OpenAI credential authenticated successfully and one bounded synthetic `gpt-4.1-mini` request passed through Studio's actual profile/runtime/schema/citation path (HTTP 200; 207 input and 32 output tokens). No retry, publication or private configuration edit occurred. Claude was not tested because no Anthropic key was present; persistent profile configuration remains unset. See [the live verification entry](multi-llm-verification.md#user-authorized-openai-key-check--2-november-2026) and credential-free `.runtime/llm-api-key-test-2026-11-02.json`.
+
+### GPT-6.1 Terra model selection — 3 November 2026
+
+Verified account access and one live bounded synthetic `gpt-6.1-terra` completion through Studio (HTTP 200; schema/citation/expected-fact checks passed; 204 input / 37 output tokens, 3.340 seconds). Configured the existing local project to use the private `openai-terra` profile, preserving other dotenv values and all application state. The checked example now selects Terra with omitted temperature, a 120-second timeout and the existing 4,096-token cap. No runtime code change was needed. Profile/runtime unit tests: 60 passed; example registry/request and patch checks passed. Restart API/worker to load dotenv changes. [Verification details](multi-llm-verification.md#gpt-61-terra-configuration--3-november-2026).
+
+### GPT and Claude selection in the GUI — 3 November 2026
+
+Added a shared native dropdown to chat, proposals, repair, model test generation and model experiments, reusing server-owned project/purpose authorization and immutable descriptors. The example and local registry now expose four GPT and three Claude choices; the private Terra profile/default and dotenv values were preserved. Missing-key models remain unavailable, catalog errors never activate demo, repair inherits unless overridden, and chat switches reset the conversation. The native runtime discards passive Claude thinking blocks while preserving all final-text/tool/refusal/completion checks. No dependencies, contract changes or paid calls.
+
+[Verification](evidence/gui-model-selection-2026-11-03.md): **629 backend passed, 8 optional skips; 76 frontend passed**; both builds, lint, contract drift and patch checks passed. Fixed a team test fixture that accidentally inherited private dotenv model configuration; the initial errors and final rerun remain recorded. Chrome verified grouped choices and selection on a disposable store with zero jobs or approvals. Independent review found no actionable defects. [Completed plan](archive/2026-11-03-gui-model-selection-plan.md).
+
+### Ubuntu test server investigation — 3 November 2026
+
+Prepared a [deployment plan](ubuntu-test-deployment-plan.md) for the user's Ryzen 7945HX, 16 GB RAM, Ubuntu 24.04 test server. The recommended core topology has four persistent application services with Jena, OntoCheck and PDF extraction invoked on demand. Actual code inspection confirms Linux confinement is unimplemented and blocks the engine workflow; the optional TrustGraph stack adds seven containers plus external embedding/portal needs and has target-architecture/configuration work. Resource allowances and concurrency targets are proposals, not benchmark results. No runtime code, server configuration, private state, models or ontology publication were changed; deployment and Ubuntu verification remain future work.
+
+Planning checks: 85 local Markdown paths resolved, direct YAML inspection confirmed the optional service count/cap sum, patch hygiene passed, and independent read-only review found no consequential issues. No application test suite was run for this documentation-only task.
+
+### Live Ubuntu host inspection — 3 November 2026
+
+At the user's request, Remote Desktop Commander inspected the online server without installing packages or changing configuration. [Observed evidence](evidence/ubuntu-host-inspection-2026-11-03.md) corrects the initial specification to Ubuntu 26.04.1, Ryzen 7945HX with 16 cores / 32 threads, 12.84 GiB kernel-visible RAM, approximately 10.95 GiB available memory and 751 GiB free NVMe space. A minimal Bubblewrap namespace launch succeeded with AppArmor restrictions enabled; this is not application confinement verification. Existing PostgreSQL 18 and another app on port 8080 remain untouched. The [plan](ubuntu-test-deployment-plan.md) now uses the measured memory budget, actual OS and runtime/version gaps, preserving existing services with a separate Studio database. No Studio runtime, workload capacity, paid provider or ontology workflow was exercised on the host.

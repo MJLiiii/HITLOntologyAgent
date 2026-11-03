@@ -176,6 +176,15 @@
 .ontology-studio .chat-source-selection label { display:flex; flex-direction:row; align-items:center; gap:9px; font-size:11px; color:#747b8e; }
 .ontology-studio .chat-source-selection select { width:auto; max-width:100%; padding:5px 25px 5px 9px; font-size:11px; }
 .ontology-studio .chat-source-selection > code { font-size:10px; color:#868398; overflow-wrap:anywhere; }
+.ontology-studio .model-selector { min-width:0; margin:12px 0; }
+.ontology-studio .model-selector select { text-overflow:ellipsis; }
+.ontology-studio .model-selector .field-help { margin:6px 0 0; }
+.ontology-studio .form-grid .model-selector { margin:0; }
+.ontology-studio .chat-model-selection { margin-bottom:10px; }
+.ontology-studio .chat-model-selection .model-selector { margin:0; }
+.ontology-studio .chat-model-selection label { flex-direction:row; align-items:center; font-size:11px; }
+.ontology-studio .chat-model-selection select { flex:1; padding:5px 9px; font-size:11px; }
+.ontology-studio .chat-model-selection > .field-help { margin:4px 0 0; }
 .ontology-studio .chat-source-note { margin:0 0 10px; color:#8a749f; font-size:11px; line-height:1.6; }
 .ontology-studio .answer-source-context { margin-top:12px; }
 .ontology-studio .composer-context { flex-wrap:wrap; }

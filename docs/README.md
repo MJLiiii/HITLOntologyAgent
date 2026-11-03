@@ -8,6 +8,7 @@ Start with the [application README](../README.md) for installation and the repos
 | --- | --- |
 | [Workflow](workflow.md) | Sources → proposal → checks → human review → publication; experiments and exports |
 | [Operations](operations.md) | Local/team identity, independent processes, migrations, backup and recovery |
+| [Ubuntu test deployment plan](ubuntu-test-deployment-plan.md) | Proposed four-service setup for the Ryzen / 16 GB test server, Linux confinement work and capacity checks |
 | [Two-agent design](two-agent-team-development.md) | Agent boundaries, roles and implementation decisions |
 | [Architecture](architecture.md) | Runtime dependencies, HTTP module ownership and workflow boundaries |
 | [Model configuration](multi-llm.md) | Server-owned profiles, providers and bounded comparisons |
@@ -45,7 +46,9 @@ Use these records for what was actually tested, including failures and limits. T
 - [Implementation ledger](implementation-ledger.md) and [requirements audit](requirements-audit.md): implementation decisions and coverage.
 - [Architecture cleanup verification](evidence/architecture-refactor-2026-11-02.md): route separation, workflow simplification and regression results.
 - [OpenAI/Claude cleanup verification](evidence/llm-api-cleanup-2026-11-02.md): current two-provider runtime, cleanup and regression evidence.
+- [GUI model selection verification](evidence/gui-model-selection-2026-11-03.md): multiple GPT/Claude choices, controlled compatibility and browser evidence.
 - [Multi-LLM verification](multi-llm-verification.md) and [model comparison](model-comparison.md): model-layer checks and bounded live observations.
+- [Ubuntu host inspection](evidence/ubuntu-host-inspection-2026-11-03.md): actual server OS/resources, installed runtimes and a limited Bubblewrap capability probe; application deployment remains pending.
 - [Release verification](evidence/release-verification.md), [backend review](evidence/backend-review.md) and [bundled resources audit](evidence/bundled-resources-audit.md).
 - [Browser acceptance](evidence/browser-acceptance.md) and [local model browser smoke](evidence/browser-smoke.md).
 - [Portal smoke](evidence/portal-smoke.md), [TrustGraph pipeline smoke](evidence/trustgraph-pipeline-smoke.md) and [native editor boundary](evidence/native-editor-boundary.md).

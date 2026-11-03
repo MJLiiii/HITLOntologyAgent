@@ -1,4 +1,4 @@
-import { projectFixture, revisionFixture, suiteFixture } from '../../test-fixtures';
+import { modelProfileFixture, projectFixture, revisionFixture, suiteFixture } from '../../test-fixtures';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TestOraclePanel } from './TestOraclePanel';
@@ -95,14 +95,15 @@ describe('human test oracle',()=>{
 it('binds model test generation to the selected profile and candidate digest and preserves failure',async()=>{
   const writes:unknown[]=[];
   vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
-    if(path.endsWith('/model-profiles'))return new Response(JSON.stringify({items:[{id:'tests-profile',is_default:true,purposes:['test_generation'],status:'configured_unverified',revision:'profile-v1',provider:'controlled',model:'test-model'}],next_cursor:null}));
+    if(path.endsWith('/model-profiles'))return new Response(JSON.stringify({items:[modelProfileFixture(),modelProfileFixture({id:'tests-profile',is_default:false,provider:'anthropic',model:'claude-sonnet-4-6'})],next_cursor:null}));
     if(path.endsWith('/test-generation-jobs')){writes.push(JSON.parse(options.body as string));return new Response(JSON.stringify({job_id:'failed-job'}));}
     if(path.endsWith('/jobs/failed-job'))return new Response(JSON.stringify({status:'failed',error:'Model schema rejected'}));
     return new Response(JSON.stringify({items:[],next_cursor:null}));
   }));
   render(<TestOraclePanel project={project} session={session} revision={revision} onRefresh={vi.fn()} onOpenProposal={vi.fn()}/>);
   fireEvent.change(screen.getByLabelText('Test generator'),{target:{value:'model'}});
-  await waitFor(()=>expect(screen.getByLabelText('Test generation model profile')).toHaveValue('tests-profile'));
+  await screen.findByRole('option',{name:/claude-sonnet-4-6/});
+  fireEvent.change(screen.getByLabelText('Test generation model'),{target:{value:'tests-profile'}});
   fireEvent.click(screen.getByRole('button',{name:'Suggest development tests'}));
   await screen.findByText('Model schema rejected');
   expect(writes).toEqual([{proposal_id:revision.id,revision:revision.revision,generator_mode:'model',model_profile_id:'tests-profile',bundle_digest:revision.bundle_digest}]);

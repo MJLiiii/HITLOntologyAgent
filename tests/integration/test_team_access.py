@@ -12,7 +12,7 @@ from oe_studio.settings import Settings
 
 @pytest.fixture
 def team(tmp_path):
-    settings = Settings(mode='team', team_test_sqlite=True, team_origin='https://studio.example',
+    settings = Settings(_env_file=None, llm_config_file=None, mode='team', team_test_sqlite=True, team_origin='https://studio.example',
                         data_dir=tmp_path, eager_jobs=True)
     app = create_app(settings)
     db = app.state.studio.db

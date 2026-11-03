@@ -141,7 +141,9 @@ def _response(raw, provider, metadata):
         blocks = raw['content']
         text = ''.join(block['text'] for block in blocks if block.get('type') == 'text')
         finish = 'stop' if raw.get('stop_reason') == 'end_turn' else raw.get('stop_reason')
-        invalid = raw.get('stop_reason') != 'end_turn' or not blocks or any(block.get('type') != 'text' for block in blocks)
+        # Thinking is passive provider output; only final text enters the audit record.
+        invalid = raw.get('stop_reason') != 'end_turn' or not blocks or any(
+            block.get('type') not in {'text', 'thinking', 'redacted_thinking'} for block in blocks)
     metadata.update(raw_output=text, finish_reason=finish)
     if finish != 'stop' or invalid or not isinstance(text, str) or not text.strip():
         raise ValueError('Model response was incomplete, refused, or requested a tool')

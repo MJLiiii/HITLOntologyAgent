@@ -1,4 +1,4 @@
-import { projectFixture, versionFixture } from '../../test-fixtures';
+import { modelProfileFixture, projectFixture, versionFixture } from '../../test-fixtures';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ChatView } from './ChatView';
@@ -19,6 +19,27 @@ function wire(sourceSelection:string,corpus:string) {
 }
 
 describe('explicit chat source selection',()=>{
+  it('sends the chosen GPT or Claude profile and starts a separate conversation when models change',async()=>{
+    const writes:Record<string,unknown>[]=[];
+    vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
+      if(path.endsWith('/model-profiles'))return new Response(JSON.stringify({items:[modelProfileFixture(),modelProfileFixture({id:'claude-sonnet',provider:'anthropic',model:'claude-sonnet-4-6',is_default:false})],next_cursor:null}));
+      if(options.method==='POST'){writes.push(JSON.parse(String(options.body)));return new Response(JSON.stringify({job_id:'question'}));}
+      return new Response(JSON.stringify({status:'succeeded',stage:'question',result:{answer:'Synthetic answer',evidence:[],triples:[]}}));
+    }));
+    render(<ChatView project={project} session={{...session,model_mode:'model'}} versions={versions} sources={[]} onNavigate={vi.fn()}/>);
+    const send=async()=>{
+      fireEvent.change(screen.getByLabelText('Ask about your ontology or sources'),{target:{value:'Who owns this service?'}});
+      fireEvent.click(screen.getByRole('button',{name:'Send question'}));
+      await screen.findByText('Synthetic answer');
+    };
+    await screen.findByRole('option',{name:/gpt-6.1-terra/});await send();
+    fireEvent.change(screen.getByLabelText('Chat model'),{target:{value:'claude-sonnet'}});
+    expect(screen.queryByText('Synthetic answer')).not.toBeInTheDocument();
+    await send();
+    expect(writes.map(body=>body.model_profile_id)).toEqual(['openai-terra','claude-sonnet']);
+    expect(writes[1].conversation_id).not.toBe(writes[0].conversation_id);
+    expect(writes[1].history).toEqual([]);
+  });
   it('defaults to historical ontology sources without sending a current-corpus override',async()=>{
     const writes=wire('ontology_version','historical-corpus');
     render(<ChatView project={project} session={session} versions={versions} sources={[]} onNavigate={vi.fn()}/>);

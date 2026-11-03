@@ -4,7 +4,7 @@ Studio and the optional TrustGraph extraction worker support two model APIs: Ope
 
 ## Configure the two APIs
 
-Copy [the profile example](../config/llm-profiles.example.json) to a private operator-owned file. Replace both model placeholders with exact model IDs available to your account, and replace `REPLACE_WITH_PROJECT_ID` with the actual Studio project ID. Retain only profiles you intend to authorize. Set:
+Copy [the profile example](../config/llm-profiles.example.json) to a private operator-owned file. It includes multiple GPT and Claude models; replace `REPLACE_WITH_PROJECT_ID` with the actual Studio project ID and retain only models available to your account that you intend to authorize. Set:
 
 ```sh
 OE_LLM_CONFIG_FILE=/absolute/private/path/llm-profiles.json
@@ -19,6 +19,34 @@ Use `claude-chat` as the default to select Claude. Set `OPENAI_API_KEY` and/or `
 | `anthropic` (Claude) | `https://api.anthropic.com` | `ANTHROPIC_API_KEY` | `/v1/messages` |
 
 An operator may override `base_url` for controlled endpoint tests and `api_key_env` for a private credential name. URLs cannot embed credentials, query parameters or fragments. Never put keys in browser bundles, tracked JSON, command arguments, queued jobs or reports.
+
+## Choose a model in the GUI
+
+The **Model** dropdown appears in Chat, new proposals, model-generated test suggestions and model experiments (both model-pilot and registered-task runs). Options come from the project's authorized server catalog, grouped by OpenAI and Claude and filtered for the action. Choose the model before submitting; the request sends its profile ID and the server freezes its exact settings. An authorized available default is selected initially. Missing-key models remain visible but disabled, and a failed catalog load offers Retry. A missing or unavailable default requires an explicit selection rather than choosing another paid model automatically.
+
+Repair starts with **Use proposal's original model** and retains its original frozen settings. Selecting another repair model explicitly overrides that inheritance for the successor. Changing the chat model clears the visible chat and starts a new conversation. Selections are local to the action and project, not a change to the server default or previous jobs. No configured registry still means the labelled deterministic demo; catalog errors do not activate it. Deterministic demo experiments never send a model selection. TrustGraph extraction remains separately bound to its provisioned flow, not this dropdown.
+
+The starter registry contains these exact IDs, checked against the [OpenAI model catalog](https://developers.openai.com/api/docs/models) and [Claude model catalog](https://platform.claude.com/docs/en/models/overview) on 3 November 2026:
+
+| Profile | Provider | Model ID |
+| --- | --- | --- |
+| `openai-chat` | OpenAI | `gpt-6.1-terra` |
+| `openai-sol` | OpenAI | `gpt-6.1-sol` |
+| `openai-astra` | OpenAI | `gpt-6-astra` |
+| `openai-luna` | OpenAI | `gpt-6-luna` |
+| `claude-chat` | Claude | `claude-sonnet-5-5` |
+| `claude-opus` | Claude | `claude-opus-5-5` |
+| `claude-haiku` | Claude | `claude-haiku-5-5` |
+
+These are configurable examples, not a hardcoded browser list or proof of account access. Add another supported exact ID by copying a server profile, assigning a unique profile ID and authorizing it in the project's list. Models from the same provider share its server-side credential. The catalog only checks credential presence; `configured_unverified` does not verify provider access or make a billable request. Restart processes after environment-setting changes; updated registry contents are read for subsequent catalog requests and jobs. Reload the view to fetch new choices.
+
+Claude examples use `prompt_json` and validate the original schema locally because Studio's length, array and numeric constraints exceed Claude's native structured-output schema subset. See [Claude structured output limits](https://platform.claude.com/docs/en/build-with-claude/structured-outputs). The runtime extracts final text while discarding documented `thinking` and `redacted_thinking` blocks, including opaque signatures, from stored output. Tools, refusals, unknown block types, truncation and missing final text still fail. See [Claude thinking behavior](https://platform.claude.com/docs/en/build-with-claude/thinking).
+
+## OpenAI model selection
+
+GPT-4.1 mini was used only for the initial credential smoke test; it is not an application limit. The current example selects `gpt-6.1-terra` with `temperature: null`, a 120-second total deadline and the existing 4,096-token ceiling. Terra supports Chat Completions and structured outputs; no endpoint change is needed for Studio's tool-free generation. The runtime omits reasoning effort, so Terra uses its provider default (currently `medium`). Keep temperature omitted for reasoning models. See [Terra's model reference](https://developers.openai.com/api/docs/models/gpt-6.1-terra) and [OpenAI's compatibility guidance](https://developers.openai.com/api/docs/guides/latest-model).
+
+Set a different exact model ID only after checking account access and request compatibility. Existing frozen jobs keep their original profile snapshot. Restart the API and independent worker after changing `.env`; registry file edits are read for subsequent profile resolutions. The 4,096-token limit also covers reasoning, so a truncated result remains an explicit failure rather than silently increasing the budget.
 
 ## Profile contract
 

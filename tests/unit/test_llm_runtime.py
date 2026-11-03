@@ -399,6 +399,60 @@ def test_anthropic_json_object_cannot_silently_drop_the_requested_mode(monkeypat
     assert requests == []
 
 
+@pytest.mark.parametrize('reasoning', [
+    {'type': 'thinking', 'thinking': '', 'signature': 'reasoning-marker-signature'},
+    {'type': 'thinking', 'thinking': 'reasoning-marker-summary', 'signature': 'reasoning-marker-signature'},
+    {'type': 'redacted_thinking', 'data': 'reasoning-marker-encrypted'},
+])
+def test_anthropic_passive_thinking_returns_only_final_text(reasoning, monkeypatch):
+    from oe_studio.llm_runtime import complete
+    monkeypatch.setenv('RUNTIME_TEST_API_KEY', 'private-fixture-key')
+    # Documented thinking display modes and safety-redacted thinking are passive blocks.
+    raw = response('anthropic').json()
+    raw['content'].insert(0, reasoning)
+
+    text, metadata = asyncio.run(complete(configured('anthropic', temperature=None), 'safe', {}, SCHEMA,
+        transport=httpx.MockTransport(lambda request: httpx.Response(200, json=raw))))
+
+    assert text == '{"answer":"supported"}'
+    assert metadata['raw_output'] == text
+    assert metadata['finish_reason'] == 'stop'
+    assert metadata['output_tokens'] == 3
+    assert 'reasoning-marker' not in json.dumps(metadata)
+
+
+@pytest.mark.parametrize('failure', [
+    'tool_use', 'refusal_block', 'unknown_block', 'refusal', 'max_tokens',
+    'thinking_only', 'empty_text', 'whitespace_text',
+])
+def test_anthropic_thinking_cannot_hide_invalid_responses(failure, monkeypatch):
+    from oe_studio.llm_runtime import complete, CompletionError
+    monkeypatch.setenv('RUNTIME_TEST_API_KEY', 'private-fixture-key')
+    raw = response('anthropic').json()
+    raw['content'][:0] = [
+        {'type': 'thinking', 'thinking': 'reasoning-marker-summary', 'signature': 'reasoning-marker-signature'},
+        {'type': 'redacted_thinking', 'data': 'reasoning-marker-encrypted'},
+    ]
+    if failure in {'refusal', 'max_tokens'}:
+        raw['stop_reason'] = failure
+    elif failure == 'thinking_only':
+        raw['content'].pop()
+    elif failure in {'empty_text', 'whitespace_text'}:
+        raw['content'][-1]['text'] = '' if failure == 'empty_text' else ' \n '
+    elif failure == 'tool_use':
+        raw['content'].append({'type': 'tool_use', 'id': 'toolu_fixture', 'name': 'publish', 'input': {}})
+    else:
+        raw['content'].append({'type': 'refusal' if failure == 'refusal_block' else 'unknown', 'text': 'unsafe'})
+
+    with pytest.raises(CompletionError) as caught:
+        asyncio.run(complete(configured('anthropic', temperature=None), 'safe', {}, SCHEMA,
+            transport=httpx.MockTransport(lambda request: httpx.Response(200, json=raw))))
+
+    assert caught.value.record['status'] == 'failed'
+    assert caught.value.record['http_attempted'] is True
+    assert 'reasoning-marker' not in str(caught.value) + json.dumps(caught.value.record)
+
+
 @pytest.mark.parametrize('provider,mutation', [
     ('openai', 'refusal'), ('openai', 'tool_calls'), ('openai', 'function_call'),
     ('openai', 'truncated'), ('openai', 'missing_choices'), ('openai', 'empty'),

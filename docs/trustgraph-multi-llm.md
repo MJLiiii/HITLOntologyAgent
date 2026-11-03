@@ -1,6 +1,6 @@
 # Profile-bound TrustGraph extraction
 
-The optional TrustGraph 2.11.1 `ProfileLlmService` worker extends `LlmService` and calls the same bounded OpenAI and Claude APIs as Studio. Text completion accepts only `openai` and `anthropic` profiles; embeddings and reranking keep their existing processors. No website model picker is added.
+The optional TrustGraph 2.11.1 `ProfileLlmService` worker extends `LlmService` and calls the same bounded OpenAI and Claude APIs as Studio. Text completion accepts only `openai` and `anthropic` profiles; embeddings and reranking keep their existing processors. Studio's [GUI model picker](multi-llm.md#choose-a-model-in-the-gui) selects its direct generation actions; extraction stays bound to a separately provisioned flow as described below.
 
 ## Private server and worker bindings
 

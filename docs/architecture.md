@@ -82,6 +82,14 @@ Its API types are generated from the registered FastAPI routes. Run
 intentional API change. The response-contract tests inspect registered endpoints,
 so job metadata coverage does not depend on their source-file location.
 
+Model selection reuses this boundary: the shared native frontend selector reads
+the sanitized project model catalog, filters profiles by operation and sends only
+the selected profile ID. The server alone resolves credentials, authorizes the
+choice and freezes the descriptor. Selections belong to individual actions;
+repair inherits its origin unless explicitly overridden, and chat switches start
+fresh conversations. No client-owned provider registry or credentials are added.
+See [GUI model selection](multi-llm.md#choose-a-model-in-the-gui).
+
 See the [workflow invariants](../AGENTS.md#workflow-invariants),
 [integration evidence](integrations.md) and
 [architecture cleanup verification](evidence/architecture-refactor-2026-11-02.md).

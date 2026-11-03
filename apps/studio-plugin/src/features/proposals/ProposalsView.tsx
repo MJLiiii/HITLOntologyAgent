@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Project, Proposal, Revision, Session, Triple } from '../../api/generated';
-import type { BundleRequest, ProposalRequest, PublishRequest, ReviewRequest, RevisionRequest, Submission } from '../../api/openapi';
+import type { BundleRequest, ProposalRequest, PublishRequest, RepairRequest, ReviewRequest, RevisionRequest, Submission } from '../../api/openapi';
 import { errorMessage, operation, runJob } from '../../api/client';
 import { Badge, date, Empty, ErrorNotice, EvidenceList, Loading, PanelHeading, short, TripleTable } from '../../components/ui';
 import { Icon } from '../../components/Icons';
 import { AssessmentCard, ValidationReportCard } from '../validation/ValidationView';
 import { ReviewTimer } from './ReviewTimer';
+import { ModelSelector, useModelSelection } from '../../components/ModelSelector';
 
 type Action = 'revise' | 'validate' | 'repair' | 'assess' | 'submit' | 'accept' | 'request_changes' | 'reject' | 'publish';
-type ActionHandler = (action: Action, body?: Partial<RevisionRequest>) => Promise<void>;
+type ActionHandler = (action: Action, body?: Partial<RevisionRequest> & {model_profile_id?:string}) => Promise<void>;
 const isTerminal = (status: string) => ['published','rejected'].includes(status);
 const tripleKey = (triple: Triple) => JSON.stringify([triple.subject,triple.predicate,triple.object,triple.object_type || 'iri',triple.datatype || null,triple.language || null]);
 function revisionDelta(previous: {additions:Triple[];deletions:Triple[]}, next: {additions:Triple[];deletions:Triple[]}) {
@@ -25,6 +26,7 @@ function ChangeEditor({label, triples, onChange}: {label: string; triples: Tripl
 }
 
 export function RevisionDetail({project, session, revision, onRefresh, onAction, busy}: {project: Project; session: Session; revision: Revision; onRefresh: () => void; onAction: ActionHandler; busy: boolean}) {
+  const repairModel=useModelSelection(project.id,'repair',{enabled:session.model_mode!=='local'&&revision.validation?.status==='failed',inherit:true});
   const [section, setSection] = useState<'changes'|'evidence'|'checks'|'history'>('changes');
   const [editing, setEditing] = useState(false);
   const [rationale, setRationale] = useState('');
@@ -70,7 +72,7 @@ export function RevisionDetail({project, session, revision, onRefresh, onAction,
     </div>
     <section className="panel review-panel"><div className="section-heading"><div><span className="card-eyebrow">HUMAN REVIEW</span><h3>{published ? 'This revision has been published' : accepted ? 'Accepted and ready for publication' : 'A deliberate step at every stage'}</h3></div><Icon name="shield" size={23}/></div><p className="muted small">Validation, assessment, submission, acceptance, and publication are separate actions. Acceptance binds your decision to this exact bundle.</p>
       {revision.revision_id&&<ReviewTimer projectId={project.id} revisionId={revision.revision_id} session={session} disabled={busy}/>}
-      <div className="review-check-actions"><button className="button button-secondary" disabled={busy||!canResearch||accepted||isTerminal(revision.status)} onClick={() => void onAction('validate')}><Icon name="validation" size={15}/>Run validation</button>{revision.validation?.status==='failed'&&<button className="button button-secondary" disabled={busy||!canRepair} onClick={()=>void onAction('repair')}><Icon name="spark" size={15}/>Request repair</button>}<button className="button button-secondary" disabled={busy||!canResearch||accepted||isTerminal(revision.status)} onClick={() => void onAction('assess')}><Icon name="experiments" size={15}/>Run assessment</button><button className="button button-secondary" disabled={busy||!canResearch||!ready||submitted||accepted||isTerminal(revision.status)} onClick={() => void onAction('submit')}>Submit for review<Icon name="chevron" size={15}/></button></div>
+      {revision.validation?.status==='failed'&&<ModelSelector label="Repair model" selection={repairModel} disabled={busy||!canRepair}/>}<div className="review-check-actions"><button className="button button-secondary" disabled={busy||!canResearch||accepted||isTerminal(revision.status)} onClick={() => void onAction('validate')}><Icon name="validation" size={15}/>Run validation</button>{revision.validation?.status==='failed'&&<button className="button button-secondary" disabled={busy||!canRepair||!repairModel.ready} onClick={()=>void onAction('repair',{model_profile_id:repairModel.profileId})}><Icon name="spark" size={15}/>Request repair</button>}<button className="button button-secondary" disabled={busy||!canResearch||accepted||isTerminal(revision.status)} onClick={() => void onAction('assess')}><Icon name="experiments" size={15}/>Run assessment</button><button className="button button-secondary" disabled={busy||!canResearch||!ready||submitted||accepted||isTerminal(revision.status)} onClick={() => void onAction('submit')}>Submit for review<Icon name="chevron" size={15}/></button></div>
       {revision.validation?.status==='failed'&&<p className="action-reason">Repair uses failed competency-question diagnostics only. At most two attempts are allowed per proposal. Each attempt creates a successor; required checks must run again and no revision is automatically approved.{project.pending_publication_id?' A pending publication must finish before repair.':''}{stale||superseded?' Repair requires the latest revision against the current approved head.':''}</p>}
       {!ready && !reasons.length && !published && <p className="action-reason">Passing validation, completed assessment, and resolved evidence are required before submission.</p>}
       {!submitted && !accepted && !published && <p className="action-reason">Submit this revision for review before recording a decision.</p>}
@@ -85,6 +87,7 @@ export function ProposalsView({project, session, proposals, initialSelection, on
   const [selected, setSelected] = useState(initialSelection || '');
   const [revision, setRevision] = useState<Revision | null>(null);
   const [creating, setCreating] = useState(false);
+  const model=useModelSelection(project.id,'proposal',{enabled:session.model_mode!=='local'&&creating});
   const [instruction, setInstruction] = useState('Create an evidence-grounded service ownership ontology from the synthetic source library.');
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -101,11 +104,11 @@ export function ProposalsView({project, session, proposals, initialSelection, on
     return () => {active=false;};
   }, [project.id, proposal?.id, proposal?.revision, proposal?.status, proposal?.validation_run_id, proposal?.assessment_run_ids?.join(',')]);
   async function create(event: React.FormEvent) {
-    event.preventDefault();if(!session.actor.roles.includes('researcher'))return;setBusy(true);setError('');setNotice('');setStage('Preparing a candidate');
+    event.preventDefault();if(!session.actor.roles.includes('researcher')||!model.ready||busy)return;setBusy(true);setError('');setNotice('');setStage('Preparing a candidate');
     try {
       const current = await operation('GET /api/v1/projects/{p}',{path:{p:project.id}});
       if(current.approved_version_id !== project.approved_version_id || current.corpus_snapshot_id !== project.corpus_snapshot_id) {await onRefresh();throw new Error('The approved version or corpus snapshot changed. Review the current workspace before creating a proposal.');}
-      const result = await runJob('POST /api/v1/projects/{p}/proposal-jobs', {path:{p:project.id},body:{base_version_id:current.approved_version_id,corpus_snapshot_id:current.corpus_snapshot_id,competency_question_ids:[],instruction:instruction.trim()} satisfies ProposalRequest}, setStage);
+      const result = await runJob('POST /api/v1/projects/{p}/proposal-jobs', {path:{p:project.id},body:{base_version_id:current.approved_version_id,corpus_snapshot_id:current.corpus_snapshot_id,competency_question_ids:[],instruction:instruction.trim(),...(model.profileId?{model_profile_id:model.profileId}:{})} satisfies ProposalRequest}, setStage);
       await onRefresh();setSelected(result.proposal_id);setCreating(false);setNotice('A candidate was created. Inspect the evidence and run both validation and assessment.');
     } catch(err) {setError(errorMessage(err));} finally {setBusy(false);}
   }
@@ -128,7 +131,7 @@ export function ProposalsView({project, session, proposals, initialSelection, on
       } else if(kind==='repair') {
         if(current.pending_publication_id)throw new Error('A publication is pending. Finish it before requesting repair.');
         if(latest.validation?.status!=='failed' || latest.stale || latest.history?.some(event=>typeof event.revision==='number'&&event.revision>revision.revision))throw new Error('Repair requires a failed expectation report on the latest revision against the current approved head. Engine errors cannot be repaired automatically.');
-        const result=await runJob('POST /api/v1/projects/{p}/repair-jobs',{path:{p:project.id},body:bundle},setStage);
+        const result=await runJob('POST /api/v1/projects/{p}/repair-jobs',{path:{p:project.id},body:{...bundle,...(extras.model_profile_id?{model_profile_id:extras.model_profile_id}:{})} satisfies RepairRequest},setStage);
         setSelected(result.proposal_id);
         setRevision(await operation('GET /api/v1/projects/{p}/proposals/{proposal}/revisions/{revision}',{path:{p:project.id,proposal:result.proposal_id,revision:result.revision}}));
         setNotice(`Repair attempt ${result.repair_attempt} of 2 created revision ${result.revision}. Inspect the successor and rerun validation and assessment. No revision was approved or published.`);
@@ -152,7 +155,7 @@ export function ProposalsView({project, session, proposals, initialSelection, on
   return <div className="page-content proposals-page"><PanelHeading title="From a useful idea to an approved change" subtitle="Every proposal is versioned, evidenced, checked, and deliberately reviewed." action={<button className="button button-primary" disabled={busy||!session.actor.roles.includes('researcher')} onClick={() => setCreating(!creating)}><Icon name="plus" size={16}/>New proposal</button>}/>
     {error && <ErrorNotice message={error} onDismiss={() => setError('')}/>}{notice && <div className="notice notice-success" role="status"><Icon name="check"/><span>{notice}</span></div>}
     {!project.scope_accepted && <div className="notice notice-info"><Icon name="shield"/><span>Demo scope acceptance is required before release review.</span><button className="text-button small" onClick={onSources}>Review scope<Icon name="chevron" size={14}/></button></div>}
-    {creating && <form className="panel form-panel" onSubmit={e => void create(e)}><h3>{project.approved_version_id ? 'Describe your proposed change' : 'Create the first ontology candidate'}</h3><p className="muted small">The proposal uses the current frozen corpus and approved head. Generation never approves or publishes changes.</p><label>Proposal instruction<textarea value={instruction} onChange={e => setInstruction(e.target.value)} maxLength={4000} rows={3} required/></label><div className="form-actions"><button className="button button-secondary" type="button" onClick={() => setCreating(false)}>Cancel</button><button className="button button-primary" type="submit" disabled={busy||!session.actor.roles.includes('researcher')||!instruction.trim()||!project.corpus_snapshot_id}><Icon name="spark" size={15}/>Generate candidate</button></div>{!project.corpus_snapshot_id && <p className="action-reason">Process sources and freeze a corpus snapshot first.</p>}</form>}
+    {creating && <form className="panel form-panel" onSubmit={e => void create(e)}><h3>{project.approved_version_id ? 'Describe your proposed change' : 'Create the first ontology candidate'}</h3><p className="muted small">The proposal uses the current frozen corpus and approved head. Generation never approves or publishes changes.</p><ModelSelector label="Proposal model" selection={model} disabled={busy}/><label>Proposal instruction<textarea value={instruction} onChange={e => setInstruction(e.target.value)} maxLength={4000} rows={3} required/></label><div className="form-actions"><button className="button button-secondary" type="button" onClick={() => setCreating(false)}>Cancel</button><button className="button button-primary" type="submit" disabled={busy||!model.ready||!session.actor.roles.includes('researcher')||!instruction.trim()||!project.corpus_snapshot_id}><Icon name="spark" size={15}/>Generate candidate</button></div>{!project.corpus_snapshot_id && <p className="action-reason">Process sources and freeze a corpus snapshot first.</p>}</form>}
     {busy && <div className="inline-loading" role="status"><span className="spinner"/>{stage.replaceAll('_',' ')}…</div>}
     {!proposals.length ? <div className="panel"><Empty icon="proposals" title="The next version starts with a proposal">Describe a change to generate an inspectable candidate, or create the first ontology from your source library.</Empty><div className="empty-action"><button className="button button-secondary" disabled={!session.actor.roles.includes('researcher')} onClick={() => setCreating(true)}>Create a proposal<Icon name="plus" size={15}/></button></div></div> : <><div className="proposal-picker"><label>Proposal<select value={proposal?.id || ''} disabled={busy} onChange={e => setSelected(e.target.value)}>{proposals.map(p => <option value={p.id} key={p.id}>{p.title} · Revision {p.revision} · {p.status.replaceAll('_',' ')}</option>)}</select></label><span className="small muted">{proposals.length} candidate{proposals.length===1?'':'s'} · immutable revisions</span></div>{loading ? <Loading label="Loading candidate revision…"/> : revision && <RevisionDetail key={`${revision.id}:${revision.revision}`} project={project} session={session} revision={revision} onRefresh={() => {void onRefresh();void refreshRevision().catch(err => setError(errorMessage(err)));}} onAction={safeAction} busy={busy}/>}</>}
   </div>;

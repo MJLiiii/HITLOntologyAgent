@@ -1,10 +1,13 @@
 import type { AuditEvent, Evidence, Experiment, Project, Publication, ReviewDecision, Revision, SourceDocument, TestSuite, Version } from './api/generated';
-import type { Actor, ArtifactRef, BundleManifest } from './api/openapi';
+import type { Actor, ArtifactRef, BundleManifest, ModelProfileResponse } from './api/openapi';
 
 // Complete synthetic wire fixtures: overrides keep each test focused without weakening API types.
 export const testActor: Actor = {kind:'human',subject:'synthetic-reviewer',roles:['researcher','reviewer','approver']};
 export const testArtifact: ArtifactRef = {id:'artifact',sha256:'a'.repeat(64),byte_length:0,media_type:'text/turtle',schema_version:1};
 const createdAt = '2026-11-01T12:00:00Z';
+export function modelProfileFixture(overrides:Partial<ModelProfileResponse>={}):ModelProfileResponse {
+  return {id:'openai-terra',model:'gpt-6.1-terra',provider:'openai',purposes:['chat','proposal','repair','experiment','test_generation'],is_default:true,status:'configured_unverified',revision:'profile-revision',max_output_tokens:4096,structured_output:'json_schema',...overrides};
+}
 const manifest: BundleManifest = {
   assessment_mappings:[],assessment_mappings_digest:'mapping-digest',base_version_id:null,
   canonical_ontology_sha256:testArtifact.sha256,corpus_digest:'corpus-digest',corpus_snapshot_id:'corpus',

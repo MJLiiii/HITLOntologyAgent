@@ -1,4 +1,4 @@
-import { evidenceFixture, projectFixture, revisionFixture } from '../../test-fixtures';
+import { evidenceFixture, modelProfileFixture, projectFixture, revisionFixture } from '../../test-fixtures';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { ProposalsView, RevisionDetail } from './ProposalsView';
@@ -8,6 +8,37 @@ const session: Session = { actor: { subject: 'human', kind: 'human', roles: ['re
 const revision: Revision = revisionFixture({ id: 'proposal', title: 'Add an owner', revision: 1, status: 'validated', base_version_id: 'head-old', bundle_digest: 'sha256:1234', created_at: '', rationale: 'Add ownership', additions: [{ subject: 'demo:Dataset', predicate: 'rdfs:subClassOf', object: 'demo:Asset' }], deletions: [], evidence: [evidenceFixture({ id: 'e', document_id: 'doc', title: 'Handbook', quote: '<script>alert(1)</script>', resolved: true })], review_eligibility: { eligible: true, reasons: [] }, validation_run_id: 'v', assessment_run_ids: ['a'] });
 afterEach(() => vi.unstubAllGlobals());
 describe('revision review', () => {
+  it('creates a proposal with the explicitly chosen Claude profile',async()=>{
+    const writes:Record<string,unknown>[]=[];
+    vi.stubGlobal('fetch',vi.fn(async(path:string,options:RequestInit={})=>{
+      if(path.endsWith('/model-profiles'))return new Response(JSON.stringify({items:[modelProfileFixture(),modelProfileFixture({id:'claude-sonnet',model:'claude-sonnet-4-6',provider:'anthropic',is_default:false})],next_cursor:null}));
+      if(options.method==='POST'){writes.push(JSON.parse(String(options.body)));return new Response(JSON.stringify({job_id:'proposal-job'}));}
+      if(path.endsWith('/jobs/proposal-job'))return new Response(JSON.stringify({status:'succeeded',result:{proposal_id:'new-proposal'}}));
+      return new Response(JSON.stringify(project));
+    }));
+    render(<ProposalsView project={project} session={{...session,model_mode:'model'}} proposals={[]} onRefresh={vi.fn().mockResolvedValue(undefined)} onSources={vi.fn()}/>);
+    fireEvent.click(screen.getByRole('button',{name:'New proposal'}));
+    await screen.findByRole('option',{name:/claude-sonnet-4-6/});
+    fireEvent.change(screen.getByLabelText('Proposal model'),{target:{value:'claude-sonnet'}});
+    fireEvent.click(screen.getByRole('button',{name:'Generate candidate'}));
+    await screen.findByText(/A candidate was created/);
+    expect(writes).toEqual([expect.objectContaining({model_profile_id:'claude-sonnet',base_version_id:project.approved_version_id,corpus_snapshot_id:project.corpus_snapshot_id})]);
+  });
+
+  it('uses an explicit repair model only when the researcher selects an override',async()=>{
+    const action=vi.fn().mockResolvedValue(undefined);
+    const current={...project,approved_version_id:'head-old'};
+    const failed:Revision={...revision,status:'validation_failed',validation:{id:'v',status:'failed',profile:'rdfs',cases:[]}};
+    vi.stubGlobal('fetch',vi.fn(async(path:string)=>new Response(JSON.stringify({items:path.endsWith('/model-profiles')?[modelProfileFixture(),modelProfileFixture({id:'claude-sonnet',model:'claude-sonnet-4-6',provider:'anthropic',is_default:false})]:[],next_cursor:null}))));
+    render(<RevisionDetail project={current} session={{...session,model_mode:'model'}} revision={failed} onRefresh={vi.fn()} onAction={action} busy={false}/>);
+    await screen.findByRole('option',{name:/claude-sonnet-4-6/});
+    expect(screen.getByLabelText('Repair model')).toHaveValue('');
+    fireEvent.click(screen.getByRole('button',{name:'Request repair'}));
+    expect(action).toHaveBeenLastCalledWith('repair',{model_profile_id:undefined});
+    fireEvent.change(screen.getByLabelText('Repair model'),{target:{value:'claude-sonnet'}});
+    fireEvent.click(screen.getByRole('button',{name:'Request repair'}));
+    expect(action).toHaveBeenLastCalledWith('repair',{model_profile_id:'claude-sonnet'});
+  });
   it('disables acceptance of a stale base and escapes source content', () => {
     render(<RevisionDetail project={project} session={session} revision={revision} onRefresh={vi.fn()} onAction={vi.fn()} busy={false} />);
     expect(screen.getByRole('button', { name: 'Accept revision' })).toBeDisabled();

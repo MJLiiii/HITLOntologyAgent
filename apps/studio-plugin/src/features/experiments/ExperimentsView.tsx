@@ -6,6 +6,7 @@ import { Badge, Empty, ErrorNotice, PanelHeading, percent } from '../../componen
 import { Icon } from '../../components/Icons';
 import { ExperimentReview } from './ExperimentReview';
 import { SyntheticTaskPanel } from './SyntheticTaskPanel';
+import { ModelSelector, useModelSelection } from '../../components/ModelSelector';
 
 const conditions = [
   {id:'A',name:'One-shot generation',description:'Initial candidate, no repair feedback.'},
@@ -37,6 +38,7 @@ export function ExperimentsView({project, experiments, proposals, session, onRef
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const registered=protocol==='synthetic-task-v1';
+  const model=useModelSelection(project.id,'experiment',{enabled:protocol!=='demo-v1'});
   const protocolRuns = useMemo(() => experiments.filter(run => protocolOf(run) === protocol&&(!registered||run.task_id===registration?.task_id)), [experiments, protocol,registered,registration?.task_id]);
   const filtered = useMemo(() => protocolRuns.filter(run => (condition === 'all' || run.condition === condition)
     && (status === 'all' || run.status === status) && (phase === 'all' || phaseOf(run) === phase)), [protocolRuns, condition, status, phase]);
@@ -46,12 +48,12 @@ export function ExperimentsView({project, experiments, proposals, session, onRef
   const pilot = protocol === 'model-pilot-v1';
 
   async function run() {
-    if(registered&&!registration)return;
+    if(busy||!model.ready||(registered&&!registration))return;
     setBusy(true); setError(''); setNotice(''); setStage(registered?'Starting registered synthetic task':pilot?'Starting frozen model pilot':'Starting frozen demonstration');
     try {
-      if(protocol==='synthetic-task-v1'&&registration) await runJob('POST /api/v1/projects/{p}/synthetic-task-jobs',{path:{p:project.id},body:{registration_id:registration.id,registration_digest:registration.registration_digest,condition,replicate_ids:[1]} satisfies SyntheticTaskJob},setStage);
+      if(protocol==='synthetic-task-v1'&&registration) await runJob('POST /api/v1/projects/{p}/synthetic-task-jobs',{path:{p:project.id},body:{registration_id:registration.id,registration_digest:registration.registration_digest,condition,replicate_ids:[1],model_profile_id:model.profileId} satisfies SyntheticTaskJob},setStage);
       else if(protocol!=='synthetic-task-v1') await runJob('POST /api/v1/projects/{p}/experiment-jobs', {path:{p:project.id},body:{
-        protocol_id:protocol, condition, task_ids:['demo-ownership'], replicate_ids:[1],
+        protocol_id:protocol, condition, task_ids:['demo-ownership'], replicate_ids:[1],...(model.profileId?{model_profile_id:model.profileId}:{}),
       } satisfies ExperimentRequest}, setStage);
       await onRefresh();
       setNotice(`${registered?'Registered task':pilot?'Model pilot':'Demo'} runs recorded. Inspect failures and missing measurements. Condition D requires an explicitly staged candidate and a real human decision.`);
@@ -66,10 +68,11 @@ export function ExperimentsView({project, experiments, proposals, session, onRef
   }
 
   return <div className="page-content">
-    <PanelHeading title="Compare the process, not just the output" subtitle="Inspect conditions A–D on frozen tasks, with failures and missing metrics kept visible." action={<button className="button button-primary" disabled={busy||!session.actor.roles.includes('researcher')||(registered&&!registration)} onClick={() => void run()}><Icon name="experiments" size={16}/>Run {condition==='all'?'A–D':condition} {registered?'registered task':pilot?'model pilot':'demo'}</button>}/>
+    <PanelHeading title="Compare the process, not just the output" subtitle="Inspect conditions A–D on frozen tasks, with failures and missing metrics kept visible." action={<button className="button button-primary" disabled={busy||!model.ready||!session.actor.roles.includes('researcher')||(registered&&!registration)} onClick={() => void run()}><Icon name="experiments" size={16}/>Run {condition==='all'?'A–D':condition} {registered?'registered task':pilot?'model pilot':'demo'}</button>}/>
     {error && <ErrorNotice message={error}/>}
     {notice && <div className="notice notice-success" role="status"><Icon name="check"/><span>{notice}</span></div>}
     <div className="experiment-protocol"><label>Experiment protocol<select value={protocol} onChange={event => chooseProtocol(event.target.value as typeof protocol)} disabled={busy}><option value="demo-v1">Frozen workflow demonstration</option><option value="model-pilot-v1">Configured model pilot</option><option value="synthetic-task-v1">Registered synthetic task</option></select></label><p className="muted small">{registered?'Runs one explicitly selected frozen task packet across A–D. Comparisons are scoped to that task.':pilot?'Calls the configured model using the same frozen task across A–D. Condition D shares C’s automated output and waits for a real review.':'Exercises the deterministic demonstration protocol. Select the model pilot to record actual model calls.'}</p></div>
+    {protocol!=='demo-v1'&&<ModelSelector label="Experiment model" selection={model} disabled={busy}/>}
     <div className="notice notice-info"><Icon name="shield"/><span>Synthetic development workload · one frozen task and one replicate. {pilot||registered?'Model-generated outputs are an engineering pilot, with no independent held-out evaluation.':'These records exercise the workflow.'} These protocols are engineering tests, not a real study or a completed expert evaluation.</span></div>
     {registered&&<SyntheticTaskPanel key={project.id} project={project} proposals={proposals} session={session} selected={registration} disabled={busy} onSelect={task=>{setRegistration(task);setSelectedId('');setStatus('all');setPhase('all');}}/>}
     <div className="condition-grid">{conditions.map(item => {

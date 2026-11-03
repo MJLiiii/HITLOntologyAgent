@@ -104,3 +104,61 @@ def test_health_is_configuration_only(client, tmp_path, monkeypatch):
     monkeypatch.setattr('httpx.Client.get', lambda *a, **kw: (_ for _ in ()).throw(AssertionError('Health must not query a model')))
     from oe_studio.health import dependencies
     assert dependencies(client.app.state.studio)['model'] == 'configured_unverified'
+
+
+def test_gui_catalog_selections_freeze_each_model_and_reject_missing_credentials(client, tmp_path, monkeypatch):
+    """Selecting a second model must not silently enqueue the provider's default."""
+    from oe_studio.llm_profiles import Profile
+
+    p = project(client)['id']
+    root = f'/api/v1/projects/{p}'
+    monkeypatch.setenv('GUI_OPENAI_TEST_KEY', 'synthetic-openai-key')
+    monkeypatch.setenv('GUI_CLAUDE_TEST_KEY', 'synthetic-claude-key')
+    monkeypatch.delenv('GUI_MISSING_TEST_KEY', raising=False)
+    models = [('terra', 'openai', 'gpt-6.1-terra'), ('sol', 'openai', 'gpt-6.1-sol'),
+              ('sonnet', 'anthropic', 'claude-sonnet-5-5'), ('opus', 'anthropic', 'claude-opus-5-5')]
+    profiles = [Profile(id=name, provider=provider, model=model, purposes=['chat'], temperature=None,
+                        api_key_env='GUI_OPENAI_TEST_KEY' if provider == 'openai' else 'GUI_CLAUDE_TEST_KEY').model_dump()
+                for name, provider, model in models]
+    profiles.append({**profiles[-1], 'id': 'unavailable', 'api_key_env': 'GUI_MISSING_TEST_KEY'})
+    profiles.append({**profiles[0], 'id': 'other-project'})
+    path = tmp_path / 'gui-models.json'
+    path.write_text(json.dumps({'profiles': profiles, 'projects': {p: [m[0] for m in models] + ['unavailable']}}))
+    studio = client.app.state.studio
+    studio.settings.llm_config_file = path
+    studio.settings.llm_default_profile = 'terra'
+    studio.settings.eager_jobs = False
+
+    listed, cursor = [], None
+    while True:
+        response = client.get(root + '/model-profiles', params={'limit': 2, **({'cursor': cursor} if cursor else {})})
+        assert response.status_code == 200
+        page = response.json()
+        listed.extend(page['items'])
+        cursor = page['next_cursor']
+        if not cursor:
+            break
+    assert {item['id'] for item in listed} == {'terra', 'sol', 'sonnet', 'opus', 'unavailable'}
+    assert {item['id'] for item in listed if item['is_default']} == {'terra'}
+    assert next(item['status'] for item in listed if item['id'] == 'unavailable') == 'missing_credentials'
+    assert all('base_url' not in item and 'api_key_env' not in item for item in listed)
+
+    for name, provider, model in models:
+        conversation = str(uuid4())
+        response = client.post(root + '/question-jobs', json={
+            'question': 'Who owns Atlas?', 'conversation_id': conversation, 'model_profile_id': name,
+        }, headers={'Idempotency-Key': str(uuid4())})
+        assert response.status_code == 202, response.text
+        with studio.db.session() as session:
+            payload = session.get(Job, response.json()['job_id']).payload
+            frozen = payload['_resolved_llm_profile']
+            assert (frozen['id'], frozen['provider'], frozen['model']) == (name, provider, model)
+            assert frozen['revision'] == next(item['revision'] for item in listed if item['id'] == name)
+            assert payload['conversation_id'] == conversation
+            assert 'synthetic-openai-key' not in json.dumps(payload)
+            assert 'synthetic-claude-key' not in json.dumps(payload)
+    for name, status in [('unavailable', 422), ('other-project', 403)]:
+        response = client.post(root + '/question-jobs', json={'question': 'Synthetic?', 'model_profile_id': name},
+                               headers={'Idempotency-Key': str(uuid4())})
+        assert response.status_code == status
+    assert project(client)['approved_version_id'] is None
