@@ -1,0 +1,9 @@
+# Overlay ONLY: retain the official pinned image and loopback port in ../compose.yaml.
+# Run with the explicit project name ontology-studio-ubuntu (see docs/operations.md).
+services:
+  postgres:
+    restart: unless-stopped
+    mem_limit: 1536m
+    cpus: 2.0
+    pids_limit: 256
+    stop_grace_period: 60s

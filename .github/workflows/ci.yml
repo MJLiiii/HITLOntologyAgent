@@ -14,8 +14,11 @@ concurrency:
 
 jobs:
   local-engine-workflow:
-    # The confined engine launcher is supported on macOS. Other platforms fail closed.
-    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -31,6 +34,9 @@ jobs:
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           version: '0.13.6'
+      - name: Install Linux engine launcher
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y bubblewrap
       - name: Install locked dependencies
         run: |
           make setup

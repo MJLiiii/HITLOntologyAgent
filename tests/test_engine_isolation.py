@@ -1,4 +1,4 @@
-"""Real OS boundary checks; run outside an existing sandbox on macOS."""
+"""Real OS boundary checks; run outside an enclosing desktop sandbox."""
 import json
 from pathlib import Path
 import socket
@@ -34,15 +34,16 @@ def test_kernel_boundary_confines_reads_writes_and_symlink_targets(tmp_path):
             forbidden.append(str(data_volume_alias))
     (work / 'escape-link').symlink_to(forbidden[0])
     script = work / 'probe.py'
-    script.write_text('''import json, os, pathlib, sys
+    script.write_text('''import errno, json, os, pathlib, sys
+denied = {errno.EPERM, errno.EACCES, errno.ENOENT, errno.EROFS, errno.EXDEV}
 work = pathlib.Path(sys.argv[1])
 assert (work / 'input.txt').read_text() == 'declared input'
 library = pathlib.Path(sys.argv[3])
 assert library.read_text() == 'runtime dependency'
 try:
     library.write_text('overwrite dependency')
-except PermissionError:
-    pass
+except OSError as error:
+    assert error.errno in denied, error
 else:
     raise AssertionError('Sandbox allowed a runtime dependency overwrite')
 (work / 'result.txt').write_text('allowed result')
@@ -51,20 +52,21 @@ for value in json.loads(sys.argv[2]) + [str(work / 'escape-link')]:
     for action in (path.read_text, lambda: path.write_text('overwrite')):
         try:
             action()
-        except PermissionError:
+        except OSError as error:
+            assert error.errno in denied, error
             continue
         raise AssertionError('Sandbox allowed access to ' + value)
 try:
     (work.parent / 'escape-write').write_text('outside')
-except PermissionError:
-    pass
+except OSError as error:
+    assert error.errno in denied, error
 else:
     raise AssertionError('Sandbox allowed an outside write')
 try:
     os.link(json.loads(sys.argv[2])[0], work / 'hardlink-escape')
     (work / 'hardlink-escape').read_text()
-except PermissionError:
-    pass
+except OSError as error:
+    assert error.errno in denied, error
 else:
     raise AssertionError('Sandbox allowed an outside read through a hard link')
 print(json.dumps({'status': 'verified'}))
@@ -85,7 +87,7 @@ print(json.dumps({'status': 'verified'}))
 def test_kernel_network_denial_survives_native_calls_and_descendants(tmp_path):
     import errno
     from oe_studio.engine_isolation import isolated_command, python_runtime_paths
-    probe = Path(__file__).with_name('probes') / 'macos_network.py'
+    probe = Path(__file__).with_name('probes') / ('linux_network.py' if sys.platform == 'linux' else 'macos_network.py')
     with socket.socket() as tcp, socket.socket(type=socket.SOCK_DGRAM) as udp:
         tcp.bind(('127.0.0.1', 0))
         tcp.listen(4)
@@ -94,18 +96,51 @@ def test_kernel_network_denial_survives_native_calls_and_descendants(tmp_path):
         worker = [sys.executable, '-I', str(probe), '--worker', str(port)]
         baseline = subprocess.run(worker, capture_output=True, text=True, timeout=10, check=True)
         assert all(item['errno'] == 0 for item in json.loads(baseline.stdout).values())
+        tcp.settimeout(0.2)
+        udp.settimeout(0.2)
+        connection, _ = tcp.accept()
+        connection.close()
+        assert udp.recvfrom(1)[0] == b'x'
         for args in (worker, [sys.executable, '-I', '-c',
                              'import subprocess,sys; subprocess.run(sys.argv[1:], check=True)', *worker]):
             command, _ = isolated_command(args, workdir=tmp_path,
                                           readable=[probe, *python_runtime_paths(sys.executable)])
             result = subprocess.run(command, capture_output=True, text=True, timeout=10)
             assert result.returncode == 0, result.stderr
-            assert all(item['errno'] in (errno.EPERM, errno.EACCES)
-                       for item in json.loads(result.stdout).values())
+            results = json.loads(result.stdout)
+            assert results['tcp_connect']['errno'] in (errno.EPERM, errno.EACCES, errno.ENETUNREACH, errno.ECONNREFUSED)
+            if sys.platform == 'darwin':
+                assert results['udp_sendto']['errno'] in (errno.EPERM, errno.EACCES)
+            # Linux UDP can send to sandbox-local loopback, but cannot reach the host listener.
+            with pytest.raises(TimeoutError):
+                udp.recvfrom(1)
+            with pytest.raises(TimeoutError):
+                tcp.accept()
 
 
 def test_missing_sandbox_launcher_never_becomes_unconfined_worker(monkeypatch, tmp_path):
     import oe_studio.engine_isolation as isolation
-    monkeypatch.setattr(isolation, 'SANDBOX_EXEC', tmp_path / 'absent')
+    monkeypatch.setattr(isolation, 'BWRAP' if sys.platform == 'linux' else 'SANDBOX_EXEC', tmp_path / 'absent')
     with pytest.raises(FileNotFoundError):
         isolation.isolated_command([sys.executable, '-V'], workdir=tmp_path, readable=[])
+
+
+@pytest.mark.skipif(sys.platform != 'linux', reason='Linux mount/environment policy')
+def test_linux_root_readonly_and_environment_private(monkeypatch, tmp_path):
+    from oe_studio.engine_isolation import isolated_command, python_runtime_paths
+    monkeypatch.setenv('STUDIO_TEST_SECRET', 'must-not-enter-engine')
+    script = '''import errno, os, pathlib
+assert 'STUDIO_TEST_SECRET' not in os.environ
+try:
+    pathlib.Path('/outside-scratch').write_text('escape')
+except OSError as error:
+    assert error.errno in {errno.EROFS, errno.EACCES, errno.EPERM}
+else:
+    raise AssertionError('Writable sandbox root')
+print('confined')
+'''
+    command, _ = isolated_command([sys.executable, '-I', '-c', script], workdir=tmp_path,
+                                 readable=python_runtime_paths(sys.executable))
+    result = subprocess.run(command, capture_output=True, text=True, timeout=10)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == 'confined'

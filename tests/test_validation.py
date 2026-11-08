@@ -115,7 +115,7 @@ def test_missing_runner_never_passes(monkeypatch, tmp_path):
 def test_missing_report_is_error(monkeypatch):
     import oe_studio.validation as validation
     # The process boundary is the only double: a crashed/misconfigured engine can exit 0 without output.
-    monkeypatch.setattr(validation.subprocess, 'run', lambda *a, **kw: subprocess.CompletedProcess(a[0], 0))
+    monkeypatch.setattr(validation, 'run_engine', lambda *a, **kw: subprocess.CompletedProcess(a[0], 0))
     assert validate(ONTOLOGY)['status'] == 'error'
 
 

@@ -474,6 +474,7 @@ class Studio:
         root = Path(__file__).resolve().parents[4]
         paths = {name: root / name for name in ["services/api/src/oe_studio/validation.py", "services/api/src/oe_studio/assessment.py", "services/api/src/oe_studio/assessment_worker.py", "services/api/src/oe_studio/assessment_contracts.py", "services/api/src/oe_studio/engine_isolation.py", "config/macos-engine.sb", "resources/nltk/corpora/stopwords/english", "resources/nltk/corpora/stopwords/README", "config/modelling-profile.json", "services/jena-runner/pom.xml", "requirements-ontocheck.lock", "uv.lock"]}
         paths.update({"jena_runner": RUNNER_JAR, "java_executable": JAVA_EXECUTABLE.resolve()})
+        paths['services/api/src/oe_studio/engine_process.py'] = root / 'services/api/src/oe_studio/engine_process.py'
         paths.update({name: root / name for name in ("services/api/src/oe_studio/pdf_ingestion.py", "services/api/src/oe_studio/pdf_worker.py")})
         result = {"isolation": isolation_configuration()}
         for name, path in paths.items():

@@ -1,0 +1,35 @@
+[Unit]
+Description=Ontology Engineering Studio API and production UI
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+# Keep retrying if PostgreSQL recovery takes longer than the first boot attempt.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=ontology-studio
+Group=ontology-studio
+WorkingDirectory=/opt/ontology-studio
+EnvironmentFile=/etc/ontology-studio/studio.env
+Environment=PYTHONPATH=/opt/ontology-studio/services/api/src
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+Environment=OE_EMBEDDED_WORKER=false
+Environment=OE_EAGER_JOBS=false
+ExecStart=/opt/ontology-studio/.venv/bin/python -m uvicorn oe_studio.main:app --host 127.0.0.1 --port 8000 --workers 1 --proxy-headers --forwarded-allow-ips 127.0.0.1 --timeout-graceful-shutdown 120
+Restart=on-failure
+RestartSec=10s
+TimeoutStopSec=150s
+KillMode=mixed
+UMask=0077
+PrivateTmp=yes
+MemoryHigh=1280M
+MemoryMax=1536M
+TasksMax=256
+LimitNOFILE=8192
+# Keep user namespaces and the AppArmor transition to /usr/bin/bwrap available.
+# Do not add NoNewPrivileges, RestrictNamespaces or syscall filters without
+# repeating the real engine boundary tests inside this service environment.
+
+[Install]
+WantedBy=multi-user.target

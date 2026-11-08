@@ -112,12 +112,46 @@ def test_pdf_timeout_is_not_an_extraction_result(monkeypatch):
     assert report['text'] == ''
 
 
+def test_pdf_cpu_signal_through_sandbox_is_a_timeout(monkeypatch, tmp_path):
+    import oe_studio.pdf_ingestion as ingestion
+    worker = tmp_path / 'cpu_timeout.py'
+    worker.write_text('import os, signal; os.kill(os.getpid(), signal.SIGXCPU)')
+    monkeypatch.setattr(ingestion, 'WORKER', worker)
+    report = ingestion.extract_pdf(pdf_bytes())
+    assert report['status'] == 'timeout', report
+    assert report['diagnostics'][0]['code'] == 'cpu_timeout'
+    assert report['text'] == ''
+
+
 def test_pdf_rss_watchdog_terminates_worker(monkeypatch):
     import oe_studio.pdf_ingestion as ingestion
     monkeypatch.setattr(ingestion, 'MAX_RSS_BYTES', 1)
     report = ingestion.extract_pdf(pdf_bytes())
     assert report['status'] == 'error', report
     assert any(item['code'] == 'memory_limit' for item in report['diagnostics'])
+
+
+def test_pdf_rss_limit_includes_descendant_workers(monkeypatch, tmp_path):
+    """A lightweight launcher must not hide the actual parser's allocation."""
+    import sys
+    import oe_studio.pdf_ingestion as ingestion
+    worker = tmp_path / 'launcher.py'
+    worker.write_text('''import subprocess, sys, time
+child = subprocess.Popen([sys.executable, '-c',
+    'import time; allocation = bytearray(80 * 1024 * 1024); time.sleep(1)'])
+try:
+    child.wait()
+finally:
+    child.kill()
+print('{}')
+''')
+    # Exercise real process accounting with only the OS sandbox boundary replaced.
+    monkeypatch.setattr(ingestion, 'isolated_command', lambda *args, **kwargs:
+                        ([sys.executable, str(worker)], {'mode': 'controlled-test'}))
+    monkeypatch.setattr(ingestion, 'MAX_RSS_BYTES', 48 * 1024 * 1024)
+    report = ingestion.extract_pdf(pdf_bytes())
+    assert report['status'] == 'error', report
+    assert any(item['code'] == 'memory_limit' for item in report['diagnostics']), report
 
 
 def test_pdf_report_with_wrong_input_identity_is_rejected(monkeypatch, tmp_path):

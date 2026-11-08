@@ -13,10 +13,14 @@ from uuid import uuid4
 from .artifacts import canonical_json
 from .assessment_contracts import ApprovedMapping
 from .engine_isolation import isolated_command, python_runtime_paths
+from .engine_process import ENFORCEMENT, run_engine
 
 ROOT = Path(__file__).resolve().parents[4]
 RESOURCE_ROOT = ROOT / 'resources/nltk'
 COMMIT = '69d42e38979f381fe531ae547fcc49b8ad58ef15'
+MAX_RSS_BYTES = 1024 * 1024 * 1024
+MAX_OUTPUT_BYTES = 8 * 1024 * 1024
+MAX_TASKS = 64
 SCORES = ('vocabulary_coverage', 'vocabulary_utilisation', 'strict_fitness',
           'approximate_fitness', 'structural_fitness')
 DEFAULT_QUESTIONS = [{
@@ -60,7 +64,10 @@ def assess(ontology_ttl: str, *, base_ttl: str = '', bundle_digest: str,
         return report
     python = os.getenv('OE_ONTOCHECK_PYTHON', str(ROOT / '.venv-ontocheck/bin/python'))
     try:
-        timeout = min(60.0, max(0.001, float(os.getenv('OE_ONTOCHECK_TIMEOUT_SECONDS', '20'))))
+        timeout = min(20.0, max(0.001, float(os.getenv('OE_ONTOCHECK_TIMEOUT_SECONDS', '20'))))
+        report['engine']['limits'] = {'wall_seconds': timeout, 'rss_bytes': MAX_RSS_BYTES,
+                                      'tasks': MAX_TASKS, 'output_bytes': MAX_OUTPUT_BYTES,
+                                      'enforcement': ENFORCEMENT}
         with tempfile.TemporaryDirectory(prefix='oe-assessment-') as work:
             folder = Path(work)
             payload = {'ontology_ttl': ontology_ttl, 'base_ttl': base_ttl, 'questions': questions,
@@ -73,10 +80,10 @@ def assess(ontology_ttl: str, *, base_ttl: str = '', bundle_digest: str,
                 readable=[worker, RESOURCE_ROOT, *python_runtime_paths(python)],
             )
             report['engine']['isolation'] = isolation
-            report['engine']['network_control'] = 'macOS Seatbelt network denial plus Python audit hook'
-            completed = subprocess.run(
-                command,
-                capture_output=True, text=True, timeout=timeout, cwd=folder, stdin=subprocess.DEVNULL,
+            report['engine']['network_control'] = isolation['mode'] + ' network denial plus Python audit hook'
+            completed = run_engine(
+                command, timeout=timeout, cwd=folder, max_rss_bytes=MAX_RSS_BYTES,
+                max_tasks=MAX_TASKS, max_output_bytes=MAX_OUTPUT_BYTES,
                 env={'PATH': str(Path(python).parent), 'LANG': 'C.UTF-8',
                      'TMPDIR': work, 'NLTK_DATA': str(RESOURCE_ROOT)},
             )
@@ -104,7 +111,7 @@ def assess(ontology_ttl: str, *, base_ttl: str = '', bundle_digest: str,
     except subprocess.TimeoutExpired:
         report['status'] = 'timeout'
         report['limitations'].append('OntoCheck exceeded its wall-clock limit; no scores are eligible for review.')
-    except (OSError, ValueError, RuntimeError) as exc:
+    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
         report['status'] = 'error'
         report['limitations'].append(f'OntoCheck unavailable or failed: {exc}')
     return report

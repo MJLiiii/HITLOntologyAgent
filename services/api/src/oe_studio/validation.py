@@ -22,6 +22,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from .engine_isolation import isolated_command
+from .engine_process import ENFORCEMENT, run_engine
 
 ROOT = Path(__file__).resolve().parents[4]
 RUNNER_JAR = Path(os.environ.get('OE_JENA_RUNNER_JAR', ROOT / 'services/jena-runner/target/oe-jena-runner.jar'))
@@ -32,6 +33,9 @@ PROFILE_FILE = ROOT / 'config/modelling-profile.json'
 TIMEOUT_SECONDS = 30
 MAX_INPUT_BYTES = 1_048_576
 MAX_REPORT_BYTES = 4_194_304
+MAX_OUTPUT_BYTES = 16 * 1024 * 1024
+MAX_RSS_BYTES = 1024 * 1024 * 1024
+MAX_TASKS = 128
 RUNNER_VERSION = '0.1.0'
 JENA_VERSION = '6.2.0'
 
@@ -102,10 +106,14 @@ def validate(ontology_ttl: str, *, bundle_digest: str, shapes_ttl: str = '',
             report['engine']['isolation'] = isolation
             # Remove JVM injection knobs; credentials are not copied into the isolated runner.
             environment = {key: os.environ[key] for key in ('PATH', 'LANG', 'LC_ALL', 'TMPDIR', 'SYSTEMROOT') if key in os.environ}
-            with (directory / 'stderr.log').open('wb') as stderr:
-                process = subprocess.run(command, cwd=directory, shell=False, stdin=subprocess.DEVNULL,
-                                         stdout=subprocess.DEVNULL, stderr=stderr, timeout=TIMEOUT_SECONDS,
-                                         start_new_session=True, env=environment, check=False)
+            limits = {'wall_seconds': TIMEOUT_SECONDS, 'rss_bytes': MAX_RSS_BYTES,
+                      'tasks': MAX_TASKS, 'output_bytes': MAX_OUTPUT_BYTES, 'enforcement': ENFORCEMENT}
+            report['engine']['limits'] = limits
+            process = run_engine(command, cwd=directory, timeout=TIMEOUT_SECONDS, env=environment,
+                                 max_rss_bytes=MAX_RSS_BYTES, max_tasks=MAX_TASKS,
+                                 max_output_bytes=MAX_OUTPUT_BYTES,
+                                 output_paths=[directory / name for name in
+                                               ('report.json', 'shacl-report.ttl', 'query-results.json')])
             output = directory / 'report.json'
             if not output.is_file():
                 return fail(f'Jena exited with code {process.returncode} without a structured report')
@@ -134,6 +142,7 @@ def validate(ontology_ttl: str, *, bundle_digest: str, shapes_ttl: str = '',
                     return fail('Successful Jena report is missing required stages or case outcomes')
             report.update(actual)
             report['engine']['isolation'] = isolation
+            report['engine']['limits'] = limits
             report['bundle_digest'] = bundle_digest
             report['input_manifest'] = manifest
             report['engine']['jar_sha256'] = hashlib.sha256(RUNNER_JAR.read_bytes()).hexdigest()
@@ -146,5 +155,5 @@ def validate(ontology_ttl: str, *, bundle_digest: str, shapes_ttl: str = '',
             return report
     except subprocess.TimeoutExpired:
         return fail('Jena process exceeded its wall-clock limit and was terminated', 'timeout')
-    except (OSError, ValueError, TypeError, KeyError, AttributeError) as error:
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError, subprocess.SubprocessError) as error:
         return fail(f'Validator input or process error: {type(error).__name__}: {error}')

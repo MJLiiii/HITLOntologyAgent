@@ -3,34 +3,24 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 from pathlib import Path
 import signal
 import subprocess
 import sys
 import tempfile
-import time
 from uuid import uuid4
 
 from .engine_isolation import isolated_command, python_runtime_paths
+from .engine_process import ENFORCEMENT, EngineResourceLimit, run_engine
 
 VERSION = '6.21.4'
 MAX_INPUT_BYTES = 20 * 1024 * 1024
 MAX_TEXT_BYTES = 2 * 1024 * 1024
 MAX_RSS_BYTES = 512 * 1024 * 1024
 MAX_REPORT_BYTES = 8 * 1024 * 1024
+MAX_TASKS = 32
 WALL_SECONDS = 15
 WORKER = Path(__file__).with_name('pdf_worker.py')
-
-
-def _rss_bytes(process):
-    sample = subprocess.run(['/bin/ps', '-o', 'rss=', '-p', str(process.pid)],
-                            capture_output=True, text=True, timeout=1, check=False)
-    if sample.returncode or not sample.stdout.strip():
-        if process.poll() is not None:
-            return 0
-        raise RuntimeError('Cannot verify PDF worker memory use; execution is blocked')
-    return int(sample.stdout.strip()) * 1024
 
 
 def _verify(result, source_hash, source_bytes):
@@ -66,6 +56,8 @@ def extract_pdf(content: bytes) -> dict:
               'page_count': None, 'pages': [], 'text': '', 'text_sha256': None, 'diagnostics': [],
               'engine': {'name': 'pypdf', 'version': VERSION,
                          'limits': {'wall_seconds': WALL_SECONDS, 'rss_bytes': MAX_RSS_BYTES,
+                                    'tasks': MAX_TASKS, 'output_bytes': MAX_REPORT_BYTES,
+                                    'enforcement': ENFORCEMENT,
                                     'input_bytes': MAX_INPUT_BYTES, 'text_bytes': MAX_TEXT_BYTES, 'pages': 200}}}
 
     def fail(code, message, status='error'):
@@ -92,38 +84,26 @@ def extract_pdf(content: bytes) -> dict:
                 readable=[WORKER, *python_runtime_paths(sys.executable)],
             )
             report['engine']['isolation'] = isolation
-            output, errors = directory / 'report.json', directory / 'stderr.log'
-            with output.open('wb') as stdout, errors.open('wb') as stderr:
-                started = time.monotonic()
-                process = subprocess.Popen(command, cwd=directory, stdout=stdout, stderr=stderr,
-                    stdin=subprocess.DEVNULL, start_new_session=True,
-                    env={'PATH': str(Path(sys.executable).parent), 'LANG': 'C.UTF-8', 'TMPDIR': work})
-                try:
-                    while process.poll() is None:
-                        if time.monotonic() - started > WALL_SECONDS:
-                            return fail('wall_timeout', 'PDF extraction exceeded its 15-second deadline', 'timeout')
-                        if _rss_bytes(process) > MAX_RSS_BYTES:
-                            return fail('memory_limit', 'PDF extraction exceeded the resident-memory limit')
-                        if max(output.stat().st_size, errors.stat().st_size) > MAX_REPORT_BYTES:
-                            return fail('output_limit', 'PDF worker output exceeds its bounded report limit')
-                        time.sleep(0.05)
-                finally:
-                    if process.poll() is None:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    process.wait(timeout=2)
+            process = run_engine(
+                command, cwd=directory, timeout=WALL_SECONDS, max_rss_bytes=MAX_RSS_BYTES,
+                max_tasks=MAX_TASKS, max_output_bytes=MAX_REPORT_BYTES,
+                env={'PATH': str(Path(sys.executable).parent), 'LANG': 'C.UTF-8', 'TMPDIR': work},
+            )
             if process.returncode:
-                if process.returncode == -signal.SIGXCPU:
+                if process.returncode in {-signal.SIGXCPU, 128 + signal.SIGXCPU}:
                     return fail('cpu_timeout', 'PDF extraction exceeded its CPU-time limit', 'timeout')
-                return fail('worker_failure', f'PDF worker exit {process.returncode}: {errors.read_text()[-1000:]}')
-            if output.stat().st_size > MAX_REPORT_BYTES:
-                return fail('output_limit', 'PDF worker report exceeds its limit')
-            result = json.loads(output.read_text())
+                return fail('worker_failure', f'PDF worker exit {process.returncode}: {process.stderr[-1000:]}')
+            result = json.loads(process.stdout)
             if hashlib.sha256(source.read_bytes()).hexdigest() != source_hash:
                 return fail('source_integrity', 'PDF source bytes changed during extraction')
             _verify(result, source_hash, len(content))
-            limits = {**report['engine']['limits'], **result['engine'].get('limits', {})}
+            limits = {**result['engine'].get('limits', {}), **report['engine']['limits']}
             report.update(result)
             report['engine'].update(isolation=isolation, limits=limits)
+    except subprocess.TimeoutExpired:
+        return fail('wall_timeout', 'PDF extraction exceeded its wall-clock deadline', 'timeout')
+    except EngineResourceLimit as exc:
+        return fail(exc.code, str(exc))
     except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError, subprocess.SubprocessError) as exc:
         return fail('extraction_error', f'{type(exc).__name__}: {exc}')
     return report

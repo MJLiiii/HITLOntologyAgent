@@ -1,0 +1,37 @@
+[Unit]
+Description=Ontology Engineering Studio durable job worker
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+# Keep retrying if PostgreSQL recovery takes longer than the first boot attempt.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=ontology-studio
+Group=ontology-studio
+WorkingDirectory=/opt/ontology-studio
+EnvironmentFile=/etc/ontology-studio/studio.env
+Environment=PYTHONPATH=/opt/ontology-studio/services/api/src
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+Environment=OE_EMBEDDED_WORKER=false
+Environment=OE_EAGER_JOBS=false
+ExecStart=/opt/ontology-studio/.venv/bin/python -m oe_studio.worker --env-file /dev/null
+Restart=on-failure
+RestartSec=10s
+# The current experiment lease is 60 minutes. Let the current bounded job
+# finish; send SIGTERM only to the worker, then reap the full cgroup on expiry.
+TimeoutStopSec=75min
+KillMode=mixed
+UMask=0077
+PrivateTmp=yes
+MemoryHigh=2560M
+MemoryMax=3G
+TasksMax=512
+LimitNOFILE=8192
+# Keep user namespaces and the AppArmor transition to /usr/bin/bwrap available.
+# Do not add NoNewPrivileges, RestrictNamespaces or syscall filters without
+# repeating the real engine boundary tests inside this service environment.
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,26 @@
+# User service for this checkout; adjust the checkout path if installed elsewhere.
+[Unit]
+Description=Private local Ontology Studio job worker
+After=ontology-local-api.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=%h/projects/HITLOntologyAgent
+EnvironmentFile=%h/projects/HITLOntologyAgent/.env
+Environment=PYTHONPATH=services/api/src
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+Environment=OE_EMBEDDED_WORKER=false
+ExecStart=%h/projects/HITLOntologyAgent/.venv/bin/python -m oe_studio.worker --env-file /dev/null
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=75min
+KillMode=mixed
+UMask=0077
+MemoryHigh=2560M
+MemoryMax=3G
+TasksMax=512
+
+[Install]
+WantedBy=default.target

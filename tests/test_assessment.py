@@ -162,7 +162,7 @@ for action in (lambda: socket.create_connection(('127.0.0.1', 1)),
 def test_incomplete_success_report_is_an_error(monkeypatch):
     import subprocess
     import oe_studio.assessment as assessment
-    monkeypatch.setattr(assessment.subprocess, 'run', lambda *a, **kw:
+    monkeypatch.setattr(assessment, 'run_engine', lambda *a, **kw:
         subprocess.CompletedProcess(a[0], 0, stdout='{"status":"completed"}', stderr=''))
     report = assess()
     assert report['status'] == 'error', report
@@ -252,7 +252,7 @@ def test_worker_mapping_identity_is_verified(monkeypatch):
     report = assess()
     assert report['status'] == 'completed', report
     report['mappings_sha256'] = '0' * 64
-    monkeypatch.setattr(assessment.subprocess, 'run', lambda *a, **kw:
+    monkeypatch.setattr(assessment, 'run_engine', lambda *a, **kw:
         subprocess.CompletedProcess(a[0], 0, stdout=json.dumps(report), stderr=''))
     failed = assess()
     assert failed['status'] == 'error', failed
@@ -286,9 +286,39 @@ def test_sandbox_launch_failure_never_falls_back_to_plain_python(monkeypatch):
         commands.append(command)
         return subprocess.CompletedProcess(command, 71, stdout='', stderr='sandbox_apply: Operation not permitted')
 
-    monkeypatch.setattr(assessment.subprocess, 'run', denied)
+    monkeypatch.setattr(assessment, 'run_engine', denied)
     report = assess()
     assert report['status'] == 'error', report
     assert report['raw'] == {}
     assert len(commands) == 1
-    assert commands[0][0] == '/usr/bin/sandbox-exec'
+    import sys
+    assert commands[0][0] == ('/usr/bin/bwrap' if sys.platform == 'linux' else '/usr/bin/sandbox-exec')
+
+
+@pytest.mark.parametrize(('limit', 'message'), [
+    ('MAX_RSS_BYTES', 'resident-memory limit'), ('MAX_TASKS', 'task limit'),
+    ('MAX_OUTPUT_BYTES', 'output limit'),
+])
+def test_resource_exhaustion_never_returns_scores(monkeypatch, limit, message):
+    import oe_studio.assessment as assessment
+    monkeypatch.setattr(assessment, limit, 1)
+    report = assess()
+    assert report['status'] == 'error', report
+    assert report['raw'] == {}
+    assert all(report[score] is None for score in assessment.SCORES)
+    assert any(message in item for item in report['limitations']), report
+
+
+def test_process_monitor_failure_is_an_explicit_assessment_error(monkeypatch):
+    import subprocess
+    import oe_studio.assessment as assessment
+
+    def monitor_failed(*args, **kwargs):
+        raise subprocess.CalledProcessError(1, ['/bin/ps'])
+
+    monkeypatch.setattr(assessment, 'run_engine', monitor_failed)
+    report = assess()
+    assert report['status'] == 'error'
+    assert report['raw'] == {}
+    assert all(report[score] is None for score in assessment.SCORES)
+    assert any('unavailable or failed' in message for message in report['limitations'])

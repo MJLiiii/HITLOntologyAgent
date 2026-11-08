@@ -20,6 +20,8 @@ Open the private local session URL printed by `make demo`. The command builds th
 
 Application data, immutable artifacts and ontology Git history live in `.data/`. For development, run `make dev-api`, `make dev-worker` and `make dev-ui` in separate terminals. Team mode adds operator-created accounts and project roles; see [team startup](docs/operations.md#team-development-on-mac). The deterministic demo needs no model key; see [model configuration](docs/multi-llm.md) for OpenAI or Claude API generation. No local model installation is required.
 
+Linux engines use Bubblewrap with fail-closed filesystem/network isolation and bounded process supervision. For the fresh Ubuntu installation, see [private SSH access and user services](docs/operations.md#private-ubuntu-setup-through-ssh) and [actual verification](docs/evidence/ubuntu-private-setup-2026-11-03.md). Local identity remains loopback-only.
+
 ## Workflow
 
 1. Select sources and scope; freeze the evidence snapshot.

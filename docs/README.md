@@ -8,7 +8,7 @@ Start with the [application README](../README.md) for installation and the repos
 | --- | --- |
 | [Workflow](workflow.md) | Sources → proposal → checks → human review → publication; experiments and exports |
 | [Operations](operations.md) | Local/team identity, independent processes, migrations, backup and recovery |
-| [Ubuntu test deployment plan](ubuntu-test-deployment-plan.md) | Proposed four-service setup for the Ryzen / 16 GB test server, Linux confinement work and capacity checks |
+| [Ubuntu deployment and migration plan](ubuntu-test-deployment-plan.md) | Fresh private Ubuntu setup, implemented Linux confinement and optional later team deployment |
 | [Two-agent design](two-agent-team-development.md) | Agent boundaries, roles and implementation decisions |
 | [Architecture](architecture.md) | Runtime dependencies, HTTP module ownership and workflow boundaries |
 | [Model configuration](multi-llm.md) | Server-owned profiles, providers and bounded comparisons |
@@ -48,7 +48,9 @@ Use these records for what was actually tested, including failures and limits. T
 - [OpenAI/Claude cleanup verification](evidence/llm-api-cleanup-2026-11-02.md): current two-provider runtime, cleanup and regression evidence.
 - [GUI model selection verification](evidence/gui-model-selection-2026-11-03.md): multiple GPT/Claude choices, controlled compatibility and browser evidence.
 - [Multi-LLM verification](multi-llm-verification.md) and [model comparison](model-comparison.md): model-layer checks and bounded live observations.
-- [Ubuntu host inspection](evidence/ubuntu-host-inspection-2026-11-03.md): actual server OS/resources, installed runtimes and a limited Bubblewrap capability probe; application deployment remains pending.
+- [Ubuntu host inspection](evidence/ubuntu-host-inspection-2026-11-03.md): historical server inventory and limited Bubblewrap capability probe before application deployment.
+- [Ubuntu clone and migration readiness](evidence/ubuntu-migration-readiness-2026-11-03.md): historical clone inventory and Linux blocker; its preservation requirement was superseded by the fresh setup below.
+- [Fresh private Ubuntu setup](evidence/ubuntu-private-setup-2026-11-03.md): superseding fresh-data/SSH choice, Linux implementation, actual user services, browser/restore checks and remaining limits.
 - [Release verification](evidence/release-verification.md), [backend review](evidence/backend-review.md) and [bundled resources audit](evidence/bundled-resources-audit.md).
 - [Browser acceptance](evidence/browser-acceptance.md) and [local model browser smoke](evidence/browser-smoke.md).
 - [Portal smoke](evidence/portal-smoke.md), [TrustGraph pipeline smoke](evidence/trustgraph-pipeline-smoke.md) and [native editor boundary](evidence/native-editor-boundary.md).

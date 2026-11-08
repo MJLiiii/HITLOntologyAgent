@@ -14,6 +14,8 @@ setup:
 	uv sync --frozen
 	uv venv --python 3.12.14 .venv-ontocheck
 	uv pip sync --python .venv-ontocheck/bin/python requirements-ontocheck.lock
+	# NLTK refuses language data writable by another account, even on a read-only mount.
+	chmod -R go-w resources/nltk
 	npm --prefix apps/studio-plugin ci
 
 build-jena:
